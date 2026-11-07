@@ -134,6 +134,7 @@
   // 다른 화면(FLEX CLASS)이 쓰는 같은 데이터 창구
   window.BF = {
     addChips(n) { st.chips += n; save(); sync(); },
+    quotes: () => st.entries.filter(e => e.quote).map(e => ({ id: `q-${e.date}-${e.start}`, date: e.date, text: e.quote })),
     stats() {
       const es = st.entries, sum = a => a.reduce((s, e) => s + e.pages, 0);
       return {

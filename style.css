@@ -122,6 +122,25 @@ small { font-size: 11px; } .mute { color: #999; } .ok { color: #2f9a5c; display:
 :focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
 
 .book[hidden], [hidden].head, .tabs[hidden], #v-class[hidden], #v-shop[hidden] { display: none; }
+#v-feed[hidden] { display: none; }
+#v-feed { display: grid; gap: 12px; }
+.linkbtn { float: right; border: 0; background: none; color: var(--hi); font-weight: 700; font-size: 11px; cursor: pointer; padding: 0; }
+.flist { display: grid; gap: 8px; margin-bottom: 8px; }
+.post { padding: 10px 12px; border-radius: 14px; background: var(--soft); }
+.post.mine { outline: 2px solid color-mix(in srgb, var(--accent) 50%, transparent); }
+.post header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.post header time { margin-left: auto; color: #aaa; font-size: 11px; }
+.post header small { color: #888; }
+.av.sm { width: 24px; height: 24px; border-radius: 8px; font-size: 12px; background: var(--accent); }
+.ptxt { margin: 0 0 4px; font-weight: 700; line-height: 1.5; }
+.post .ph { margin: 0 0 4px; color: #aaa; font-style: italic; }
+.src { color: #888; display: block; }
+.cbtn { margin-top: 6px; border: 0; background: #fff; border-radius: 999px; padding: 3px 10px; font-size: 11px; font-weight: 700; color: var(--hi); cursor: pointer; }
+.cm { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); display: grid; gap: 6px; }
+.cm p { margin: 0; display: flex; gap: 8px; } .cm p b { color: var(--hi); flex: none; }
+.cm time { margin-left: auto; color: #aaa; font-size: 11px; }
+.cm .say { margin: 0; } .cm .say input { background: #fff; }
+.cm .msg { min-height: 0; }
 #v-mission[hidden] { display: none; }
 #v-mission { display: grid; gap: 12px; }
 .mgrid { grid-template-columns: 1fr 1fr; }

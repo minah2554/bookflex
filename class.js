@@ -64,6 +64,9 @@
   function show(page) {
     const cls = page === 'class', sub = page !== 'my';
     $('v-mission').hidden = page !== 'mission';
+    $('v-feed').hidden = page !== 'feed';
+    document.querySelectorAll('.menu [data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === page));
+    document.querySelectorAll('.linkbtn').forEach(b => b.classList.remove('on'));
     document.querySelectorAll('[data-page]').forEach(b => { b.classList.toggle('on', b.dataset.page === page); b.toggleAttribute('aria-current', b.dataset.page === page); });
     $('v-class').hidden = !cls;
     $('v-shop').hidden = page !== 'shop';

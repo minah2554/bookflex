@@ -4,10 +4,12 @@
   const KEY = 'bookflex.mission.v1', TOTAL = 27, P_CHIP = 15, C_CHIP = 30;
   const visits = () => { try { const v = JSON.parse(localStorage.getItem('bookflex.visit.v1')); return v && v.date === window.BF.stats().today ? v.names.length : 0; } catch { return 0; } };
 
+  const comments = () => { try { const f = JSON.parse(localStorage.getItem('bookflex.feed.v1')); return (f && f.v && f.v[window.BF.stats().today]) || 0; } catch { return 0; } };
   const PERSONAL = [
     { title: '오늘 10쪽 이상 읽고 기록하기', goal: 10, unit: '쪽', how: '당일 중복 제외 페이지 합계 10쪽 이상', val: s => s.todayPages },
     { title: '오늘의 한 구절 남기기', goal: 1, unit: '개', how: '당일 한 구절 저장', val: s => s.todayQuotes },
     { title: '친구 2명의 서재 방문하기', goal: 2, unit: '명', how: '당일 서로 다른 친구 2명 방문', val: () => visits() },
+    { title: '친구 글에 댓글 1개 달기', goal: 1, unit: '개', how: '당일 친구 글에 10자 이상 댓글 1개', val: () => comments() },
   ];
   // base: 오늘 이미 달성한 샘플 인원(학급 서버가 생기기 전 값)
   const CLASS = [
