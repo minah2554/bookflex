@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>BOOK FLEX | 북플렉스</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="style.css?v=0.23.0">
+<link rel="stylesheet" href="style.css?v=0.24.0">
 </head>
 <body>
 <div class="app">
@@ -139,7 +139,8 @@
         <div class="two logtop">
           <form id="logForm" class="logform" novalidate>
             <h2>오늘 어디까지 읽었어?</h2>
-            <div class="bookrow"><label for="bookSel">읽는 책</label><select id="bookSel"></select><small id="bookInfo"></small><button type="button" class="linkbtn" id="addBookBtn" aria-expanded="false" aria-controls="addBook">+ 책 직접 등록</button></div>
+            <div class="bookrow"><label for="bookSel">읽는 책</label><select id="bookSel"></select><small id="bookInfo"></small><span class="bkact"><button type="button" class="linkbtn" id="editBookBtn" aria-controls="addBook">수정</button><button type="button" class="linkbtn" id="delBookBtn">삭제</button><button type="button" class="linkbtn" id="addBookBtn" aria-controls="addBook">+ 책 직접 등록</button></span></div>
+            <div id="delRow" class="delrow" hidden><span id="delTxt"></span><button type="button" class="cta mini" id="delYes">삭제</button><button type="button" class="cta mini ghost" id="delNo">취소</button></div>
             <div id="addBook" class="addbook" hidden>
               <label>제목<input id="abT" maxlength="40" placeholder="예: 데미안"></label>
               <label>저자 <small>(선택)</small><input id="abW" maxlength="30" placeholder="예: 헤르만 헤세"></label>
@@ -418,14 +419,14 @@
   <span>읽고, 쌓고, 꾸미고, 함께 자랑하는 우리 반 독서 세계</span>
   <span id="ver"></span>
 </footer>
-<script src="app.js?v=0.23.0"></script>
-<script src="log.js?v=0.23.0"></script>
-<script src="class.js?v=0.23.0"></script>
-<script src="shop.js?v=0.23.0"></script>
-<script src="mission.js?v=0.23.0"></script>
-<script src="feed.js?v=0.23.0"></script>
-<script src="pick.js?v=0.23.0"></script>
-<script src="tabs.js?v=0.23.0"></script>
-<script src="notify.js?v=0.23.0"></script>
+<script src="app.js?v=0.24.0"></script>
+<script src="log.js?v=0.24.0"></script>
+<script src="class.js?v=0.24.0"></script>
+<script src="shop.js?v=0.24.0"></script>
+<script src="mission.js?v=0.24.0"></script>
+<script src="feed.js?v=0.24.0"></script>
+<script src="pick.js?v=0.24.0"></script>
+<script src="tabs.js?v=0.24.0"></script>
+<script src="notify.js?v=0.24.0"></script>
 </body>
 </html>

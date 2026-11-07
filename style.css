@@ -423,3 +423,8 @@ small { font-size: 12px; } .mute { color: var(--muted); } .ok { color: #247040; 
 .addbook input, .regrow input { box-sizing: border-box; height: 36px; padding: 0 10px; border: 2px solid color-mix(in srgb, var(--hi) 30%, transparent); border-radius: 10px; background: #fff; font: inherit; font-weight: 400; }
 .addbook label small { font-weight: 400; color: var(--ink2); }
 .addbook .cta { height: 36px; }
+.bkact { margin-left: auto; display: flex; gap: 10px; }
+.bookrow .linkbtn { margin-left: 0; }
+.delrow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 12px; padding: 10px 12px; border-radius: 12px; background: #fdecee; font-size: 13px; }
+.delrow[hidden] { display: none; }
+.delrow span { flex: 1; min-width: 200px; }

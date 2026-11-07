@@ -147,12 +147,48 @@
     st.cur = t; switched();
     return { ok: true, dup };
   }
-  $('addBookBtn').addEventListener('click', () => { const o = $('addBook'); o.hidden = !o.hidden; $('addBookBtn').setAttribute('aria-expanded', !o.hidden); if (!o.hidden) $('abT').focus(); });
+  // 책 수정: 제목·저자·쪽수. 제목을 바꾸면 그 책의 기록도 새 제목으로 이어진다
+  function editBook(t, w, n) {
+    t = String(t || '').trim(); w = String(w || '').trim(); n = parseInt(n, 10);
+    const bk = cb(), r = reached();
+    if (!t) return { err: '책 제목을 적어 주세요.' };
+    if (t.length > 40) return { err: '책 제목은 40자까지 적을 수 있어요.' };
+    if (t !== bk.t && st.lib.some(x => x.t === t)) return { err: '이미 등록한 제목이에요.' };
+    if (!Number.isInteger(n) || n < 10 || n > 3000) return { err: '내 판본의 전체 쪽수를 10~3000 사이로 적어 주세요.' };
+    if (n < r) return { err: `이미 ${r}쪽까지 읽었어요. ${r}쪽보다 적게 바꿀 수 없어요.` };
+    st.entries.forEach(e => { if (e.book === bk.t) e.book = t; });
+    Object.assign(bk, { t, w: w || '저자 미상', total: n, fin: r >= n });
+    st.cur = t; switched();
+    return { ok: true };
+  }
+  let editing = false;
+  function openForm(edit) {
+    editing = edit; $('delRow').hidden = true; $('abMsg').textContent = '';
+    $('addBook').hidden = false; $('abOk').textContent = edit ? '저장하기' : '등록하기';
+    $('abT').value = edit ? cb().t : ''; $('abW').value = edit && cb().w !== '저자 미상' ? cb().w : ''; $('abN').value = edit ? cb().total : '';
+    $('abT').focus();
+  }
+  const closeForm = () => { $('addBook').hidden = true; $('delRow').hidden = true; };
+  $('addBookBtn').addEventListener('click', () => ($('addBook').hidden || editing ? openForm(false) : closeForm()));
+  $('editBookBtn').addEventListener('click', () => ($('addBook').hidden || !editing ? openForm(true) : closeForm()));
+  // 삭제: 읽는 책이 하나는 남아야 한다. 읽은 기록·칩·XP는 지우지 않고 책 목록에서만 뺀다
+  $('delBookBtn').addEventListener('click', () => {
+    $('logMsg').className = 'msg';
+    if (st.lib.length < 2) { $('logMsg').textContent = '읽는 책이 하나는 있어야 해요. 다른 책을 먼저 등록해 주세요.'; return; }
+    $('addBook').hidden = true; $('delRow').hidden = false; $('delTxt').textContent = `「${cb().t}」을(를) 책 목록에서 삭제할까요? 읽은 기록과 칩은 그대로 남아요.`;
+  });
+  $('delNo').addEventListener('click', () => ($('delRow').hidden = true));
+  $('delYes').addEventListener('click', () => {
+    const gone = cb().t;
+    st.lib = st.lib.filter(x => x.t !== gone); st.cur = st.lib[0].t;
+    $('delRow').hidden = true; switched();
+    $('logMsg').className = 'msg okm'; $('logMsg').textContent = `「${gone}」을(를) 책 목록에서 삭제했어요. 「${st.cur}」을(를) 읽는 책으로 바꿨어요.`;
+  });
   const doAdd = () => {
-    const r = addBook($('abT').value, $('abW').value, $('abN').value), m = $('abMsg');
+    const was = editing, r = (was ? editBook : addBook)($('abT').value, $('abW').value, $('abN').value), m = $('abMsg');
     m.className = r.err ? 'msg' : 'msg okm';
-    m.textContent = r.err || (r.dup ? '이미 등록한 책이에요. 이 책으로 바꿨어요.' : `「${st.cur}」을(를) 읽는 책으로 등록했어요. 읽은 쪽을 적어 보세요.`);
-    if (r.ok) { ['abT', 'abW', 'abN'].forEach(i => ($(i).value = '')); $('addBook').hidden = true; $('addBookBtn').setAttribute('aria-expanded', 'false'); $('logMsg').className = 'msg okm'; $('logMsg').textContent = m.textContent; }
+    m.textContent = r.err || (was ? `「${st.cur}」 정보를 저장했어요.` : r.dup ? '이미 등록한 책이에요. 이 책으로 바꿨어요.' : `「${st.cur}」을(를) 읽는 책으로 등록했어요. 읽은 쪽을 적어 보세요.`);
+    if (r.ok) { ['abT', 'abW', 'abN'].forEach(i => ($(i).value = '')); closeForm(); $('logMsg').className = 'msg okm'; $('logMsg').textContent = m.textContent; }
   };
   $('abOk').addEventListener('click', doAdd);
   $('addBook').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); doAdd(); } });
