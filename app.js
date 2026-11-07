@@ -1,4 +1,4 @@
-const APP_VERSION = '0.21.0'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '0.22.0'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
@@ -111,15 +111,17 @@ const ITEMS = [
 ];
 
 // 상점 물건 그림(assets/items). 일곱 가지 물건은 디자인 4종 중 하나를 고를 수 있다(상점에서).
-const DIM = {"bmark-1":[440,280],"bmark-2":[440,251],"bmark-3":[440,282],"bmark-4":[440,225],"clock-1":[312,440],"clock-2":[319,440],"clock-3":[368,440],"clock-4":[332,440],"mug-1":[440,402],"mug-2":[440,387],"mug-3":[439,440],"mug-4":[440,429],"plant-1":[371,440],"plant-2":[259,440],"plant-3":[355,440],"plant-4":[270,440],"rug-1":[440,236],"rug-2":[440,258],"rug-3":[440,236],"rug-4":[440,249],"frame-1":[321,440],"frame-2":[345,440],"frame-3":[384,440],"frame-4":[341,440],"poster-1":[382,440],"poster-2":[294,440],"poster-3":[396,440],"poster-4":[238,440],"chair":[348,440],"sofa":[440,412],"bigrug":[440,232],"wall-blue":[330,440],"wall-wood":[325,440],"floor-carpet":[440,239],"floor-tile":[440,247],"books":[204,167],"desk":[203,204],"lamp":[150,204],"roundrug":[204,115],"sunset":[130,204],"window":[150,204]};
-const VAR_KEY = 'bookflex.variant.v1', HAS_VAR = ['bmark', 'clock', 'mug', 'plant', 'rug', 'frame', 'poster'];
+const DIM = {"bmark-1":[440,280],"bmark-2":[440,251],"bmark-3":[440,282],"bmark-4":[440,225],"clock-1":[312,440],"clock-2":[319,440],"clock-3":[368,440],"clock-4":[332,440],"mug-1":[440,402],"mug-2":[440,387],"mug-3":[439,440],"mug-4":[440,429],"plant-1":[371,440],"plant-2":[259,440],"plant-3":[355,440],"plant-4":[270,440],"rug-1":[440,236],"rug-2":[440,258],"rug-3":[440,236],"rug-4":[440,249],"frame-1":[321,440],"frame-2":[345,440],"frame-3":[384,440],"frame-4":[341,440],"poster-1":[382,440],"poster-2":[294,440],"poster-3":[396,440],"poster-4":[238,440],"chair":[348,440],"sofa":[440,412],"bigrug":[440,232],"wall-blue":[330,440],"wall-wood":[325,440],"floor-carpet":[440,239],"floor-tile":[440,247],"books-1":[391,440],"books-2":[388,440],"desk-1":[440,301],"desk-2":[440,330],"lamp-1":[233,440],"lamp-2":[242,440],"roundrug-1":[440,222],"roundrug-2":[440,183],"sunset-1":[389,440],"sunset-2":[328,440],"window-1":[413,440],"window-2":[427,440]};
+const VAR_KEY = 'bookflex.variant.v1', HAS_VAR = ['bmark', 'clock', 'mug', 'plant', 'rug', 'frame', 'poster', 'books', 'desk', 'lamp', 'roundrug', 'sunset', 'window'];
+const VAR_N = { books: 2, desk: 2, lamp: 2, roundrug: 2, sunset: 2, window: 2 }; // 나머지는 4종
+const varCount = id => VAR_N[id] || 4;
 const variants = (() => { try { return JSON.parse(localStorage.getItem(VAR_KEY)) || {}; } catch { return {}; } })();
 const spriteKey = id => (HAS_VAR.includes(id) ? id + '-' + (variants[id] || 1) : id);
 // 방 안 자리: [가운데 x, 기준 y, 가로폭, mid(1이면 y가 그림 가운데, 아니면 바닥)] — 방 좌표(480×360 기준)
 const PLACE = {
   plant: [106, 312, 40], rug: [222, 262, 150, 1], roundrug: [225, 272, 120, 1], bigrug: [225, 255, 250, 1],
-  desk: [395, 300, 140], chair: [340, 312, 50], sofa: [170, 306, 100], books: [322, 292, 44],
-  lamp: [358, 217, 24], mug: [382, 232, 15], clock: [434, 236, 19], bmark: [412, 242, 24, 1],
+  desk: [395, 302, 170], chair: [336, 314, 56], sofa: [170, 306, 100], books: [322, 292, 44],
+  lamp: [352, 226, 24], mug: [392, 238, 14], clock: [434, 232, 19], bmark: [416, 246, 22, 1],
   window: [105, 138, 66, 1], sunset: [185, 98, 36, 1], poster: [283, 92, 40, 1], frame: [392, 120, 34, 1],
 };
 // 책상이 없으면 책상 위 작은 물건은 협탁 위에 놓인다
@@ -240,7 +242,7 @@ function roomSvg(px, over = {}) {
 const room = () => (document.getElementById('room').innerHTML = roomSvg('h-'));
 // 상점 화면이 쓰는 창구: 구매하면 방에 바로 놓이고(벽지·바닥은 바로 적용) 저장한다
 window.ROOM = {
-  roomSvg, ITEMS, WALLS, FLOORS, own, HAS_VAR, spriteKey,
+  roomSvg, ITEMS, WALLS, FLOORS, own, HAS_VAR, spriteKey, varCount,
   variant: id => variants[id] || 1,
   setVariant(id, n) { variants[id] = n; try { localStorage.setItem(VAR_KEY, JSON.stringify(variants)); } catch {} render(); },
   buy(id) {

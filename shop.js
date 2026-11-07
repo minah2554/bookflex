@@ -60,7 +60,7 @@
     // 디자인 고르기(4종이 있는 물건만)
     const vr = $('vRow'), hv = c && window.ROOM.HAS_VAR.includes(c.id);
     vr.hidden = !hv;
-    vr.innerHTML = hv ? '<small>디자인</small>' + [1, 2, 3, 4].map(n => `<button type="button" data-v="${n}" aria-pressed="${window.ROOM.variant(c.id) === n}" aria-label="디자인 ${n}"><img src="assets/items/${c.id}-${n}.webp" alt=""></button>`).join('') : '';
+    vr.innerHTML = hv ? '<small>디자인</small>' + Array.from({ length: window.ROOM.varCount(c.id) }, (_, i) => i + 1).map(n => `<button type="button" data-v="${n}" aria-pressed="${window.ROOM.variant(c.id) === n}" aria-label="디자인 ${n}"><img src="assets/items/${c.id}-${n}.webp" alt=""></button>`).join('') : '';
     const btn = $('buyBtn');
     btn.disabled = !canBuy || chips < c.price;
     btn.textContent = !c ? '' : window.ROOM.own(c.id) ? '이미 가지고 있어요' : `${c.name} 사기 · ${c.price}칩`;
