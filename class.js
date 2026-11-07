@@ -29,12 +29,22 @@
   try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.names)) v = s; } catch {}
   const todayVisits = () => (v.date === today() ? v.names : []);
 
+  // 우리 반이 완독한 책(샘플): [제목, 권수]. 합계가 BASE.books(37권). 학급 서버가 생기면 실제 승인 완독으로 바뀐다.
+  const DONE = [['어린 왕자', 6], ['노인과 바다', 5], ['동물농장', 4], ['빨간 머리 앤', 4], ['데미안', 3], ['소나기', 3], ['완득이', 3], ['변신', 2], ['1984', 2], ['모모', 2], ['홍길동전', 2], ['아큐정전', 1]];
+  console.assert(DONE.reduce((s, [, n]) => s + n, 0) === BASE.books, '학급 완독 샘플 합계 불일치');
+  const colorOf = t => `hsl(${[...t].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) % 360, 7)} 55% 55%)`;
   function shelf() {
-    const hues = ['#e0556f', '#3a7bd5', '#f2b84b', '#4f9d69', '#8e63c9', '#2aa0c8', '#f2765a'];
-    let h = '';
-    for (let i = 0; i < BASE.books; i++) h += `<i style="--c:${hues[(i * 5 + (i >> 2)) % 7]};--h:${58 + ((i * 11) % 22)}px"></i>`;
+    let h = '', i = 0;
+    DONE.forEach(([t, n]) => { for (let k = 0; k < n; k++, i++) h += `<i data-t="${esc(t)}" title="${esc(t)}" style="--c:${colorOf(t)};--h:${58 + ((i * 11) % 22)}px"></i>`; });
     $('shelf').innerHTML = h + '<i class="slot" title="다음 칸은 누구 책?"></i>';
+    $('shelfList').innerHTML = DONE.map(([t, n]) => `<li data-t="${esc(t)}"><i style="--c:${colorOf(t)}"></i>${esc(t)}<b>${n}권</b></li>`).join('');
   }
+  // 목록의 책 이름에 마우스를 올리면 책장에서 같은 책이 밝게 보인다
+  document.addEventListener('mouseover', e => {
+    const li = e.target.closest && e.target.closest('#shelfList li'), sp = e.target.closest && e.target.closest('#shelf i[data-t]'), t = li ? li.dataset.t : sp ? sp.dataset.t : '';
+    document.querySelectorAll('#shelf i').forEach(x => x.classList.toggle('hl', !!t && x.dataset.t === t));
+    document.querySelectorAll('#shelfList li').forEach(x => x.classList.toggle('on', !!t && x.dataset.t === t));
+  });
 
   // 책친구 한마디: 친구 서재에서 남기면 +5칩(10자 이상, 서로 다른 친구 하루 2명까지)
   const TKEY = 'bookflex.talk.v1', TCHIP = 5, TCAP = 2, TMIN = 10;

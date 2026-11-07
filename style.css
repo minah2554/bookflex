@@ -428,3 +428,14 @@ small { font-size: 12px; } .mute { color: var(--muted); } .ok { color: #247040; 
 .delrow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 12px; padding: 10px 12px; border-radius: 12px; background: #fdecee; font-size: 13px; }
 .delrow[hidden] { display: none; }
 .delrow span { flex: 1; min-width: 200px; }
+
+/* v0.26: 우리 반 책장 제목 목록 */
+.shelf i[data-t] { cursor: help; transition: filter .15s, transform .15s; }
+.shelf i.hl { filter: brightness(1.15) saturate(1.2); transform: translateY(-6px); box-shadow: inset -2px 0 #0002, 0 0 0 2px #fff, 0 0 0 4px var(--hi); }
+.shelfh { margin: 14px 0 8px; font-size: 14px; }
+.shelfh small { margin-left: 6px; color: var(--ink2); font-weight: 400; }
+.shelflist { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.shelflist li { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--soft); font-size: 13px; cursor: default; }
+.shelflist li.on { background: #fff; box-shadow: inset 0 0 0 2px var(--hi); }
+.shelflist li i { width: 8px; height: 14px; border-radius: 2px; background: var(--c); }
+.shelflist li b { color: var(--hi); font-weight: 700; }
