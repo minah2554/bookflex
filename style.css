@@ -391,3 +391,8 @@ small { font-size: 12px; } .mute { color: var(--muted); } .ok { color: #247040; 
 .guide p, .guide .gl { font-size: 14px; line-height: 1.6; margin: 6px 0; }
 .guide .gl { padding-left: 18px; }
 .guide .gl b { margin-right: 6px; }
+
+/* v0.20: 오른쪽 탭을 본문 오른쪽 모서리에 맞춰 붙임 (패널 안쪽 여백 16px에 맞춤) */
+.tabs { right: 16px; top: 86px; gap: 6px; z-index: 2; }
+.tabs a, .tabs button { width: 66px; padding: 14px 4px; border-radius: 0 12px 12px 0; box-shadow: none; transition: background-color .15s, filter .15s; }
+.tabs .on { position: relative; margin-left: -2px; width: 68px; border-left: 0; box-shadow: none; }
