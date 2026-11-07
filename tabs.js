@@ -102,5 +102,7 @@
   $('titLink').addEventListener('click', () => document.querySelector('.tabs [data-view=titles]').click());
   document.querySelectorAll('.tabs [data-view]').forEach(b => b.addEventListener('click', render));
   document.addEventListener('bf:change', render);
+  // 상단 「기록하기」: 독서 기록 탭으로 이동
+  document.querySelector('.now .cta').addEventListener('click', () => document.querySelector('.tabs [data-view=log]').click());
   render();
 })();

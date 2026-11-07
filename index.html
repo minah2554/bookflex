@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>BOOK FLEX | 북플렉스</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="style.css?v=0.18.0">
+<link rel="stylesheet" href="style.css?v=0.19.0">
 </head>
 <body>
 <div class="app">
@@ -26,7 +26,11 @@
       </div>
       <span class="pill chip" id="chipN">120 칩</span>
       <span class="pill" id="lvPill">Lv.3</span>
-      <span class="bell" aria-label="알림 3개">3</span>
+      <button type="button" class="guidebtn" data-page="guide">사용설명서</button>
+      <span class="bellwrap">
+        <button type="button" class="bell" id="bell" aria-label="알림" aria-expanded="false" aria-controls="notif"><b id="bellN" hidden>0</b></button>
+        <div id="notif" class="notif" role="region" aria-label="알림" hidden></div>
+      </span>
       <span class="av">별</span>
     </div>
   </header>
@@ -57,9 +61,8 @@
         <small class="lvtxt" id="lvTxt">Lv.3 · 182 XP · Lv.4까지 118 XP</small>
         <a class="link" href="#" id="titLink">칭호 모음 3 / 10 보기</a>
         <hr>
-        <label class="visit">책친구 서재 놀러가기
-          <select><option>책갈피탐험가 · 누적 340쪽</option><option>새벽세시 · 누적 512쪽</option><option>바다유리 · 누적 276쪽</option></select>
-        </label>
+        <label class="visit" for="visitSel">책친구 서재 놀러가기</label>
+        <div class="visitrow"><select id="visitSel"></select><button type="button" class="cta mini" id="visitGo">가기</button></div>
         <small class="ok">오늘 처음 놀러 가면 +3칩 (하루 3명까지)</small>
         <button type="button" class="cta pickbtn" data-page="pick"><small>어떤 책을 읽을지 모른다면?</small><b>BOOK PICK · 나에게 맞는 책 찾기</b></button>
       </aside>
@@ -67,13 +70,14 @@
       <main class="page content">
         <div class="two">
           <section id="sFeed">
-            <h2>새로 올라온 기록</h2>
+            <h2>새로 올라온 기록 <button type="button" class="linkbtn" data-page="feed">친구 글에 댓글 달기 ›</button></h2>
             <ul class="feed">
               <li><span class="tag">PAGE LOG</span>어린 왕자 85~96쪽 읽음<time>어제</time></li>
               <li><span class="tag b">한 구절</span>“정말 중요한 건 눈에 보이지 않아.”<time>어제</time></li>
               <li><span class="tag c">완독</span>노인과 바다 — 선생님 승인 완료<time>11.3</time></li>
               <li><span class="tag d">칭호</span>문장 수집가 획득<time>11.2</time></li>
             </ul>
+            <small class="note">친구가 올린 한 구절·한줄평은 FLEX FEED에서 보고, 글 아래 입력칸에 10자 이상 댓글을 달면 +5칩이에요.</small>
           </section>
           <section id="sMission">
             <h2>오늘의 미션</h2>
@@ -113,12 +117,9 @@
         </section>
 
         <section id="sTalk">
-          <h2>책친구 한마디 <small>10자 이상 남기면 +5칩 · 하루 2개까지</small></h2>
-          <form class="say" onsubmit="return false"><input id="cheerIn" placeholder="별빛책방에게 응원 한마디" maxlength="100"><button class="cta" type="submit">남기기</button></form>
-          <ul class="talk">
-            <li><b>책갈피탐험가</b>여우랑 길들이기 얘기하는 장면 나도 제일 좋았어. 다 읽으면 감상 알려줘!<time>11.6</time></li>
-            <li><b>새벽세시</b>미니서재 창문 귀엽다 ㅋㅋ 노인과 바다 다음엔 뭐 읽어?<time>11.4</time></li>
-          </ul>
+          <h2>책친구 한마디 <small>친구가 내 서재에 남긴 글 · 나도 친구 서재에서 남기면 +5칩(하루 2개)</small></h2>
+          <ul class="talk" id="talkList"></ul>
+          <p class="talkhint">친구 서재의 미니서재 아래 입력칸에 10자 이상 적으면 한마디가 남아요. <button type="button" class="linkbtn" data-page="class">친구 서재 가기 ›</button></p>
         </section>
         </div>
       </main>
@@ -273,6 +274,50 @@
       </section>
     </div>
 
+    <div id="v-guide" hidden>
+      <div class="chead">
+        <h1>BOOK FLEX 사용설명서 <small>읽고, 칩 모으고, 서재 꾸미기</small></h1>
+        <button type="button" class="linkbtn" data-page="my">‹ 내 서재로</button>
+      </div>
+      <section class="page guide">
+        <h2>플렉스칩 얻는 방법</h2>
+        <table class="logtbl">
+          <thead><tr><th>활동</th><th>어디서</th><th>받는 칩</th><th>규칙</th></tr></thead>
+          <tbody>
+            <tr><td>오늘 첫 독서 기록</td><td>MY FLEX › 독서 기록</td><td class="chp">+10</td><td>하루 1번</td></tr>
+            <tr><td>새로 읽은 쪽수</td><td>MY FLEX › 독서 기록</td><td class="chp">5쪽마다 +2</td><td>하루 최대 +20 · 같은 쪽을 다시 적으면 제외</td></tr>
+            <tr><td>오늘의 한 구절</td><td>MY FLEX › 독서 기록</td><td class="chp">+5</td><td>하루 1번</td></tr>
+            <tr><td>개인 미션 달성</td><td>FLEX MISSION</td><td class="chp">+15</td><td>하루 1번</td></tr>
+            <tr><td>우리 반 미션 달성</td><td>FLEX MISSION</td><td class="chp">+30</td><td>반 전원이 달성하면 하루 1번</td></tr>
+            <tr><td>친구 서재 놀러가기</td><td>FLEX CLASS · 홈 왼쪽</td><td class="chp">+3</td><td>서로 다른 친구 하루 3명까지</td></tr>
+            <tr><td>친구 글에 댓글</td><td>FLEX FEED</td><td class="chp">+5</td><td>10자 이상 · 서로 다른 글 하루 2개 · 내 글 제외</td></tr>
+            <tr><td>친구 서재에 한마디</td><td>친구 서재 › 미니서재</td><td class="chp">+5</td><td>10자 이상 · 서로 다른 친구 하루 2명</td></tr>
+          </tbody>
+        </table>
+      </section>
+      <section class="page guide">
+        <h2>칩은 어디에 쓰나요</h2>
+        <p><b>FLEX SHOP</b>에서 방에 놓을 가구·소품을 사요. 사기 전에 내 방에 먼저 놓아 볼 수 있고, 일부 물건은 디자인을 4가지 중 골라요. 칩을 써도 <b>레벨·칭호·독서 기록은 줄지 않아요.</b></p>
+        <p>상점 단계는 많이 읽을수록 열려요. 잠긴 단계는 누적 쪽수·기록한 날·완독 권수 중 하나만 채우면 열려요.</p>
+      </section>
+      <section class="page guide">
+        <h2>레벨과 칭호</h2>
+        <p><b>독서 XP</b>는 독서 기록(첫 기록·읽은 쪽·한 구절)에서만 쌓여요. 친구 방문·댓글·미션 칩은 XP가 아니라서 칩만 늘어나요. XP가 쌓이면 레벨이 오르고, 조건을 채우면 <b>칭호</b>가 열려요. 칭호 탭에서 하나를 골라 장착하면 프로필에 보여요.</p>
+      </section>
+      <section class="page guide">
+        <h2>메뉴 안내</h2>
+        <ul class="gl">
+          <li><b>MY FLEX</b> 내 미니서재, 오른쪽 탭에서 독서 기록·내 책장·게시판·칭호를 봐요. 방은 「내 방 꾸미기」로, 닉네임·아바타·말풍선은 「설정」에서 바꿔요.</li>
+          <li><b>FLEX CLASS</b> 우리 반 책장과 친구 서재 목록. 「놀러가기」를 누르면 친구의 방·기록·책장·게시판을 볼 수 있어요.</li>
+          <li><b>FLEX FEED</b> 한줄평 올리기, 친구 글 읽기와 댓글 달기.</li>
+          <li><b>FLEX MISSION</b> 오늘의 개인·우리 반 미션.</li>
+          <li><b>FLEX SHOP</b> 칩으로 방 꾸미기 아이템 사기.</li>
+          <li><b>BOOK PICK</b> 질문 3개로 읽을 책 추천받기.</li>
+          <li><b>알림(종 모양)</b> 친구의 한마디, 미션 달성, 칭호·완독 소식이 모여요. 숫자는 아직 안 읽은 알림 수예요.</li>
+        </ul>
+      </section>
+    </div>
+
     <div id="v-pick" hidden>
       <div class="chead">
         <h1>BOOK PICK <small>질문 3개로 나에게 맞는 책 찾기</small></h1>
@@ -366,13 +411,14 @@
   <span>읽고, 쌓고, 꾸미고, 함께 자랑하는 우리 반 독서 세계</span>
   <span id="ver"></span>
 </footer>
-<script src="app.js?v=0.18.0"></script>
-<script src="log.js?v=0.18.0"></script>
-<script src="class.js?v=0.18.0"></script>
-<script src="shop.js?v=0.18.0"></script>
-<script src="mission.js?v=0.18.0"></script>
-<script src="feed.js?v=0.18.0"></script>
-<script src="pick.js?v=0.18.0"></script>
-<script src="tabs.js?v=0.18.0"></script>
+<script src="app.js?v=0.19.0"></script>
+<script src="log.js?v=0.19.0"></script>
+<script src="class.js?v=0.19.0"></script>
+<script src="shop.js?v=0.19.0"></script>
+<script src="mission.js?v=0.19.0"></script>
+<script src="feed.js?v=0.19.0"></script>
+<script src="pick.js?v=0.19.0"></script>
+<script src="tabs.js?v=0.19.0"></script>
+<script src="notify.js?v=0.19.0"></script>
 </body>
 </html>

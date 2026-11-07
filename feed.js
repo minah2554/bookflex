@@ -39,16 +39,16 @@
     document.querySelectorAll('#fdFilters button').forEach(b => b.classList.toggle('on', b.dataset.f === filter));
     const list = posts().filter(p => filter === 'all' || p.type === filter);
     $('fdList').innerHTML = list.map(p => {
-      const cs = f.c[p.id] || [], isOpen = open.has(p.id);
+      const cs = f.c[p.id] || [], isOpen = true; // 댓글칸은 항상 펼쳐 둔다
       return `<article class="post${p.me ? ' mine' : ''}" data-id="${p.id}">
         <header><span class="av sm">${p.who[0]}</span><b>${esc(p.who)}</b><small>누적 ${p.pages}쪽</small>
           <span class="tag ${p.type === 'quote' ? '' : 'b'}">${p.type === 'quote' ? '한 구절' : '한줄평'}</span><time>${when(p.date)}</time></header>
         <p class="${p.text === PH ? 'ph' : 'ptxt'}">${esc(p.text)}</p>
         <small class="src">${esc(p.book)} · ${esc(p.writer)}</small>
-        <button type="button" class="cbtn" data-toggle="${p.id}" aria-expanded="${isOpen}">댓글 ${p.n + cs.length}</button>
+        <span class="cbtn">댓글 ${p.n + cs.length}</span>
         ${isOpen ? `<div class="cm">${cs.map(c => `<p><b>${esc(window.PROFILE.name)}</b> ${esc(c.text)}<time>${when(c.date)}</time></p>`).join('')}
           ${p.me ? '<small class="note">내 글에는 친구들이 댓글을 달아요.</small>'
-            : `<form class="say" data-form="${p.id}" novalidate><input maxlength="100" placeholder="10자 이상 댓글"><button class="cta mini" type="submit">달기</button></form><small class="msg"></small>`}</div>` : ''}
+            : `<form class="say" data-form="${p.id}" novalidate><input maxlength="100" placeholder="${esc(p.who)}님 글에 댓글 쓰기 (10자 이상 · +5칩)" aria-label="댓글"><button class="cta mini" type="submit">댓글 달기</button></form><small class="msg"></small>`}</div>` : ''}
       </article>`;
     }).join('') || '<p class="note">아직 글이 없어요.</p>';
   }

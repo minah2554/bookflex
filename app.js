@@ -1,4 +1,4 @@
-const APP_VERSION = '0.18.0'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '0.19.0'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
@@ -328,7 +328,6 @@ function applyProfile() {
   $p('nickName').textContent = profile.name;
   document.querySelector('.menu .av, .av').textContent = [...profile.name][0];
   $p('profAvatar').innerHTML = bustSvg();
-  $p('cheerIn').placeholder = `${profile.name}에게 응원 한마디`;
   document.querySelectorAll('.myname').forEach(e => (e.textContent = profile.name));
 }
 function saveName(inp, key, max) {

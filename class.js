@@ -36,6 +36,23 @@
     $('shelf').innerHTML = h + '<i class="slot" title="다음 칸은 누구 책?"></i>';
   }
 
+  // 책친구 한마디: 친구 서재에서 남기면 +5칩(10자 이상, 서로 다른 친구 하루 2명까지)
+  const TKEY = 'bookflex.talk.v1', TCHIP = 5, TCAP = 2, TMIN = 10;
+  let tk = { msgs: {}, rew: {} };
+  try { const s = JSON.parse(localStorage.getItem(TKEY)); if (s && s.msgs) tk = { ...tk, ...s }; } catch {}
+  const INBOX = [
+    ['책갈피탐험가', '여우랑 길들이기 얘기하는 장면 나도 제일 좋았어. 다 읽으면 감상 알려줘!', '11.6'],
+    ['새벽세시', '미니서재 창문 귀엽다 ㅋㅋ 노인과 바다 다음엔 뭐 읽어?', '11.4'],
+  ];
+  function talk() {
+    $('talkList').innerHTML = INBOX.map(([n, t, d]) => `<li><b>${esc(n)}</b>${esc(t)}<time>${d}</time></li>`).join('');
+  }
+
+  function fill() {
+    const sel = $('visitSel');
+    sel.innerHTML = FRIENDS.filter(f => !f[5]).sort((a, b) => a[0].localeCompare(b[0], 'ko')).map(f => `<option value="${f[0]}">${f[0]} · 누적 ${f[2]}쪽</option>`).join('');
+  }
+
   function render() {
     const st = window.BF.stats();
     $('cPages').textContent = fmt(BASE.pages + st.added);
@@ -57,14 +74,18 @@
     }).join('');
   }
 
+  $('visitGo').addEventListener('click', () => { const n = $('visitSel').value; if (n) visitFriend(n); });
   $('friends').addEventListener('click', e => {
     const b = e.target.closest('button');
     if (!b) return;
     if (b.dataset.go) return show('my');
     if (b.dataset.again) return openVisit(b.dataset.again);
-    const name = b.dataset.visit;
+    visitFriend(b.dataset.visit);
+  });
+  // 처음 가면 +3칩(하루 3명까지), 다녀온 친구는 칩 없이 다시 열기
+  function visitFriend(name) {
     if (v.date !== today()) v = { date: today(), names: [] };
-    if (v.names.includes(name)) return;
+    if (v.names.includes(name)) return openVisit(name);
     const gain = v.names.length < CAP ? CHIP : 0;
     v.names.push(name);
     try { localStorage.setItem(KEY, JSON.stringify(v)); } catch {}
@@ -75,7 +96,7 @@
     $('vMsg').textContent = gain ? `FLEX VISIT — ${name}의 서재에 다녀왔어요! +${gain} 플렉스칩` : `${name}의 서재에 다녀왔어요. 오늘 칩은 3명까지만 받아요.`;
     openVisit(name);
     $('vNote').className = $('vMsg').className; $('vNote').textContent = $('vMsg').textContent;
-  });
+  }
 
   // 친구 서재 방문 화면: 미니서재·독서 기록·내 책장·게시판
   let fr = null, ftab = 'room';
@@ -87,7 +108,11 @@
     const day = k => { const d = new Date(T - k * 864e5); return `${d.getMonth() + 1}.${d.getDate()}`; };
     if (ftab === 'room') {
       return `<h2>미니서재 <small>${esc(title)}</small></h2><div class="roomwrap"><div class="room" role="img" aria-label="${esc(name)}의 서재 방">${window.ROOM.roomSvg('v-', { ...cfg, books: nb })}</div><div class="tip" id="vTip" hidden></div></div>
-        <p class="cap">${cfg.ids.includes('shelf') ? `책장에 마우스를 올리면 ${esc(name)}이(가) 읽은 책이 보여요` : '아직 책장이 없어요'}</p>`;
+        <p class="cap">${cfg.ids.includes('shelf') ? `책장에 마우스를 올리면 ${esc(name)}이(가) 읽은 책이 보여요` : '아직 책장이 없어요'}</p>
+        <section class="gbook"><h3>${esc(name)}에게 한마디 <small>10자 이상 · +${TCHIP}칩 (서로 다른 친구 하루 ${TCAP}명까지)</small></h3>
+          <form class="say" id="gbForm" novalidate><input id="gbIn" maxlength="100" placeholder="${esc(name)}에게 응원 한마디" aria-label="한마디"><button class="cta" type="submit">남기기</button></form>
+          <p id="gbMsg" class="msg" role="status"></p>
+          <ul class="talk">${(tk.msgs[name] || []).map(m => `<li><b>${esc(window.PROFILE.name)}</b>${esc(m.text)}<time>${m.date.slice(5).replace('-', '.')}</time></li>`).join('')}</ul></section>`;
     }
     if (ftab === 'log') {
       const rows = Array.from({ length: days }, (_, k) => {
@@ -113,6 +138,22 @@
   }
   $('vTabs').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (b) { ftab = b.dataset.v; renderVisit(); } });
   $('vBack').addEventListener('click', () => show('class'));
+  $('vBody').addEventListener('submit', e => {
+    if (e.target.id !== 'gbForm') return;
+    e.preventDefault();
+    const name = fr[0], inp = $('gbIn'), text = inp.value.trim(), d = today(), msg = $('gbMsg');
+    if (text.length < TMIN) { msg.className = 'msg'; msg.textContent = `${TMIN}자 이상 적어 주세요.`; return; }
+    (tk.msgs[name] = tk.msgs[name] || []).push({ text, date: d });
+    const got = tk.rew[d] = tk.rew[d] || [];
+    const reward = got.length < TCAP && !got.includes(name);
+    if (reward) { got.push(name); window.BF.addChips(TCHIP); }
+    try { localStorage.setItem(TKEY, JSON.stringify(tk)); } catch {}
+    renderVisit();
+    const m = $('gbMsg');
+    m.className = 'msg okm';
+    m.textContent = reward ? `한마디를 남겼어요! +${TCHIP} 플렉스칩` : '한마디를 남겼어요. 오늘 칩은 서로 다른 친구 2명까지만 받아요.';
+    document.dispatchEvent(new Event('bf:change'));
+  });
   const vb = $('vBody');
   vb.addEventListener('mousemove', e => {
     const t = $('vTip'), h = e.target.closest && e.target.closest('.shelf-hit');
@@ -131,6 +172,7 @@
     $('v-mission').hidden = page !== 'mission';
     $('v-feed').hidden = page !== 'feed';
     $('v-pick').hidden = page !== 'pick';
+    $('v-guide').hidden = page !== 'guide';
     document.querySelectorAll('.menu [data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === page));
     document.querySelectorAll('.linkbtn').forEach(b => b.classList.remove('on'));
     document.querySelectorAll('[data-page]').forEach(b => { b.classList.toggle('on', b.dataset.page === page); b.toggleAttribute('aria-current', b.dataset.page === page); });
@@ -143,5 +185,5 @@
     if (cls) render();
   }
   document.querySelectorAll('[data-page]').forEach(b => b.addEventListener('click', () => show(b.dataset.page)));
-  shelf();
+  shelf(); talk(); fill();
 })();
