@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-theme="cy">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -9,61 +9,112 @@
 </head>
 <body>
 <div class="app">
-  <div class="panel">
-    <header class="top">
-      <span class="counter">TODAY <b>1</b> | TOTAL <b>1</b></span>
-      <h1>읽는 것도 FLEX다!</h1>
-      <span class="url">bookflex / my-flex</span>
-    </header>
+  <header class="nav">
+    <div class="logo"><i></i><span><b>BOOK FLEX</b><small>읽는 것도 FLEX다!</small></span></div>
+    <nav class="menu" aria-label="메뉴">
+      <a class="on" href="#" aria-current="page"><i style="--c:#f2765a"></i>MY FLEX</a>
+      <button type="button" disabled title="준비 중"><i style="--c:#3f9a5c"></i>FLEX CLASS</button>
+      <button type="button" disabled title="준비 중"><i style="--c:#f2b84b"></i>FLEX FEED</button>
+      <button type="button" disabled title="준비 중"><i style="--c:#5b86e5"></i>FLEX MISSION</button>
+      <button type="button" disabled title="준비 중"><i style="--c:#e0556f"></i>FLEX SHOP</button>
+    </nav>
+    <div class="me">
+      <div class="themes" role="group" aria-label="테마 색">
+        <button type="button" data-t="cy" style="--c:#8190dc" title="싸이월드" aria-label="싸이월드 테마"></button>
+        <button type="button" data-t="peach" style="--c:#f1c3a8" title="피치" aria-label="피치 테마"></button>
+        <button type="button" data-t="green" style="--c:#8fcf9c" title="초록" aria-label="초록 테마"></button>
+      </div>
+      <span class="pill chip">120 칩</span>
+      <span class="pill">Lv.3</span>
+      <span class="bell" aria-label="알림 3개">3</span>
+      <span class="av">별</span>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="head">
+      <span class="week">이번 주 <b>4</b>일 읽음 <em>|</em> 누적 <b>214</b>쪽</span>
+      <h1>별빛책방의 서재</h1>
+      <span class="now">
+        <i class="play"></i>지금 읽는 중 · 어린 왕자
+        <span class="bar"><i style="width:69%"></i></span>96/140
+        <a class="cta dark" href="#">기록하기</a>
+      </span>
+    </div>
 
     <div class="book">
       <aside class="page profile">
-        <div class="avatar" aria-hidden="true">
-          <svg viewBox="0 0 16 16" shape-rendering="crispEdges">
-            <rect x="3" y="2" width="10" height="5" fill="#6b3f2a"/><rect x="2" y="4" width="2" height="6" fill="#6b3f2a"/><rect x="12" y="4" width="2" height="6" fill="#6b3f2a"/>
-            <rect x="4" y="5" width="8" height="6" fill="#ffd9b8"/><rect x="5" y="7" width="1" height="2" fill="#222"/><rect x="10" y="7" width="1" height="2" fill="#222"/>
-            <rect x="7" y="10" width="2" height="1" fill="#e0556f"/><rect x="4" y="11" width="8" height="4" fill="#e0556f"/><rect x="7" y="12" width="2" height="2" fill="#fff"/>
-          </svg>
+        <div class="avatar"><span>별</span><a href="#" class="tiny">프로필 바꾸기</a></div>
+        <div class="quote">
+          <small>오늘의 한 구절</small>
+          <p>“정말 중요한 건 눈에 보이지 않아.”</p>
+          <small class="mute">어린 왕자 · 생텍쥐페리</small>
         </div>
-        <p class="today">TODAY IS... <b>몰입</b></p>
-        <p class="nick">책벌레 하늘</p>
-        <p class="lv">Lv.1 첫 장을 넘긴 독자</p>
-        <p class="stat">0 XP · 0 플렉스칩</p>
-        <p class="stat">누적 0쪽 · 완독 0권</p>
-        <a class="mini-btn" href="#" aria-disabled="true">책 추천 BOOK PICK</a>
+        <hr>
+        <h2 class="nick">별빛책방 <small>2학년 2반</small></h2>
+        <span class="badge">문장 수집가</span>
+        <div class="xp"><i style="width:60%"></i></div>
+        <small class="lvtxt">Lv.3 · 182 XP · Lv.4까지 118 XP</small>
+        <a class="link" href="#">칭호 모음 3 / 10 보기</a>
+        <hr>
+        <label class="visit">책친구 서재 놀러가기
+          <select><option>책갈피탐험가 · 누적 340쪽</option><option>새벽세시 · 누적 512쪽</option><option>바다유리 · 누적 276쪽</option></select>
+        </label>
+        <small class="ok">오늘 처음 놀러 가면 +3칩 (하루 3명까지)</small>
       </aside>
 
       <main class="page content">
-        <section>
-          <h2>Updated news</h2>
-          <ul class="news">
-            <li><span class="tag">PAGE LOG</span> 어린 왕자 11~20쪽 +10칩</li>
-            <li><span class="tag b">FLEX FEED</span> 오늘의 한 구절이 올라왔어요</li>
-            <li><span class="tag c">MISSION</span> 우리 반 미션 진행 중</li>
-          </ul>
-        </section>
+        <div class="two">
+          <section>
+            <h2>새로 올라온 기록</h2>
+            <ul class="feed">
+              <li><span class="tag">PAGE LOG</span>어린 왕자 85~96쪽 읽음<time>어제</time></li>
+              <li><span class="tag b">한 구절</span>“정말 중요한 건 눈에 보이지 않아.”<time>어제</time></li>
+              <li><span class="tag c">완독</span>노인과 바다 — 선생님 승인 완료<time>11.3</time></li>
+              <li><span class="tag d">칭호</span>문장 수집가 획득<time>11.2</time></li>
+            </ul>
+          </section>
+          <section>
+            <h2>오늘의 미션</h2>
+            <div class="mission me1"><p><span>나 · 10쪽 이상 읽기</span><b>+15칩</b></p><div class="bar"><i style="width:8%"></i></div></div>
+            <div class="mission cls"><p><span>우리 반 · 모두 1쪽 읽기</span><b>전원 +30칩</b></p><div class="bar"><i style="width:78%"></i></div><small>21 / 27명 — 6명만 더!</small></div>
+          </section>
+        </div>
 
         <section>
-          <h2>Miniroom <small>내 방 꾸미기</small></h2>
-          <div id="room" class="room" role="img" aria-label="꾸밀 수 있는 나만의 서재 방"></div>
-          <div class="ctrl">
+          <h2>미니서재 <small>책을 끝낼 때마다 선반에 한 권씩 꽂혀요</small></h2>
+          <div class="roomwrap">
+            <div id="room" class="room" role="img" aria-label="꾸밀 수 있는 나만의 서재 방"></div>
+            <button id="deco" class="cta" type="button" aria-expanded="false" aria-controls="ctrl">내 방 꾸미기</button>
+          </div>
+          <p class="cap">선반 빈자리 4칸 — 다음 책을 기다리는 중</p>
+          <div id="ctrl" class="ctrl" hidden>
             <div class="row"><span>벽지</span><div id="walls"></div></div>
             <div class="row"><span>바닥</span><div id="floors"></div></div>
             <div class="row"><span>소품</span><div id="items"></div></div>
             <button id="reset" class="reset" type="button">처음 상태로</button>
           </div>
         </section>
-      </main>
-    </div>
 
-    <nav class="tabs" aria-label="메뉴">
-      <a class="on" href="#" aria-current="page">MY FLEX</a>
-      <button type="button" disabled title="준비 중">FLEX CLASS</button>
-      <button type="button" disabled title="준비 중">FLEX FEED</button>
-      <button type="button" disabled title="준비 중">FLEX MISSION</button>
-      <button type="button" disabled title="준비 중">FLEX SHOP</button>
-    </nav>
-  </div>
+        <section>
+          <h2>책친구 한마디 <small>10자 이상 남기면 +5칩 · 하루 2개까지</small></h2>
+          <form class="say" onsubmit="return false"><input placeholder="별빛책방에게 응원 한마디" maxlength="100"><button class="cta" type="submit">남기기</button></form>
+          <ul class="talk">
+            <li><b>책갈피탐험가</b>여우랑 길들이기 얘기하는 장면 나도 제일 좋았어. 다 읽으면 감상 알려줘!<time>11.6</time></li>
+            <li><b>새벽세시</b>미니서재 창문 귀엽다 ㅋㅋ 노인과 바다 다음엔 뭐 읽어?<time>11.4</time></li>
+          </ul>
+        </section>
+      </main>
+
+      <nav class="tabs" aria-label="서재 메뉴">
+        <a class="on" href="#" aria-current="page">홈</a>
+        <button type="button" disabled title="준비 중">독서 기록</button>
+        <button type="button" disabled title="준비 중">내 책장</button>
+        <button type="button" disabled title="준비 중">게시판</button>
+        <button type="button" disabled title="준비 중">칭호</button>
+      </nav>
+    </div>
+  </section>
 </div>
 
 <footer class="foot">

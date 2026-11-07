@@ -1,4 +1,5 @@
-const APP_VERSION = '0.1.0'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '0.2.0'; // CHANGELOG.md와 함께 올린다
+const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
 // 등각 투영: 바닥 좌표 (u,v,z) -> 화면. u는 오른쪽 아래, v는 왼쪽 아래 방향. 오른쪽 벽 v=0, 왼쪽 벽 u=0.
@@ -123,5 +124,19 @@ function render() {
 
 document.getElementById('reset').onclick = () => { Object.assign(state, { wall: 'cream', floor: 'wood', off: [] }); save(); render(); };
 document.getElementById('ver').textContent = 'v' + APP_VERSION;
-document.querySelectorAll('[aria-disabled="true"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
+document.querySelectorAll('a[href="#"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
+
+const deco = document.getElementById('deco');
+deco.onclick = () => {
+  const ctrl = document.getElementById('ctrl');
+  ctrl.hidden = !ctrl.hidden;
+  deco.setAttribute('aria-expanded', !ctrl.hidden);
+};
+
+function setTheme(t) {
+  document.documentElement.dataset.theme = t;
+  try { localStorage.setItem(THEME_KEY, t); } catch {}
+}
+document.querySelectorAll('.themes button').forEach(b => (b.onclick = () => setTheme(b.dataset.t)));
+try { const t = localStorage.getItem(THEME_KEY); if (['cy', 'peach', 'green'].includes(t)) setTheme(t); } catch {}
 render();
