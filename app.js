@@ -1,4 +1,4 @@
-const APP_VERSION = '0.15.0'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '0.16.0'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
@@ -132,7 +132,7 @@ const escSvg = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&l
 const HAIR_STYLES = [['short', '남 · 짧은 머리'], ['crew', '남 · 스포츠 머리'], ['curly', '남 · 곱슬 머리'], ['bob', '여 · 단발'], ['long', '여 · 긴 머리'], ['twin', '여 · 양갈래']];
 const OUTFITS = [['tee', '티셔츠'], ['hoodie', '후드티'], ['dress', '원피스'], ['uniform', '교복'], ['cardigan', '가디건']];
 function figure(x, y, a) {
-  const hs = a.hs || 'short', os = a.os || 'tee', h = a.hair, t = a.top, hy = y - 38, skin = '#ffd9b8';
+  const hs = a.hs || 'short', os = a.os || 'tee', h = a.hair, t = a.top, hy = y - 40, skin = '#ffd9b8';
   // 점토 인형 느낌: 모든 면에 같은 부드러운 하이라이트·그늘(#clay)을 한 겹 덮는다
   const K = (tag, at, c, extra = '') => `<${tag} ${at} fill="${c}" ${extra}/><${tag} ${at} fill="url(#clay)"/>`;
   const R = (rx, ry, w, hh, r, c) => K('rect', `x="${rx}" y="${ry}" width="${w}" height="${hh}" rx="${r}"`, c);
@@ -150,31 +150,32 @@ function figure(x, y, a) {
     uniform: R(x - 9, y - 31, 18, 20, 6, '#fff') + arms('#fff') + Pa(`M${x - 5} ${y - 31}l5 6 5 -6z`, t) + Pa(`M${x} ${y - 25}l-2 8h4z`, t) + R(x - 9, y - 15, 18, 5, 2, '#3a4a7a'),
     cardigan: R(x - 9, y - 31, 18, 20, 6, '#fff') + R(x - 9, y - 31, 7, 20, 3, t) + R(x + 2, y - 31, 7, 20, 3, t) + arms(t) + `<circle cx="${x}" cy="${y - 24}" r="1" fill="${t}"/><circle cx="${x}" cy="${y - 19}" r="1" fill="${t}"/>`,
   }[os] || '';
-  const back = { long: R(x - 13, hy - 8, 26, 32, 10, h), bob: R(x - 13, hy - 7, 26, 22, 9, h) }[hs] || '';
+  const back = { long: R(x - 13, hy - 8, 26, 32, 10, h), bob: R(x - 13, hy - 7, 26, 19, 9, h) }[hs] || '';
   const cap = Pa(`M${x - 12} ${hy + 1} a12 12 0 0 1 24 0 q-6 -3 -9 -1 q-3 -3 -6 -1 q-4 -3 -9 2z`, h);
   const front = {
-    short: cap + R(x - 12, hy, 3.5, 10, 1.7, h) + R(x + 8.5, hy, 3.5, 10, 1.7, h),
+    short: cap + R(x - 12, hy, 3.5, 8, 1.7, h) + R(x + 8.5, hy, 3.5, 8, 1.7, h),
     crew: Pa(`M${x - 11} ${hy - 1} a11 11 0 0 1 22 0 q-11 -4 -22 0z`, h),
     curly: [-9, -3.5, 3.5, 9].map((d, i) => C(x + d, hy - 8 + (i % 2) * 2, 5.5, h)).join('') + Pa(`M${x - 11} ${hy} q11 -7 22 0 q-11 -3 -22 0z`, h),
-    bob: cap + R(x - 13, hy - 1, 5, 14, 2.5, h) + R(x + 8, hy - 1, 5, 14, 2.5, h),
-    long: cap + R(x - 13, hy - 1, 4.5, 20, 2.2, h) + R(x + 8.5, hy - 1, 4.5, 20, 2.2, h),
-    twin: cap + C(x - 14, hy + 6, 5, h) + C(x + 14, hy + 6, 5, h) + R(x - 13, hy - 1, 3, 5, 1, '#e0556f') + R(x + 10, hy - 1, 3, 5, 1, '#e0556f'),
+    bob: cap + R(x - 13, hy - 1, 5, 10, 2.5, h) + R(x + 8, hy - 1, 5, 10, 2.5, h),
+    long: cap + R(x - 13, hy - 1, 4.5, 10, 2.2, h) + R(x + 8.5, hy - 1, 4.5, 10, 2.2, h),
+    twin: cap + C(x - 14, hy + 3, 4.5, h) + C(x + 14, hy + 3, 4.5, h) + R(x - 13, hy - 1, 3, 5, 1, '#e0556f') + R(x + 10, hy - 1, 3, 5, 1, '#e0556f'),
   }[hs] || cap;
-  return defs + legs + body + back + C(x, hy, 11, skin) + front +
+  // 뒷머리는 몸 뒤에 그려서 옷을 가리지 않고, 앞머리 옆선은 턱 높이에서 끝난다
+  return defs + back + legs + body + R(x - 3, y - 32, 6, 5, 2, skin) + C(x, hy, 11, skin) + front +
     `<circle cx="${x - 6.2}" cy="${hy + 4}" r="2.4" fill="#f4a09a" opacity=".55"/><circle cx="${x + 6.2}" cy="${hy + 4}" r="2.4" fill="#f4a09a" opacity=".55"/>` +
     `<ellipse cx="${x - 4}" cy="${hy + 1.5}" rx="1.5" ry="1.9" fill="#4a2e22"/><ellipse cx="${x + 4}" cy="${hy + 1.5}" rx="1.5" ry="1.9" fill="#4a2e22"/>` +
     `<path d="M${x - 2.8} ${hy + 5.8} q2.8 3 5.6 0" stroke="#d1475a" stroke-width="1.5" fill="none" stroke-linecap="round"/>`;
 }
 // 프로필 카드용 상반신(얼굴·어깨만 보이게 잘라 쓴다)
-const bustSvg = () => `<svg viewBox="-27 -55 54 50" width="112" height="104" aria-hidden="true">${figure(0, 0, state.avatar)}</svg>`;
+const bustSvg = () => `<svg viewBox="-27 -57 54 52" width="112" height="108" aria-hidden="true">${figure(0, 0, state.avatar)}</svg>`;
 // 아바타와 말풍선(글은 2줄·줄당 12자). 방 가운데 러그 위에 서 있다.
 function avatarSvg(a = state.avatar, text = state.say) {
   const [x, y] = P(100, 106), say = (text || '').trim();
-  let s = `<ellipse cx="${x}" cy="${y}" rx="11" ry="4" fill="#0002"/>` + figure(x, y, a);
+  let s = `<g transform="translate(${x} ${y}) scale(1.3) translate(${-x} ${-y})"><ellipse cx="${x}" cy="${y}" rx="11" ry="4" fill="#0002"/>${figure(x, y, a)}</g>`;
   if (say) {
     const lines = [say.slice(0, 12), say.slice(12, 24)].filter(Boolean);
     const w = Math.max(...lines.map(l => [...l].length)) * 11 + 18, h = lines.length * 14 + 10;
-    const bx = Math.max(6, Math.min(474 - w, x - w / 2)), by = y - 56 - h;
+    const bx = Math.max(16, Math.min(464 - w, x - w / 2)), by = y - 72 - h;
     s += `<polygon points="${x - 5},${by + h} ${x + 5},${by + h} ${x},${by + h + 8}" fill="#fff" stroke="#c9b8a8"/>
       <rect x="${bx}" y="${by}" width="${w}" height="${h}" rx="9" fill="#fff" stroke="#c9b8a8"/>
       <rect x="${x - 6}" y="${by + h - 1}" width="12" height="3" fill="#fff"/>` +
@@ -195,24 +196,19 @@ function roomSvg(px, over = {}) {
   // 책장은 마우스를 올리면 읽은 책 목록이 뜨는 영역. 아바타는 책상(5~6)까지 그린 뒤, 의자 앞에 선다.
   const draw = i => i.id === 'shelf' ? `<g class="shelf-hit" tabindex="0" role="img" aria-label="책장 — 읽은 책 목록 보기">${i.draw(over.books)}</g>` : i.draw();
   const items = list.filter(i => i.layer <= 6.1).map(draw).join('') + (over.noAvatar ? '' : over.avatar ? avatarSvg(over.avatar, over.say) : avatarSvg()) + list.filter(i => i.layer > 6.1).map(draw).join('');
-  // 부드러운 점토 느낌: 바닥 두께, 걸레받이, 모서리 그늘, 방 아래 그림자
-  const slab = pts([P(0, 190), P(190, 190), P(190, 190, -10), P(0, 190, -10)]) + '';
-  const slabR = pts([P(190, 190), P(190, 0), P(190, 0, -10), P(190, 190, -10)]);
-  const base = (a, b) => `<polygon points="${pts(a)}" fill="#fff" opacity=".55"/>`;
-  return `<svg viewBox="30 14 420 342" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"><defs>${pats}
-      <filter id="${px}blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="9"/></filter>
+  // 방이 틀 전체를 채우도록 벽·바닥을 화면 밖까지 늘려 그린다(점토 느낌: 모서리 그늘, 걸레받이)
+  const E = 330, H = 420;
+  const L = [P(0, 0, H), P(0, E, H), P(0, E), P(0, 0)], Rw = [P(0, 0, H), P(E, 0, H), P(E, 0), P(0, 0)];
+  const base = a => `<polygon points="${pts(a)}" fill="#fff" opacity=".55"/>`;
+  return `<svg viewBox="10 30 460 290" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs>${pats}
       <linearGradient id="${px}gl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".25"/><stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient>
       <linearGradient id="${px}gr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".1"/><stop offset="1" stop-color="#fff" stop-opacity=".2"/></linearGradient>
       <linearGradient id="${px}gf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".1"/><stop offset=".5" stop-color="#fff" stop-opacity=".08"/><stop offset="1" stop-color="#fff" stop-opacity=".22"/></linearGradient></defs>
-    <polygon points="${pts([P(0, 190, -8), P(190, 190, -8), P(190, 0, -8), P(0, 0, -8)])}" fill="#7a5b8c" opacity=".28" filter="url(#${px}blur)" transform="translate(0 12)"/>
-    <polygon points="${slab}" fill="#c99a62"/><polygon points="${slabR}" fill="#b8854f"/>
-    ${wall([P(0, 0, 120), P(0, 190, 120), P(0, 190), P(0, 0)], 0.08)}
-    <polygon points="${pts([P(0, 0, 120), P(0, 190, 120), P(0, 190), P(0, 0)])}" fill="url(#${px}gl)"/>
-    ${wall([P(0, 0, 120), P(190, 0, 120), P(190, 0), P(0, 0)], 0)}
-    <polygon points="${pts([P(0, 0, 120), P(190, 0, 120), P(190, 0), P(0, 0)])}" fill="url(#${px}gr)"/>
-    ${base([P(0, 0, 7), P(0, 190, 7), P(0, 190), P(0, 0)])}${base([P(0, 0, 7), P(190, 0, 7), P(190, 0), P(0, 0)])}
-    <polygon points="${pts([P(0, 0), P(190, 0), P(190, 190), P(0, 190)])}" fill="url(#${px}f-${fk})" stroke="#fff6"/>
-    <polygon points="${pts([P(0, 0), P(190, 0), P(190, 190), P(0, 190)])}" fill="url(#${px}gf)"/>
+    <polygon points="${pts([P(0, 0), P(E, 0), P(E, E), P(0, E)])}" fill="url(#${px}f-${fk})"/>
+    <polygon points="${pts([P(0, 0), P(E, 0), P(E, E), P(0, E)])}" fill="url(#${px}gf)"/>
+    ${wall(L, 0.08)}<polygon points="${pts(L)}" fill="url(#${px}gl)"/>
+    ${wall(Rw, 0)}<polygon points="${pts(Rw)}" fill="url(#${px}gr)"/>
+    ${base([P(0, 0, 7), P(0, E, 7), P(0, E), P(0, 0)])}${base([P(0, 0, 7), P(E, 0, 7), P(E, 0), P(0, 0)])}
     ${items}</svg>`;
 }
 const room = () => (document.getElementById('room').innerHTML = roomSvg('h-'));
