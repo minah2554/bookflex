@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>BOOK FLEX | 북플렉스</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="style.css?v=0.22.1">
+<link rel="stylesheet" href="style.css?v=0.23.0">
 </head>
 <body>
 <div class="app">
@@ -40,7 +40,7 @@
       <span class="week">이번 주 <b id="weekDays">4</b>일 읽음 <em>|</em> 누적 <b id="totPages">214</b>쪽</span>
       <h1 id="profTitle">별빛책방의 서재</h1>
       <span class="now">
-        <i class="play"></i>지금 읽는 중 · 어린 왕자
+        <i class="play"></i>지금 읽는 중 · <span id="rdBook">어린 왕자</span>
         <span class="bar"><i id="rdBar" style="width:69%"></i></span><span id="rdTxt">96/140</span>
         <a class="cta dark" href="#">기록하기</a>
       </span>
@@ -139,7 +139,14 @@
         <div class="two logtop">
           <form id="logForm" class="logform" novalidate>
             <h2>오늘 어디까지 읽었어?</h2>
-            <p class="bookrow"><b>어린 왕자</b><small id="bookInfo"></small></p>
+            <div class="bookrow"><label for="bookSel">읽는 책</label><select id="bookSel"></select><small id="bookInfo"></small><button type="button" class="linkbtn" id="addBookBtn" aria-expanded="false" aria-controls="addBook">+ 책 직접 등록</button></div>
+            <div id="addBook" class="addbook" hidden>
+              <label>제목<input id="abT" maxlength="40" placeholder="예: 데미안"></label>
+              <label>저자 <small>(선택)</small><input id="abW" maxlength="30" placeholder="예: 헤르만 헤세"></label>
+              <label>전체 쪽수<input id="abN" type="number" min="10" max="3000" inputmode="numeric" placeholder="내 책 기준"></label>
+              <button type="button" class="cta mini" id="abOk">등록하기</button>
+              <p id="abMsg" class="msg" role="alert"></p>
+            </div>
             <div class="fields">
               <label>읽은 날<input type="date" id="fDate"></label>
               <label>시작 쪽<input type="number" id="fStart" min="1" inputmode="numeric"></label>
@@ -332,7 +339,7 @@
         <p class="cstats">오늘 댓글 보상 <b id="fdGot">0</b> / 2</p>
       </div>
       <section class="page">
-        <h2>내 한줄평 남기기 <small>어린 왕자 · 학급 모두에게 공개돼요</small></h2>
+        <h2>내 한줄평 남기기 <small><span id="fdBook">어린 왕자</span> · 학급 모두에게 공개돼요</small></h2>
         <form id="fdForm" class="say" novalidate><input id="fdText" maxlength="100" placeholder="읽고 있는 책에 대한 한줄평"><button class="cta" type="submit">올리기</button></form>
         <p id="fdMsg" class="msg" role="status"></p>
       </section>
@@ -411,14 +418,14 @@
   <span>읽고, 쌓고, 꾸미고, 함께 자랑하는 우리 반 독서 세계</span>
   <span id="ver"></span>
 </footer>
-<script src="app.js?v=0.22.1"></script>
-<script src="log.js?v=0.22.1"></script>
-<script src="class.js?v=0.22.1"></script>
-<script src="shop.js?v=0.22.1"></script>
-<script src="mission.js?v=0.22.1"></script>
-<script src="feed.js?v=0.22.1"></script>
-<script src="pick.js?v=0.22.1"></script>
-<script src="tabs.js?v=0.22.1"></script>
-<script src="notify.js?v=0.22.1"></script>
+<script src="app.js?v=0.23.0"></script>
+<script src="log.js?v=0.23.0"></script>
+<script src="class.js?v=0.23.0"></script>
+<script src="shop.js?v=0.23.0"></script>
+<script src="mission.js?v=0.23.0"></script>
+<script src="feed.js?v=0.23.0"></script>
+<script src="pick.js?v=0.23.0"></script>
+<script src="tabs.js?v=0.23.0"></script>
+<script src="notify.js?v=0.23.0"></script>
 </body>
 </html>

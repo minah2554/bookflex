@@ -31,7 +31,7 @@
   try { const s = JSON.parse(localStorage.getItem(KEY)); if (Array.isArray(s)) saved = s; } catch {}
   const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch {} };
 
-  let step = 0, picks = [];
+  let step = 0, picks = [], regFor = '', regMsg = '';
   const label = tag => QS.flatMap(q => q.a).find(a => a.tag === tag).t;
 
   function render() {
@@ -42,7 +42,7 @@
         <div class="pchoices">${q.a.map(a => `<button type="button" class="pchoice" data-tag="${a.tag}">${a.t}</button>`).join('')}</div>`;
       return;
     }
-    const res = rank(picks);
+    const res = rank(picks), mine = window.BF.library();
     box.innerHTML = `<h2 class="pq">이런 책은 어때요?</h2><p class="pstep">내가 고른 것: ${picks.map(label).join(' · ')}</p>
       <div class="pres">${res.map(({ b, s }) => {
         const why = picks.filter(t => b.tags.includes(t)).map(label);
@@ -50,7 +50,10 @@
           <p>${b.d}</p><p class="why">${why.length ? `‘${why.join('’, ‘')}’를 골라서 추천해요.` : '새로운 분야를 만나 보기 좋아요.'}</p>
           <small class="lv">난이도 · ${b.lv}</small>
           <div class="pact"><button type="button" class="cta mini${saved.includes(b.t) ? ' done' : ''}" data-save="${b.t}">${saved.includes(b.t) ? '담았어요 ✓' : '내 서재에 담기'}</button>
-          ${b.url ? `<a class="link" href="${b.url}" target="_blank" rel="noopener">교보문고 상세 ›</a>` : ''}</div></article>`;
+          <button type="button" class="cta mini${mine.includes(b.t) ? ' done' : ''}" data-reg="${b.t}">${mine.includes(b.t) ? '읽는 책에 등록됨' : '이 책 읽기 시작'}</button>
+          ${b.url ? `<a class="link" href="${b.url}" target="_blank" rel="noopener">교보문고 상세 ›</a>` : ''}</div>
+          ${regFor === b.t ? `<div class="regrow"><label>내 책의 전체 쪽수<input type="number" id="pickN" min="10" max="3000" inputmode="numeric" placeholder="예: 200"></label><button type="button" class="cta mini" data-regok="${b.t}">등록하고 시작</button></div>` : ''}
+          ${regFor === b.t && regMsg ? `<p class="msg" role="alert">${regMsg}</p>` : ''}</article>`;
       }).join('')}</div>
       <div class="pfoot"><button type="button" class="cta" data-again="1">다시 해 보기</button>
       <small class="note">${saved.length ? `담은 책: ${saved.join(', ')}` : '마음에 드는 책은 ‘내 서재에 담기’로 모아 보세요.'}</small></div>`;
@@ -60,7 +63,20 @@
     const a = e.target.closest('[data-tag]'), s = e.target.closest('[data-save]');
     if (a) { picks.push(a.dataset.tag); step++; render(); }
     else if (s) { const t = s.dataset.save; saved = saved.includes(t) ? saved.filter(x => x !== t) : [...saved, t]; persist(); render(); }
+    else if (e.target.closest('[data-reg]')) {
+      const t = e.target.closest('[data-reg]').dataset.reg;
+      if (window.BF.library().includes(t)) { window.BF.addBook(t, '', 10); regFor = ''; render(); return goLog(); }
+      regFor = regFor === t ? '' : t; regMsg = ''; render();
+      const n = $('pickN'); if (n) n.focus();
+    } else if (e.target.closest('[data-regok]')) {
+      const t = e.target.closest('[data-regok]').dataset.regok, b = BOOKS.find(x => x.t === t);
+      const r = window.BF.addBook(b.t, b.w, $('pickN').value);
+      if (r.err) { regMsg = r.err; return render(); }
+      regFor = ''; regMsg = ''; render(); goLog();
+    }
     else if (e.target.closest('[data-again]')) { step = 0; picks = []; render(); }
   });
+  // 등록하면 독서 기록 화면(쪽수 입력)으로 이동
+  const goLog = () => { document.querySelector('.menu [data-page=my]').click(); document.querySelector('.tabs [data-view=log]').click(); };
   document.querySelectorAll('[data-page=pick]').forEach(b => b.addEventListener('click', () => { step = 0; picks = []; render(); }));
 })();

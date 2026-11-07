@@ -60,7 +60,7 @@
   function shelf(x) {
     $('shDone').textContent = x.done.length;
     $('spines').innerHTML = x.done.map((b, i) => `<div class="spine" style="--c:hsl(${hue(b.t)} 55% 55%);--h:${150 - (i % 3) * 14}px" title="${esc(b.t)}"><span>${esc(b.t)}</span></div>`).join('') +
-      `<div class="spine now" style="--h:140px" title="읽는 중"><span>어린 왕자 · ${x.s.reached}/${x.s.total}쪽</span></div>` +
+      `<div class="spine now" style="--h:140px" title="읽는 중"><span>${esc(x.s.book)} · ${x.s.reached}/${x.s.total}쪽</span></div>` +
       Array.from({ length: Math.max(0, 6 - x.done.length) }, () => '<div class="spine empty" style="--h:140px" aria-hidden="true"></div>').join('');
     $('shRows').innerHTML = x.done.map(b => `<tr><td><b>${esc(b.t)}</b></td><td>${CAT[b.t] || '기타'}</td><td>${esc(b.s.replace('완독 · ', ''))}</td></tr>`).join('');
     const wish = read('bookflex.pick.v1') || [];

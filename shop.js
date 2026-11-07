@@ -48,7 +48,7 @@
     $('unlockBox').innerHTML = next
       ? `<b>${next.need.books ? `완독 ${Math.max(1, next.need.books - BOOKS_DONE)}권만 더 끝내면` : '조금만 더 읽으면'} ${next.n}단계가 열려요</b>
          <small>조건: ${[next.need.pages && `누적 ${next.need.pages}쪽(지금 ${st.pages}쪽)`, next.need.books && `선생님 승인 완독 ${next.need.books}권(지금 ${BOOKS_DONE}권)`, next.need.days && `기록 ${next.need.days}일(지금 ${st.days}일)`].filter(Boolean).join(' 또는 ')}</small>
-         <small>어린 왕자 ${st.total - st.reached}쪽 남음</small>`
+         <small>${st.book} ${st.total - st.reached}쪽 남음</small>`
       : '<b>모든 단계가 열렸어요</b>';
 
     // 미리보기

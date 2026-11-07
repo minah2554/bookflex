@@ -405,3 +405,21 @@ small { font-size: 12px; } .mute { color: var(--muted); } .ok { color: #247040; 
   .tabs { right: auto; top: auto !important; gap: 4px; }
   .tabs a, .tabs button, .tabs .on { width: auto; margin-left: 0; padding: 8px 12px; border-radius: 10px; border-left: 2px solid color-mix(in srgb, var(--hi) 45%, transparent); }
 }
+
+/* v0.23: 책 등록 */
+.bookrow { flex-wrap: wrap; }
+.bookrow label { font-weight: 700; }
+.bookrow select { max-width: 200px; }
+.bookrow .linkbtn { margin-left: auto; }
+.addbook { display: grid; grid-template-columns: repeat(3, 1fr) auto; gap: 8px; align-items: end; margin: 0 0 12px; padding: 12px; border-radius: 12px; background: var(--soft); }
+.addbook[hidden] { display: none; }
+.addbook label { display: grid; gap: 4px; font-size: 12px; font-weight: 700; }
+.addbook input { width: 100%; }
+.addbook .msg { grid-column: 1 / -1; margin: 0; }
+.regrow { display: flex; gap: 8px; align-items: end; margin-top: 8px; }
+.regrow label { display: grid; gap: 4px; font-size: 12px; font-weight: 700; }
+.pact { flex-wrap: wrap; }
+@media (max-width: 760px) { .addbook { grid-template-columns: 1fr; } }
+.addbook input, .regrow input { box-sizing: border-box; height: 36px; padding: 0 10px; border: 2px solid color-mix(in srgb, var(--hi) 30%, transparent); border-radius: 10px; background: #fff; font: inherit; font-weight: 400; }
+.addbook label small { font-weight: 400; color: var(--ink2); }
+.addbook .cta { height: 36px; }

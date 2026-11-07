@@ -26,8 +26,8 @@
   function posts() {
     const pages = window.BF.stats().pages;
     const mine = [
-      ...window.BF.quotes().map(q => ({ id: q.id, who: ME, me: true, type: 'quote', text: `“${q.text}”`, book: '어린 왕자', writer: '생텍쥐페리', date: q.date, n: 0, k: 1 })),
-      ...f.reviews.map(r => ({ ...r, me: true, who: ME, type: 'review', book: '어린 왕자', writer: '생텍쥐페리', n: 0, k: 1 })),
+      ...window.BF.quotes().map(q => ({ id: q.id, who: ME, me: true, type: 'quote', text: `“${q.text}”`, book: q.book || '어린 왕자', writer: q.writer || '생텍쥐페리', date: q.date, n: 0, k: 1 })),
+      ...f.reviews.map(r => ({ book: '어린 왕자', writer: '생텍쥐페리', ...r, me: true, who: ME, type: 'review', n: 0, k: 1 })),
     ];
     return [...mine, ...SEED].map(p => ({ ...p, who: p.me ? window.PROFILE.name : p.who, pages: p.me ? pages : p.pages }))
       .sort((a, b) => b.date.localeCompare(a.date) || (b.k || 0) - (a.k || 0));
@@ -80,7 +80,7 @@
     e.preventDefault();
     const text = $('fdText').value.trim(), msg = $('fdMsg');
     if (!text) { msg.className = 'msg'; msg.textContent = '한줄평을 적어 주세요.'; return; }
-    f.reviews.push({ id: 'r' + Date.now(), text, date: today() });
+    f.reviews.push({ id: 'r' + Date.now(), text, date: today(), book: window.BF.stats().book, writer: window.BF.stats().writer });
     save(); $('fdText').value = ''; filter = 'all'; render();
     msg.className = 'msg okm'; msg.textContent = '한줄평을 올렸어요. 우리 반에 공개됩니다.';
   });
@@ -88,6 +88,6 @@
   // 내 게시판(tabs.js)이 쓰는 창구: 내가 쓴 글과 댓글 수
   window.FEED = { when, mine: () => posts().filter(p => p.me).map(p => ({ ...p, count: p.n + (f.c[p.id] || []).length })) };
 
-  document.querySelector('[data-page=feed]').addEventListener('click', () => { $('fdMsg').textContent = ''; render(); });
+  document.querySelector('[data-page=feed]').addEventListener('click', () => { $('fdMsg').textContent = ''; $('fdBook').textContent = window.BF.stats().book; render(); });
   document.querySelectorAll('.linkbtn[data-page=feed]').forEach(b => b.addEventListener('click', render));
 })();

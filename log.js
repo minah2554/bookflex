@@ -1,26 +1,30 @@
 // PAGE LOG(독서 기록): PRD 11A/11B 규칙 — 양끝 포함 쪽수, 중복 구간 차단, 칩·XP 계산
 (() => {
   const KEY = 'bookflex.log.v1';
-  const BOOK = '어린 왕자', TOTAL = 140;
+  const BOOK0 = '어린 왕자'; // 처음 등록돼 있는 책(140쪽). 책은 직접 더 등록할 수 있다
   const BASE = { pages: 178, chips: 120, xp: 182 }; // 목업의 시작 수치(다른 책 기록 포함)
   const LV = [0, 50, 150, 300, 500];
   const $ = id => document.getElementById(id);
+  const esc = x => String(x).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const ymd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   const today = ymd(new Date());
   const ago = n => { const d = new Date(); d.setDate(d.getDate() - n); return ymd(d); };
   const SEED = [
     { date: '2026-10-20', book: '빨간 머리 앤', kind: 'done', pages: 0, chips: 40 }, // 완독 2권을 맞추려는 샘플
     { date: '2026-11-03', book: '노인과 바다', kind: 'done', pages: 0, chips: 40 },
-    { date: '2026-11-05', book: BOOK, kind: 'read', start: 61, end: 84, pages: 24, chips: 38 },
-    { date: '2026-11-06', book: BOOK, kind: 'read', start: 85, end: 96, pages: 12, chips: 34 },
+    { date: '2026-11-05', book: BOOK0, kind: 'read', start: 61, end: 84, pages: 24, chips: 38 },
+    { date: '2026-11-06', book: BOOK0, kind: 'read', start: 85, end: 96, pages: 12, chips: 34 },
   ];
 
-  let st = { entries: SEED, chips: 0, xp: 0, missions: [] };
-  try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.entries)) st = s; } catch {}
+  let st = { entries: SEED, chips: 0, xp: 0, missions: [], lib: [{ t: BOOK0, w: '앙투안 드 생텍쥐페리', total: 140 }], cur: BOOK0 };
+  try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.entries)) st = { ...st, ...s }; } catch {}
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch {} };
 
-  const reads = () => st.entries.filter(e => e.kind === 'read' && e.book === BOOK);
-  const reached = () => Math.max(0, ...reads().map(e => e.end));
+  const cb = () => st.lib.find(b => b.t === st.cur) || st.lib[0];
+  const tot = () => cb().total;
+  const reads = () => st.entries.filter(e => e.kind === 'read' && e.book === cb().t);
+  const reachedOf = b => Math.max(0, ...st.entries.filter(e => e.kind === 'read' && e.book === b.t).map(e => e.end));
+  const reached = () => reachedOf(cb());
 
   // 하루 첫 기록 +10, 5쪽당 +2(하루 최대 20), 한 구절 +5. 미션 보상은 mission.js가 따로 지급한다.
   function reward(entries, missions, date, pages, quote) {
@@ -41,7 +45,7 @@
     if (!date || date > today || date < ago(7)) return '오늘부터 7일 전까지만 기록할 수 있어요.';
     if (!Number.isInteger(s) || !Number.isInteger(e) || s < 1) return '시작 쪽과 끝 쪽을 입력해 주세요.';
     if (e < s) return '끝 쪽은 시작 쪽보다 크거나 같아야 해요.';
-    if (e > TOTAL) return `내 판본은 ${TOTAL}쪽까지예요.`;
+    if (e > tot()) return `내 판본은 ${tot()}쪽까지예요.`;
     const hit = reads().find(r => s <= r.end && e >= r.start);
     return hit ? `이미 기록한 ${hit.start}~${hit.end}쪽과 겹쳐요.` : '';
   }
@@ -56,8 +60,8 @@
     const ok = filled && !err;
     const pages = ok ? e - s + 1 : 0;
     $('sumPages').textContent = pages;
-    $('sumRange').textContent = ok ? `${s}~${e}쪽 · 이제 ${Math.max(e, reached())} / ${TOTAL}쪽` : '시작·끝 쪽을 입력하세요';
-    $('sumLeft').textContent = ok ? `완독까지 ${TOTAL - Math.max(e, reached())}쪽 남음` : '';
+    $('sumRange').textContent = ok ? `${s}~${e}쪽 · 이제 ${Math.max(e, reached())} / ${tot()}쪽` : '시작·끝 쪽을 입력하세요';
+    $('sumLeft').textContent = ok ? `완독까지 ${tot() - Math.max(e, reached())}쪽 남음` : '';
     const r = ok ? reward(st.entries, st.missions, date, pages, q) : { list: [], chips: 0, xp: 0 };
     $('sumList').innerHTML = r.list.map(([l, n]) => `<li><span>${l}</span><b>+${n}칩</b></li>`).join('') +
       (ok ? `<li class="xpr"><span>독서 XP</span><b>+${r.xp} XP</b></li>` : '');
@@ -71,14 +75,16 @@
     const err = check(date, s, e);
     if (err) { $('logMsg').className = 'msg'; $('logMsg').textContent = err; return; }
     const pages = e - s + 1, r = reward(st.entries, st.missions, date, pages, q);
-    st.entries.push({ date, book: BOOK, kind: 'read', start: s, end: e, pages, quote: q, chips: r.chips, pageChips: r.pc, mine: true });
+    st.entries.push({ date, book: cb().t, kind: 'read', start: s, end: e, pages, quote: q, chips: r.chips, pageChips: r.pc, mine: true });
     st.chips += r.chips; st.xp += r.xp;
+    const fin = reached() >= tot() && !cb().fin; // 끝 쪽까지 읽으면 완독 신청(선생님 승인 대기)
+    if (fin) cb().fin = true;
     save();
     $('fEnd').value = ''; $('fQuote').value = '';
     $('fStart').value = reached() + 1;
     render();
     $('logMsg').className = 'msg okm';
-    $('logMsg').textContent = `오늘의 PAGE LOG 완료! +${r.chips} 플렉스칩`;
+    $('logMsg').textContent = `오늘의 PAGE LOG 완료! +${r.chips} 플렉스칩` + (fin ? ` · 「${cb().t}」을(를) 끝까지 읽었어요. 선생님 승인을 기다려요` : '');
     document.dispatchEvent(new Event('bf:change'));
   });
 
@@ -117,16 +123,39 @@
     $('chipN').textContent = `${chips} 칩`; $('lvPill').textContent = `Lv.${i + 1}`;
     $('totPages').textContent = BASE.pages + st.entries.reduce((s, e) => s + e.pages, 0);
     $('weekDays').textContent = wk;
-    $('rdBar').style.width = `${Math.round(reachedP / TOTAL * 100)}%`; $('rdTxt').textContent = `${reachedP}/${TOTAL}`;
+    $('rdBar').style.width = `${Math.round(reachedP / tot() * 100)}%`; $('rdTxt').textContent = `${reachedP}/${tot()}`; $('rdBook').textContent = cb().t;
     $('lvTxt').textContent = next ? `Lv.${i + 1} · ${xp} XP · Lv.${i + 2}까지 ${next - xp} XP` : `Lv.${i + 1} · ${xp} XP · 최고 레벨`;
     $('xpBar').style.width = next ? `${Math.round((xp - LV[i]) / (next - LV[i]) * 100)}%` : '100%';
-    $('bookInfo').textContent = `지난번 ${reachedP}쪽까지 · 내 판본 ${TOTAL}쪽`;
+    $('bookInfo').textContent = `지난번 ${reachedP}쪽까지 · 내 판본 ${tot()}쪽`;
+    $('bookSel').innerHTML = st.lib.map(b => `<option value="${esc(b.t)}"${b.t === st.cur ? ' selected' : ''}>${esc(b.t)}${b.fin ? ' (완독 신청)' : ''}</option>`).join('');
     const n = days.size;
     $('goal').innerHTML = n >= 7 ? '<b>일주일 책벌레</b> 조건 달성!' :
       `<b>일주일 책벌레까지</b><br>서로 다른 날 7일 중 ${n}일${days.has(today) ? '' : `<br><small>오늘 기록하면 ${n + 1}일째</small>`}`;
   }
 
   function render() { sync(); calendar(); table(); preview(); }
+  function switched() { $('fStart').value = reached() + 1; $('fEnd').value = ''; save(); render(); document.dispatchEvent(new Event('bf:change')); }
+  $('bookSel').addEventListener('change', e => { st.cur = e.target.value; switched(); });
+  // 책 등록: 제목·쪽수는 필수. 이미 등록한 제목이면 새로 만들지 않고 그 책으로 바꾼다
+  function addBook(t, w, n) {
+    t = String(t || '').trim(); w = String(w || '').trim(); n = parseInt(n, 10);
+    if (!t) return { err: '책 제목을 적어 주세요.' };
+    if (t.length > 40) return { err: '책 제목은 40자까지 적을 수 있어요.' };
+    if (!Number.isInteger(n) || n < 10 || n > 3000) return { err: '내 판본의 전체 쪽수를 10~3000 사이로 적어 주세요.' };
+    const dup = st.lib.some(b => b.t === t);
+    if (!dup) st.lib.push({ t, w: w || '저자 미상', total: n });
+    st.cur = t; switched();
+    return { ok: true, dup };
+  }
+  $('addBookBtn').addEventListener('click', () => { const o = $('addBook'); o.hidden = !o.hidden; $('addBookBtn').setAttribute('aria-expanded', !o.hidden); if (!o.hidden) $('abT').focus(); });
+  const doAdd = () => {
+    const r = addBook($('abT').value, $('abW').value, $('abN').value), m = $('abMsg');
+    m.className = r.err ? 'msg' : 'msg okm';
+    m.textContent = r.err || (r.dup ? '이미 등록한 책이에요. 이 책으로 바꿨어요.' : `「${st.cur}」을(를) 읽는 책으로 등록했어요. 읽은 쪽을 적어 보세요.`);
+    if (r.ok) { ['abT', 'abW', 'abN'].forEach(i => ($(i).value = '')); $('addBook').hidden = true; $('addBookBtn').setAttribute('aria-expanded', 'false'); $('logMsg').className = 'msg okm'; $('logMsg').textContent = m.textContent; }
+  };
+  $('abOk').addEventListener('click', doAdd);
+  $('addBook').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); doAdd(); } });
 
   $('fDate').max = today; $('fDate').min = ago(7); $('fDate').value = today;
   $('fStart').value = reached() + 1;
@@ -135,12 +164,14 @@
   // 다른 화면(FLEX CLASS)이 쓰는 같은 데이터 창구
   window.BF = {
     addChips(n) { st.chips += n; save(); sync(); },
+    addBook,
+    library: () => st.lib.map(b => b.t),
     // 책장 툴팁용: 읽는 중인 책 + 승인된 완독(최신순)
     books: () => [
-      { t: BOOK, s: `읽는 중 · ${reached()}/${TOTAL}쪽` },
+      ...[cb(), ...st.lib.filter(b => b !== cb())].map(b => ({ t: b.t, s: b.fin ? '승인 대기 · 끝까지 읽음' : `읽는 중 · ${reachedOf(b)}/${b.total}쪽` })),
       ...st.entries.filter(e => e.kind === 'done').sort((a, b) => b.date.localeCompare(a.date)).map(e => ({ t: e.book, s: `완독 · ${e.date.slice(5).replace('-', '.')}` })),
     ],
-    quotes: () => st.entries.filter(e => e.quote).map(e => ({ id: `q-${e.date}-${e.start}`, date: e.date, text: e.quote })),
+    quotes: () => st.entries.filter(e => e.quote).map(e => ({ id: `q-${e.date}-${e.start}`, date: e.date, text: e.quote, book: e.book, writer: (st.lib.find(b => b.t === e.book) || {}).w || '' })),
     stats() {
       const es = st.entries, sum = a => a.reduce((s, e) => s + e.pages, 0);
       return {
@@ -156,7 +187,9 @@
         reads: es.filter(e => e.kind === 'read').length,
         days: new Set(es.map(e => e.date)).size,
         reached: reached(),
-        total: TOTAL,
+        total: tot(),
+        book: cb().t,
+        writer: cb().w,
       };
     },
   };
