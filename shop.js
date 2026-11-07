@@ -14,7 +14,9 @@
   // soon: 아직 방에 그려지지 않는 물건(구매 불가)
   const I = (stage, id, name, price, sw, extra = {}) => ({ stage, id, name, price, sw, ...extra });
   const CATALOG = [
+    I(1, 'plant', '화분', 50, '#55b573'), I(1, 'rug', '러그', 60, '#e98ba0'), I(1, 'poster', '포스터', 50, '#ffe7a8'),
     I(1, 'bmark', '책갈피', 20, '#e0556f'), I(1, 'mug', '머그컵', 30, '#fff'), I(1, 'frame', '미니 액자', 40, '#f6c6d4'), I(1, 'clock', '탁상시계', 60, '#6aa7e8'),
+    I(2, 'desk', '책상', 150, '#c28622'), I(2, 'shelf', '책장', 140, '#c89b6a'), I(2, 'window', '창문', 120, '#9fd6f2'),
     I(2, 'lamp', '독서등', 90, '#ffe27a'), I(2, 'cushion', '초록 쿠션', 80, '#6fc58a'), I(2, 'books', '책더미', 70, '#5b86e5'),
     I(2, 'sunset', '노을 포스터', 100, '#f7a65a'), I(2, 'roundrug', '동그란 러그', 130, '#f3c76b'),
     I(3, 'wall-blue', '하늘 벽지', 150, '#c3d9f0', { wall: 'blue' }), I(3, 'wall-wood', '우드 벽지', 200, '#c9935a', { wall: 'wood' }),

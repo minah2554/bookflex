@@ -1,4 +1,4 @@
-const APP_VERSION = '0.10.0'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '0.11.0'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
@@ -28,7 +28,7 @@ const FLOORS = {
 };
 
 const ITEMS = [
-  { id: 'window', label: '창문', layer: 1, draw() {
+  { id: 'window', label: '창문', layer: 1, shop: true, draw() {
     const L = (v, z) => P(0, v, z);
     return poly([L(108, 44), L(168, 44), L(168, 110), L(108, 110)], '#fff', 'stroke="#c9b48f"') +
       poly([L(112, 48), L(164, 48), L(164, 106), L(112, 106)], '#9fd6f2') +
@@ -37,13 +37,13 @@ const ITEMS = [
       `<polyline points="${pts([L(112, 77), L(164, 77)])}" stroke="#fff" stroke-width="2"/>` +
       poly([L(104, 40), L(118, 40), L(124, 108), L(104, 108)], '#f6b8c6') +
       poly([L(158, 40), L(172, 40), L(172, 108), L(152, 108)], '#f6b8c6'); } },
-  { id: 'poster', label: '포스터', layer: 1, draw() {
+  { id: 'poster', label: '포스터', layer: 1, shop: true, draw() {
     const R = (u, z) => P(u, 0, z);
     return poly([R(22, 62), R(62, 62), R(62, 106), R(22, 106)], '#fff', 'stroke="#c9b48f"') +
       poly([R(26, 66), R(58, 66), R(58, 102), R(26, 102)], '#ffe7a8') +
       poly([R(26, 66), R(34, 82), R(42, 72), R(50, 88), R(58, 66)], '#4f9d69') +
       poly([R(46, 92), R(52, 92), R(52, 98), R(46, 98)], '#f26d5b'); } },
-  { id: 'rug', label: '러그', layer: 2, draw() {
+  { id: 'rug', label: '러그', layer: 2, shop: true, draw() {
     return poly([P(68, 92), P(132, 92), P(132, 158), P(68, 158)], '#f7e8d0') +
       poly([P(73, 97), P(127, 97), P(127, 153), P(73, 153)], '#e98ba0') +
       poly([P(82, 106), P(118, 106), P(118, 144), P(82, 144)], '#f7c9d4'); } },
@@ -52,7 +52,7 @@ const ITEMS = [
       box(8, 10, 60, 104, 20, ['#fff', '#e8eef7', '#d6deec']) +
       box(8, 48, 60, 66, 26, ['#f6a5b8', '#ef8fa6', '#e07890']) +
       box(14, 14, 48, 22, 27, ['#fff', '#eef1f7', '#dde3ef'], 20); } },
-  { id: 'shelf', label: '책장', layer: 3, draw() {
+  { id: 'shelf', label: '책장', layer: 3, shop: true, draw() {
     const F = (a, b) => P(a, 22, b);
     let s = box(100, 2, 64, 20, 100, DARK) + poly([F(103, 3), F(161, 3), F(161, 97), F(103, 97)], '#4a2f1b');
     const colors = ['#e0556f', '#3a7bd5', '#f2b84b', '#4f9d69', '#8e63c9', '#2aa0c8'];
@@ -65,10 +65,10 @@ const ITEMS = [
       }
     });
     return s; } },
-  { id: 'plant', label: '화분', layer: 4, draw() {
+  { id: 'plant', label: '화분', layer: 4, shop: true, draw() {
     return box(168, 8, 14, 14, 14, ['#d98a5f', '#c0724a', '#a95f3a']) +
       circle(P(175, 15, 26), 10, '#3f9a5c') + circle(P(171, 12, 34), 8, '#55b573') + circle(P(179, 17, 34), 8, '#55b573'); } },
-  { id: 'desk', label: '책상', layer: 5, draw() {
+  { id: 'desk', label: '책상', layer: 5, shop: true, draw() {
     const leg = (u, v) => box(u, v, 4, 4, 30, DARK);
     return leg(112, 50) + leg(174, 50) + leg(112, 78) + leg(174, 78) +
       box(110, 48, 72, 36, 34, WOOD, 30) +
@@ -111,7 +111,7 @@ const ITEMS = [
 const SHOP_KEY = 'bookflex.shop.v1';
 const owned = new Set((() => {
   try { const s = JSON.parse(localStorage.getItem(SHOP_KEY)); if (Array.isArray(s)) return s; } catch {}
-  return ['cushion'];
+  return []; // 처음엔 벽지·바닥·침대만 있는 빈 방
 })());
 const own = id => owned.has(id);
 
@@ -123,8 +123,8 @@ const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } c
 
 const escSvg = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 // 아바타와 말풍선(글은 2줄·줄당 12자). 방 가운데 러그 위에 서 있다.
-function avatarSvg() {
-  const [x, y] = P(100, 106), a = state.avatar, say = (state.say || '').trim();
+function avatarSvg(a = state.avatar, text = state.say) {
+  const [x, y] = P(100, 106), say = (text || '').trim();
   let s = `<ellipse cx="${x}" cy="${y}" rx="11" ry="4" fill="#0002"/>
     <rect x="${x - 6}" y="${y - 12}" width="5" height="12" rx="2" fill="#4a4a5a"/><rect x="${x + 1}" y="${y - 12}" width="5" height="12" rx="2" fill="#4a4a5a"/>
     <rect x="${x - 9}" y="${y - 30}" width="18" height="19" rx="5" fill="${a.top}"/>
@@ -148,15 +148,16 @@ function avatarSvg() {
 // px: 한 화면에 방이 둘(홈·상점) 있어 패턴 id가 겹치지 않게 붙이는 접두어
 // over: 상점 미리보기용 { wall, floor, add } — 안 산 물건도 임시로 놓아 본다
 function roomSvg(px, over = {}) {
+  // over.ids: 친구 방처럼 놓인 물건 목록을 통째로 지정(내 소유·끄기 설정을 보지 않음)
   const wk = over.wall || state.wall, fk = over.floor || state.floor, wl = WALLS[wk];
   const pats = Object.entries({ ...prefix(px + 'w-', WALLS), ...prefix(px + 'f-', FLOORS) }).map(([id, p]) =>
     `<pattern id="${id}" width="${p.w}" height="${p.h}" patternUnits="userSpaceOnUse">${p.mark}</pattern>`).join('');
   const wall = (pts4, shade) => `<polygon points="${pts(pts4)}" fill="${wl.base}"/><polygon points="${pts(pts4)}" fill="url(#${px}w-${wk})"/>` +
     `<polygon points="${pts(pts4)}" fill="#000" opacity="${shade}" stroke="#0003"/>`;
-  const list = ITEMS.filter(i => over.add === i.id || ((!i.shop || own(i.id)) && !state.off.includes(i.id))).sort((a, b) => a.layer - b.layer);
+  const list = ITEMS.filter(i => over.ids ? over.ids.includes(i.id) : over.add === i.id || ((!i.shop || own(i.id)) && !state.off.includes(i.id))).sort((a, b) => a.layer - b.layer);
   // 책장은 마우스를 올리면 읽은 책 목록이 뜨는 영역. 아바타는 책상(5~6)까지 그린 뒤, 의자 앞에 선다.
   const draw = i => i.id === 'shelf' ? `<g class="shelf-hit" tabindex="0" role="img" aria-label="책장 — 읽은 책 목록 보기">${i.draw()}</g>` : i.draw();
-  const items = list.filter(i => i.layer <= 6.1).map(draw).join('') + (over.noAvatar ? '' : avatarSvg()) + list.filter(i => i.layer > 6.1).map(draw).join('');
+  const items = list.filter(i => i.layer <= 6.1).map(draw).join('') + (over.noAvatar ? '' : over.avatar ? avatarSvg(over.avatar, over.say) : avatarSvg()) + list.filter(i => i.layer > 6.1).map(draw).join('');
   return `<svg viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg"><defs>${pats}</defs>
     <rect width="480" height="360" fill="#fdf6ec"/>
     ${wall([P(0, 0, 120), P(0, 190, 120), P(0, 190), P(0, 0)], 0.08)}

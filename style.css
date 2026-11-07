@@ -299,3 +299,9 @@ small { font-size: 11px; } .mute { color: #999; } .ok { color: #2f9a5c; display:
   .head h1 { order: -1; flex-basis: 100%; }
   .foot span:last-child { margin-left: 0; }
 }
+
+/* 친구 서재 방문 화면 */
+.vtabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
+.vtabs button { border: 0; border-radius: 999px; padding: 7px 16px; background: var(--soft); color: var(--hi); font: inherit; font-weight: 700; cursor: pointer; }
+.vtabs button.on { background: var(--accent); color: #fff; }
+#v-visit[hidden] { display: none; }
