@@ -1,11 +1,12 @@
-const APP_VERSION = '0.17.0'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '0.18.0'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
 // 등각 투영: 바닥 좌표 (u,v,z) -> 화면. u는 오른쪽 아래, v는 왼쪽 아래 방향. 오른쪽 벽 v=0, 왼쪽 벽 u=0.
 const P = (u, v, z = 0) => [240 + u - v, 150 + (u + v) / 2 - z];
 const pts = a => a.map(p => p.join(',')).join(' ');
-const poly = (a, fill, extra = '') => `<polygon points="${pts(a)}" fill="${fill}" ${extra}/>`;
+const poly = (a, fill, extra = '') => extra.includes('stroke') ? `<polygon points="${pts(a)}" fill="${fill}" ${extra}/>`
+  : `<polygon points="${pts(a)}" fill="${fill}" stroke="${fill}" stroke-width="2" stroke-linejoin="round" ${extra}/><polygon points="${pts(a)}" fill="url(#clay)" stroke="url(#clay)" stroke-width="2" stroke-linejoin="round"/>`;
 // 상자: c = [윗면, 왼쪽 앞면(v+d), 오른쪽 앞면(u+w)]
 const box = (u, v, w, d, z1, c, z0 = 0) =>
   poly([P(u, v + d, z0), P(u + w, v + d, z0), P(u + w, v + d, z1), P(u, v + d, z1)], c[1]) +
@@ -15,6 +16,7 @@ const circle = (p, r, f) => `<circle cx="${p[0]}" cy="${p[1]}" r="${r}" fill="${
 
 const WOOD = ['#d9a56b', '#b98350', '#a2703f'];
 const DARK = ['#8a5a36', '#6e4527', '#5a371d'];
+const OAK = ['#f0d2a4', '#dcb27a', '#c99a62'];
 
 const WALLS = {
   cream: { name: '크림', base: '#fbf1d9', line: '#ecdcb2', w: 10, h: 10, mark: '<rect width="1.5" height="10" fill="#ecdcb2"/>' },
@@ -53,11 +55,11 @@ const ITEMS = [
   { id: 'shelf', label: '책장', layer: 3, draw(books) {
     const F = (a, b) => P(a - 34, 22, b);
     const n = books ?? (window.BF ? window.BF.books().filter(b => b.s.startsWith('완독')).length : 0);
-    let s = box(66, 2, 64, 20, 100, DARK) + poly([F(103, 3), F(161, 3), F(161, 97), F(103, 97)], '#4a2f1b');
+    let s = box(66, 2, 64, 20, 100, OAK) + poly([F(103, 3), F(161, 3), F(161, 97), F(103, 97)], '#b88650');
     const colors = ['#e0556f', '#3a7bd5', '#f2b84b', '#4f9d69', '#8e63c9', '#2aa0c8'];
     let left = n;
     [4, 36, 68].forEach((z, i) => {
-      s += poly([F(103, z), F(161, z), F(161, z + 2), F(103, z + 2)], '#c89b6a');
+      s += poly([F(103, z), F(161, z), F(161, z + 2), F(103, z + 2)], '#f0d2a4');
       for (let a = 105, k = 0; a < 156 && left > 0; k++, left--) {
         const w = 4 + (k + i) % 3, h = 18 + ((k * 7 + i * 3) % 9);
         s += poly([F(a, z + 2), F(a + w, z + 2), F(a + w, z + 2 + h), F(a, z + 2 + h)], colors[(k + i * 2) % 6], 'stroke="#0003" stroke-width=".5"');
@@ -65,6 +67,8 @@ const ITEMS = [
       }
     });
     return s; } },
+  { id: 'nightstand', label: '협탁', layer: 3.2, draw() {
+    return box(4, 124, 24, 24, 22, ['#fff1d6', '#f0d2a4', '#dcb27a']) + poly([P(8, 148, 14), P(24, 148, 14), P(24, 148, 6), P(8, 148, 6)], '#e0bb86') + circle(P(16, 148, 10), 1.8, '#c28a4a'); } },
   { id: 'plant', label: '화분', layer: 4, shop: true, draw() {
     return box(168, 8, 14, 14, 14, ['#d98a5f', '#c0724a', '#a95f3a']) +
       circle(P(175, 15, 26), 10, '#3f9a5c') + circle(P(171, 12, 34), 8, '#55b573') + circle(P(179, 17, 34), 8, '#55b573'); } },
@@ -118,11 +122,12 @@ const PLACE = {
   lamp: [358, 217, 24], mug: [382, 232, 15], clock: [434, 236, 19], bmark: [412, 242, 24, 1],
   window: [105, 138, 66, 1], sunset: [185, 98, 36, 1], poster: [283, 92, 40, 1], frame: [392, 120, 34, 1],
 };
+// 책상이 없으면 책상 위 작은 물건은 협탁 위에 놓인다
+const ALT = { lamp: [118, 203, 22], clock: [133, 205, 15], mug: [123, 209, 12], bmark: [111, 207, 16, 1] };
 ITEMS.forEach(i => {
-  const p = PLACE[i.id];
-  if (!p) return;
-  i.draw = () => {
-    const k = spriteKey(i.id), d = DIM[k], w = p[2], h = w * d[1] / d[0];
+  if (!PLACE[i.id]) return;
+  i.draw = (_, list = []) => {
+    const p = ALT[i.id] && !list.some(x => x.id === 'desk') ? ALT[i.id] : PLACE[i.id], k = spriteKey(i.id), d = DIM[k], w = p[2], h = w * d[1] / d[0];
     return `<image href="assets/items/${k}.webp" x="${p[0] - w / 2}" y="${p[3] ? p[1] - h / 2 : p[1] - h}" width="${w}" height="${h}"/>`;
   };
 });
@@ -215,13 +220,13 @@ function roomSvg(px, over = {}) {
     `<polygon points="${pts(pts4)}" fill="#000" opacity="${shade}" stroke="#0003"/>`;
   const list = ITEMS.filter(i => over.ids ? over.ids.includes(i.id) : over.add === i.id || ((!i.shop || own(i.id)) && !state.off.includes(i.id))).sort((a, b) => a.layer - b.layer);
   // 책장은 마우스를 올리면 읽은 책 목록이 뜨는 영역. 아바타는 책상(5~6)까지 그린 뒤, 의자 앞에 선다.
-  const draw = i => i.id === 'shelf' ? `<g class="shelf-hit" tabindex="0" role="img" aria-label="책장 — 읽은 책 목록 보기">${i.draw(over.books)}</g>` : i.draw();
+  const draw = i => i.id === 'shelf' ? `<g class="shelf-hit" tabindex="0" role="img" aria-label="책장 — 읽은 책 목록 보기">${i.draw(over.books, list)}</g>` : i.draw(over.books, list);
   const items = list.filter(i => i.layer <= 6.1).map(draw).join('') + (over.noAvatar ? '' : over.avatar ? avatarSvg(over.avatar, over.say) : avatarSvg()) + list.filter(i => i.layer > 6.1).map(draw).join('');
   // 방이 틀 전체를 채우도록 벽·바닥을 화면 밖까지 늘려 그린다(점토 느낌: 모서리 그늘, 걸레받이)
   const E = 330, H = 420;
   const L = [P(0, 0, H), P(0, E, H), P(0, E), P(0, 0)], Rw = [P(0, 0, H), P(E, 0, H), P(E, 0), P(0, 0)];
   const base = a => `<polygon points="${pts(a)}" fill="#fff" opacity=".55"/>`;
-  return `<svg viewBox="10 30 460 290" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs>${pats}
+  return `<svg viewBox="10 30 460 290" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs>${pats}<radialGradient id="clay" cx=".35" cy=".28" r=".85"><stop offset="0" stop-color="#fff" stop-opacity=".4"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".18"/></radialGradient>
       <linearGradient id="${px}gl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".25"/><stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient>
       <linearGradient id="${px}gr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".1"/><stop offset="1" stop-color="#fff" stop-opacity=".2"/></linearGradient>
       <linearGradient id="${px}gf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".1"/><stop offset=".5" stop-color="#fff" stop-opacity=".08"/><stop offset="1" stop-color="#fff" stop-opacity=".22"/></linearGradient></defs>
