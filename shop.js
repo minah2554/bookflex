@@ -51,7 +51,7 @@
 
     // 미리보기
     const c = byId(sel), canBuy = c && !c.soon && open && !window.ROOM.own(c.id);
-    const over = c ? (c.wall ? { wall: c.wall } : c.floor ? { floor: c.floor } : { add: c.id }) : {};
+    const over = { noAvatar: true, ...(c ? (c.wall ? { wall: c.wall } : c.floor ? { floor: c.floor } : { add: c.id }) : {}) };
     $('shopRoom').innerHTML = window.ROOM.roomSvg('s-', over);
     $('pName').textContent = c ? `놓아 보는 중 · ${c.name}` : '';
     $('pAfter').textContent = c ? (chips >= c.price ? `${chips} → ${chips - c.price} 칩` : `${c.price - chips}칩이 더 필요해요`) : '';

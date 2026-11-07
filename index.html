@@ -86,9 +86,18 @@
           <h2>미니서재 <small>책을 끝낼 때마다 선반에 한 권씩 꽂혀요</small></h2>
           <div class="roomwrap">
             <div id="room" class="room" role="img" aria-label="꾸밀 수 있는 나만의 서재 방"></div>
-            <button id="deco" class="cta" type="button" aria-expanded="false" aria-controls="ctrl">내 방 꾸미기</button>
+            <div id="shelfTip" class="tip" hidden></div>
+            <div class="rbtns">
+              <button id="setBtn" class="cta ghost" type="button" aria-expanded="false" aria-controls="setp">설정</button>
+              <button id="deco" class="cta" type="button" aria-expanded="false" aria-controls="ctrl">내 방 꾸미기</button>
+            </div>
           </div>
           <p class="cap">선반 빈자리 4칸 — 다음 책을 기다리는 중</p>
+          <div id="setp" class="ctrl" hidden>
+            <div class="row"><span>말풍선</span><div class="grow"><input id="sayIn" maxlength="24" placeholder="방문한 친구에게 하고 싶은 말 (24자까지)" aria-label="말풍선 글"></div></div>
+            <div class="row"><span>머리</span><div id="hairs"></div></div>
+            <div class="row"><span>옷</span><div id="tops"></div></div>
+          </div>
           <div id="ctrl" class="ctrl" hidden>
             <div class="row"><span>벽지</span><div id="walls"></div></div>
             <div class="row"><span>바닥</span><div id="floors"></div></div>

@@ -9,6 +9,7 @@
   const today = ymd(new Date());
   const ago = n => { const d = new Date(); d.setDate(d.getDate() - n); return ymd(d); };
   const SEED = [
+    { date: '2026-10-20', book: '빨간 머리 앤', kind: 'done', pages: 0, chips: 40 }, // 완독 2권을 맞추려는 샘플
     { date: '2026-11-03', book: '노인과 바다', kind: 'done', pages: 0, chips: 40 },
     { date: '2026-11-05', book: BOOK, kind: 'read', start: 61, end: 84, pages: 24, chips: 38 },
     { date: '2026-11-06', book: BOOK, kind: 'read', start: 85, end: 96, pages: 12, chips: 34 },
@@ -134,6 +135,11 @@
   // 다른 화면(FLEX CLASS)이 쓰는 같은 데이터 창구
   window.BF = {
     addChips(n) { st.chips += n; save(); sync(); },
+    // 책장 툴팁용: 읽는 중인 책 + 승인된 완독(최신순)
+    books: () => [
+      { t: BOOK, s: `읽는 중 · ${reached()}/${TOTAL}쪽` },
+      ...st.entries.filter(e => e.kind === 'done').sort((a, b) => b.date.localeCompare(a.date)).map(e => ({ t: e.book, s: `완독 · ${e.date.slice(5).replace('-', '.')}` })),
+    ],
     quotes: () => st.entries.filter(e => e.quote).map(e => ({ id: `q-${e.date}-${e.start}`, date: e.date, text: e.quote })),
     stats() {
       const es = st.entries, sum = a => a.reduce((s, e) => s + e.pages, 0);

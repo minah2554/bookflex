@@ -1,4 +1,4 @@
-const APP_VERSION = '0.8.0'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '0.9.0'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
@@ -116,11 +116,35 @@ const owned = new Set((() => {
 const own = id => owned.has(id);
 
 const state = (() => {
-  const d = { wall: 'cream', floor: 'wood', off: [] };
+  const d = { wall: 'cream', floor: 'wood', off: [], avatar: { hair: '#6b3f2a', top: '#e0556f' }, say: '어서 와, 내 서재에 놀러 왔구나!' };
   try { return { ...d, ...JSON.parse(localStorage.getItem(KEY)) }; } catch { return d; }
 })();
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch {} };
 
+const escSvg = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+// 아바타와 말풍선(글은 2줄·줄당 12자). 방 가운데 러그 위에 서 있다.
+function avatarSvg() {
+  const [x, y] = P(100, 106), a = state.avatar, say = (state.say || '').trim();
+  let s = `<ellipse cx="${x}" cy="${y}" rx="11" ry="4" fill="#0002"/>
+    <rect x="${x - 6}" y="${y - 12}" width="5" height="12" rx="2" fill="#4a4a5a"/><rect x="${x + 1}" y="${y - 12}" width="5" height="12" rx="2" fill="#4a4a5a"/>
+    <rect x="${x - 9}" y="${y - 30}" width="18" height="19" rx="5" fill="${a.top}"/>
+    <rect x="${x - 12}" y="${y - 28}" width="4" height="12" rx="2" fill="${a.top}"/><rect x="${x + 8}" y="${y - 28}" width="4" height="12" rx="2" fill="${a.top}"/>
+    <circle cx="${x}" cy="${y - 38}" r="10" fill="#ffd9b8"/>
+    <path d="M${x - 11} ${y - 37} a11 11 0 0 1 22 0 q-11 -6 -22 0z" fill="${a.hair}"/>
+    <rect x="${x - 11}" y="${y - 38}" width="3" height="9" rx="1.5" fill="${a.hair}"/><rect x="${x + 8}" y="${y - 38}" width="3" height="9" rx="1.5" fill="${a.hair}"/>
+    <circle cx="${x - 3.5}" cy="${y - 37}" r="1.3" fill="#333"/><circle cx="${x + 3.5}" cy="${y - 37}" r="1.3" fill="#333"/>
+    <path d="M${x - 2.5} ${y - 33} q2.5 2.5 5 0" stroke="#c0505a" stroke-width="1.2" fill="none"/>`;
+  if (say) {
+    const lines = [say.slice(0, 12), say.slice(12, 24)].filter(Boolean);
+    const w = Math.max(...lines.map(l => [...l].length)) * 11 + 18, h = lines.length * 14 + 10;
+    const bx = Math.max(6, Math.min(474 - w, x - w / 2)), by = y - 56 - h;
+    s += `<polygon points="${x - 5},${by + h} ${x + 5},${by + h} ${x},${by + h + 8}" fill="#fff" stroke="#c9b8a8"/>
+      <rect x="${bx}" y="${by}" width="${w}" height="${h}" rx="9" fill="#fff" stroke="#c9b8a8"/>
+      <rect x="${x - 6}" y="${by + h - 1}" width="12" height="3" fill="#fff"/>` +
+      lines.map((l, i) => `<text x="${bx + w / 2}" y="${by + 15 + i * 14}" font-size="11" font-weight="600" text-anchor="middle" fill="#3a3330" font-family="Pretendard, sans-serif">${escSvg(l)}</text>`).join('');
+  }
+  return `<g class="avatar-g">${s}</g>`;
+}
 // px: 한 화면에 방이 둘(홈·상점) 있어 패턴 id가 겹치지 않게 붙이는 접두어
 // over: 상점 미리보기용 { wall, floor, add } — 안 산 물건도 임시로 놓아 본다
 function roomSvg(px, over = {}) {
@@ -129,8 +153,10 @@ function roomSvg(px, over = {}) {
     `<pattern id="${id}" width="${p.w}" height="${p.h}" patternUnits="userSpaceOnUse">${p.mark}</pattern>`).join('');
   const wall = (pts4, shade) => `<polygon points="${pts(pts4)}" fill="${wl.base}"/><polygon points="${pts(pts4)}" fill="url(#${px}w-${wk})"/>` +
     `<polygon points="${pts(pts4)}" fill="#000" opacity="${shade}" stroke="#0003"/>`;
-  const items = ITEMS.filter(i => over.add === i.id || ((!i.shop || own(i.id)) && !state.off.includes(i.id)))
-    .sort((a, b) => a.layer - b.layer).map(i => i.draw()).join('');
+  const list = ITEMS.filter(i => over.add === i.id || ((!i.shop || own(i.id)) && !state.off.includes(i.id))).sort((a, b) => a.layer - b.layer);
+  // 책장은 마우스를 올리면 읽은 책 목록이 뜨는 영역. 아바타는 책상(5~6)까지 그린 뒤, 의자 앞에 선다.
+  const draw = i => i.id === 'shelf' ? `<g class="shelf-hit" tabindex="0" role="img" aria-label="책장 — 읽은 책 목록 보기">${i.draw()}</g>` : i.draw();
+  const items = list.filter(i => i.layer <= 6.1).map(draw).join('') + (over.noAvatar ? '' : avatarSvg()) + list.filter(i => i.layer > 6.1).map(draw).join('');
   return `<svg viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg"><defs>${pats}</defs>
     <rect width="480" height="360" fill="#fdf6ec"/>
     ${wall([P(0, 0, 120), P(0, 190, 120), P(0, 190), P(0, 0)], 0.08)}
@@ -177,12 +203,55 @@ document.getElementById('reset').onclick = () => { Object.assign(state, { wall: 
 document.getElementById('ver').textContent = 'v' + APP_VERSION;
 document.querySelectorAll('a[href="#"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
 
-const deco = document.getElementById('deco');
-deco.onclick = () => {
-  const ctrl = document.getElementById('ctrl');
-  ctrl.hidden = !ctrl.hidden;
-  deco.setAttribute('aria-expanded', !ctrl.hidden);
-};
+// '내 방 꾸미기'(ctrl)와 '설정'(setp) 패널은 하나만 열린다
+function panel(btnId, panelId, otherBtn, otherPanel) {
+  const b = document.getElementById(btnId), p = document.getElementById(panelId);
+  b.onclick = () => {
+    p.hidden = !p.hidden;
+    document.getElementById(otherPanel).hidden = true;
+    b.setAttribute('aria-expanded', !p.hidden);
+    document.getElementById(otherBtn).setAttribute('aria-expanded', 'false');
+  };
+}
+panel('deco', 'ctrl', 'setBtn', 'setp');
+panel('setBtn', 'setp', 'deco', 'ctrl');
+
+// 설정: 말풍선 글, 머리색, 옷색
+const HAIRS = ['#6b3f2a', '#222222', '#c98a3c', '#e07a9a'], TOPS = ['#e0556f', '#5b86e5', '#4f9d69', '#f2b84b'];
+function swatches(id, colors, key) {
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  colors.forEach(c => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'sw'; b.style.background = c; b.setAttribute('aria-label', c);
+    b.setAttribute('aria-pressed', state.avatar[key] === c);
+    b.onclick = () => { state.avatar[key] = c; save(); swatches(id, colors, key); room(); };
+    el.append(b);
+  });
+}
+const sayIn = document.getElementById('sayIn');
+sayIn.value = state.say;
+sayIn.oninput = () => { state.say = sayIn.value.slice(0, 24); save(); room(); };
+swatches('hairs', HAIRS, 'hair');
+swatches('tops', TOPS, 'top');
+
+// 책장에 마우스(또는 키보드 포커스)를 올리면 내가 읽은 책 목록
+const tip = document.getElementById('shelfTip'), wrap = tip.parentElement;
+function showTip(e) {
+  const books = window.BF ? window.BF.books() : [];
+  tip.innerHTML = `<b>내가 읽은 책</b><ul>${books.map(b => `<li>${escSvg(b.t)} <small>${escSvg(b.s)}</small></li>`).join('')}</ul>`;
+  tip.hidden = false;
+  const r = wrap.getBoundingClientRect(), t = e.target.getBoundingClientRect();
+  const cx = e.clientX || t.left + t.width / 2, cy = e.clientY || t.top;
+  tip.style.left = `${Math.max(6, Math.min(r.width - tip.offsetWidth - 6, cx - r.left + 14))}px`;
+  tip.style.top = `${Math.max(6, Math.min(r.height - tip.offsetHeight - 6, cy - r.top + 10))}px`;
+}
+const hit = e => e.target.closest && e.target.closest('.shelf-hit');
+const roomEl = document.getElementById('room');
+roomEl.addEventListener('mousemove', e => (hit(e) ? showTip(e) : (tip.hidden = true)));
+roomEl.addEventListener('mouseleave', () => (tip.hidden = true));
+roomEl.addEventListener('focusin', e => hit(e) && showTip(e));
+roomEl.addEventListener('focusout', () => (tip.hidden = true));
 
 function setTheme(t) {
   document.documentElement.dataset.theme = t;
