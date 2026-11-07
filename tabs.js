@@ -38,6 +38,23 @@
     const eq = (read(KEY) || {}).eq, got = list.filter(t => t.got);
     return got.find(t => t.n === eq) || got.find(t => t.n === '문장 수집가') || got[0] || null;
   }
+  // 칭호 뱃지: 칭호마다 색과 24×24 선 아이콘이 하나씩 있고, 못 얻은 칭호는 회색
+  const MEDAL = {
+    '첫 장을 넘긴 독자': ['#e5a62c', 'M4 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4z M20 5h-6a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h6z'],
+    '문장 수집가': ['#d6455f', 'M7 8h3v3c0 2-1 3-3 4 M15 8h3v3c0 2-1 3-3 4'],
+    '일주일 책벌레': ['#3f9a5c', 'M5 6h14v13H5z M5 10h14 M9 4v4 M15 4v4'],
+    '책갈피 탐험가': ['#2a7fae', 'M7 4h10v16l-5-4-5 4z'],
+    '책장 지킴이': ['#8450c0', 'M5 5v10 M9 7v8 M13 5v10 M17 8l2 7 M4 18h16'],
+    '서재의 건축가': ['#e06f12', 'M5 20V9l7-5 7 5v11 M10 20v-6h4v6'],
+    '이야기 항해사': ['#1f94b8', 'M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16z M15 9l-2 5-4 1 2-5z'],
+    '고전 탐험가': ['#b4452a', 'M12 4l2.4 5 5.4.7-4 3.7 1 5.4-4.8-2.7-4.8 2.7 1-5.4-4-3.7 5.4-.7z'],
+    '독서 마라토너': ['#2f7d49', 'M6 20V4 M6 5h11l-2 4 2 4H6'],
+    '우리 반 문장 친구': ['#3f6bd0', 'M5 6h14v10H10l-4 3v-3H5z'],
+  };
+  const medal = (n, got, cls = 'medal') => {
+    const [c, d] = MEDAL[n] || ['#888', 'M12 5v14'];
+    return `<svg class="${cls}" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22" fill="${got ? c : '#c4cbd1'}"/><circle cx="24" cy="24" r="17.5" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.5"/><g transform="translate(12 12)" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></g></svg>`;
+  };
   const hue = s => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 360, 7);
 
   function shelf(x) {
@@ -67,10 +84,10 @@
     $('tXpTxt').textContent = next ? `다음 레벨 Lv.${i + 2}까지 ${next - xp} XP` : '최고 레벨이에요';
     $('lvTable').innerHTML = LV.map((n, k) => `<li class="${k === i ? 'cur' : ''}">Lv.${k + 1}<small>${n} XP</small></li>`).join('');
     $('tGrid').innerHTML = list.map(t => `<button type="button" class="tcard${t.got ? ' got' : ''}" data-t="${t.n}" ${t.got ? '' : 'disabled'} aria-pressed="${!!eq && eq.n === t.n}">
-      <b>${t.n}</b><small>${t.c}</small><div class="bar"><i style="width:${Math.round(t.cur / t.goal * 100)}%"></i></div>
+      ${medal(t.n, t.got)}<b>${t.n}</b><small>${t.c}</small><div class="bar"><i style="width:${Math.round(t.cur / t.goal * 100)}%"></i></div>
       <span>${t.got ? (eq && eq.n === t.n ? '장착 중' : '획득 · 눌러서 장착') : `${t.cur} / ${t.goal}`}</span></button>`).join('');
     // 홈 화면의 배지·링크
-    $('eqBadge').textContent = eq ? eq.n : '칭호 없음';
+    $('eqBadge').innerHTML = eq ? medal(eq.n, true, 'medal-mini') + esc(eq.n) : '칭호 없음';
     $('titLink').textContent = `칭호 모음 ${got} / ${TITLES.length} 보기`;
   }
 

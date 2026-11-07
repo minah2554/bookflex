@@ -1,4 +1,4 @@
-const APP_VERSION = '0.13.0'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '0.14.0'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
@@ -48,7 +48,7 @@ const ITEMS = [
       poly([P(73, 97), P(127, 97), P(127, 153), P(73, 153)], '#e98ba0') +
       poly([P(82, 106), P(118, 106), P(118, 144), P(82, 144)], '#f7c9d4'); } },
   // 침대는 그림 파일(assets/bed.png). 방 뒤쪽 구석, 머리판이 오른쪽 벽에 붙는다.
-  { id: 'bed', label: '침대', layer: 3, draw() { return '<image href="assets/bed.png" x="112" y="83" width="190" height="160"/>'; } },
+  { id: 'bed', label: '침대', layer: 3, draw() { return '<image href="assets/bed.png" x="153" y="102" width="140" height="118"/>'; } },
   // 책장은 기본 가구. 책을 완독할 때마다 아래 칸부터 한 권씩 꽂힌다(books: 완독 권수).
   { id: 'shelf', label: '책장', layer: 3, draw(books) {
     const F = (a, b) => P(a, 22, b);

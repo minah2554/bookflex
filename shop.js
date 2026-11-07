@@ -35,7 +35,7 @@
     const st = window.BF.stats(), chips = st.chips;
     $('sChips').textContent = chips;
     const cur = STAGES[stage - 1], open = unlocked(cur, st);
-    $('stageTabs').innerHTML = STAGES.map(s => `<button type="button" role="tab" class="${s.n === stage ? 'on' : ''}" data-stage="${s.n}" aria-selected="${s.n === stage}">${unlocked(s, st) ? '' : '🔒 '}${s.n} ${s.name}</button>`).join('');
+    $('stageTabs').innerHTML = STAGES.map(s => `<button type="button" role="tab" class="${s.n === stage ? 'on' : ''}" data-stage="${s.n}" aria-selected="${s.n === stage}">${s.n} ${s.name}${unlocked(s, st) ? '' : '<span class="lk">잠김</span>'}</button>`).join('');
 
     $('shopCards').innerHTML = CATALOG.filter(c => c.stage === stage).map(c => {
       const has = window.ROOM.own(c.id) && !c.soon;
