@@ -120,7 +120,44 @@ small { font-size: 11px; } .mute { color: #999; } .ok { color: #2f9a5c; display:
 .say .cta { background: #f2b84b; color: #4a3600; }
 :focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
 
-.tabs { position: absolute; right: -16px; top: 20px; display: flex; flex-direction: column; gap: 4px; }
+.book[hidden] { display: none; }
+.calhead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.calhead button { border: 0; background: var(--soft); border-radius: 50%; width: 24px; height: 24px; cursor: pointer; }
+.cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; text-align: center; font-size: 11px; }
+.dow { color: #999; padding: 2px 0; }
+.day { padding: 5px 0; border-radius: 8px; }
+.day.r { background: color-mix(in srgb, var(--accent) 30%, #fff); font-weight: 700; }
+.day.d { background: #bfe6c9; font-weight: 700; }
+.day.t { outline: 2px solid var(--accent); }
+.legend { font-size: 10px; color: #777; margin: 8px 0; }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 3px; vertical-align: -1px; }
+.dot.r { background: color-mix(in srgb, var(--accent) 45%, #fff); } .dot.d { background: #bfe6c9; margin-left: 6px; }
+.goal { background: #e3f5e8; border-radius: 12px; padding: 8px 10px; font-size: 12px; line-height: 1.5; color: #2f7d49; }
+.logtop { grid-template-columns: 1.3fr 1fr; align-items: start; }
+.bookrow { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; }
+.bookrow small { color: #888; }
+.fields { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.logform label { display: block; font-size: 11px; font-weight: 700; color: #777; }
+.logform input, .logform textarea { display: block; width: 100%; margin-top: 4px; padding: 8px 10px; border: 0; border-radius: 10px; background: var(--soft); color: #333; font-weight: 600; }
+.logform textarea { resize: vertical; }
+.qlabel small { font-weight: 500; color: #999; }
+.msg { min-height: 18px; margin: 6px 0 0; font-size: 12px; font-weight: 600; color: #c2503b; }
+.msg.okm { color: #2f8a4f; }
+.sum { background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 16px; padding: 14px; }
+.sum small { display: block; color: #777; }
+.big { margin: 2px 0; font-size: 12px; } .big b { font-size: 34px; color: var(--hi); }
+.sum h3 { margin: 12px 0 4px; font-size: 12px; }
+.gain { list-style: none; margin: 0 0 10px; padding: 0; }
+.gain li { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid #0001; }
+.gain b { color: var(--hi); }
+.cta.wide { width: 100%; padding: 10px; }
+.cta:disabled { opacity: .6; }
+.note { margin-top: 6px; text-align: center; font-size: 10px; }
+.logtbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.logtbl th { text-align: left; color: #888; font-weight: 600; padding: 4px 6px; }
+.logtbl td { padding: 8px 6px; border-top: 1px solid var(--line); }
+.chp { color: var(--hi); font-weight: 700; }
+.tabs { position: absolute; right: -16px; top: 64px; display: flex; flex-direction: column; gap: 4px; }
 .tabs a, .tabs button {
   border: 0; text-decoration: none; text-align: center; width: 44px; padding: 14px 4px; border-radius: 0 10px 10px 0;
   background: var(--tab); color: var(--tabink); font-size: 11px; font-weight: 700; line-height: 1.2;
@@ -134,7 +171,7 @@ small { font-size: 11px; } .mute { color: #999; } .ok { color: #2f9a5c; display:
 
 @media (max-width: 760px) {
   .book { grid-template-columns: 1fr; padding-right: 0; }
-  .two { grid-template-columns: 1fr; }
+  .two, .logtop { grid-template-columns: 1fr; }
   .tabs { position: static; flex-direction: row; flex-wrap: wrap; order: 3; }
   .tabs a, .tabs button { width: auto; padding: 8px 12px; border-radius: 10px; }
   .head h1 { order: -1; flex-basis: 100%; }

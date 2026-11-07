@@ -24,8 +24,8 @@
         <button type="button" data-t="peach" style="--c:#f1c3a8" title="피치" aria-label="피치 테마"></button>
         <button type="button" data-t="green" style="--c:#8fcf9c" title="초록" aria-label="초록 테마"></button>
       </div>
-      <span class="pill chip">120 칩</span>
-      <span class="pill">Lv.3</span>
+      <span class="pill chip" id="chipN">120 칩</span>
+      <span class="pill" id="lvPill">Lv.3</span>
       <span class="bell" aria-label="알림 3개">3</span>
       <span class="av">별</span>
     </div>
@@ -33,16 +33,16 @@
 
   <section class="panel">
     <div class="head">
-      <span class="week">이번 주 <b>4</b>일 읽음 <em>|</em> 누적 <b>214</b>쪽</span>
+      <span class="week">이번 주 <b id="weekDays">4</b>일 읽음 <em>|</em> 누적 <b id="totPages">214</b>쪽</span>
       <h1>별빛책방의 서재</h1>
       <span class="now">
         <i class="play"></i>지금 읽는 중 · 어린 왕자
-        <span class="bar"><i style="width:69%"></i></span>96/140
+        <span class="bar"><i id="rdBar" style="width:69%"></i></span><span id="rdTxt">96/140</span>
         <a class="cta dark" href="#">기록하기</a>
       </span>
     </div>
 
-    <div class="book">
+    <div class="book" id="v-home">
       <aside class="page profile">
         <div class="avatar"><span>별</span><a href="#" class="tiny">프로필 바꾸기</a></div>
         <div class="quote">
@@ -53,8 +53,8 @@
         <hr>
         <h2 class="nick">별빛책방 <small>2학년 2반</small></h2>
         <span class="badge">문장 수집가</span>
-        <div class="xp"><i style="width:60%"></i></div>
-        <small class="lvtxt">Lv.3 · 182 XP · Lv.4까지 118 XP</small>
+        <div class="xp"><i id="xpBar" style="width:60%"></i></div>
+        <small class="lvtxt" id="lvTxt">Lv.3 · 182 XP · Lv.4까지 118 XP</small>
         <a class="link" href="#">칭호 모음 3 / 10 보기</a>
         <hr>
         <label class="visit">책친구 서재 놀러가기
@@ -76,7 +76,7 @@
           </section>
           <section>
             <h2>오늘의 미션</h2>
-            <div class="mission me1"><p><span>나 · 10쪽 이상 읽기</span><b>+15칩</b></p><div class="bar"><i style="width:8%"></i></div></div>
+            <div class="mission me1"><p><span>나 · 10쪽 이상 읽기</span><b>+15칩</b></p><div class="bar"><i id="msBar" style="width:8%"></i></div></div>
             <div class="mission cls"><p><span>우리 반 · 모두 1쪽 읽기</span><b>전원 +30칩</b></p><div class="bar"><i style="width:78%"></i></div><small>21 / 27명 — 6명만 더!</small></div>
           </section>
         </div>
@@ -106,14 +106,60 @@
         </section>
       </main>
 
-      <nav class="tabs" aria-label="서재 메뉴">
-        <a class="on" href="#" aria-current="page">홈</a>
-        <button type="button" disabled title="준비 중">독서 기록</button>
-        <button type="button" disabled title="준비 중">내 책장</button>
-        <button type="button" disabled title="준비 중">게시판</button>
-        <button type="button" disabled title="준비 중">칭호</button>
-      </nav>
     </div>
+
+    <div class="book" id="v-log" hidden>
+      <aside class="page">
+        <h2>독서 달력</h2>
+        <div class="calhead"><button type="button" id="prevM" aria-label="이전 달">‹</button><b id="calT"></b><button type="button" id="nextM" aria-label="다음 달">›</button></div>
+        <div id="cal" class="cal"></div>
+        <p class="legend"><i class="dot r"></i>읽고 기록한 날 <i class="dot d"></i>완독 승인 받은 날</p>
+        <div class="goal" id="goal"></div>
+      </aside>
+
+      <main class="page content">
+        <div class="two logtop">
+          <form id="logForm" class="logform" novalidate>
+            <h2>오늘 어디까지 읽었어?</h2>
+            <p class="bookrow"><b>어린 왕자</b><small id="bookInfo"></small></p>
+            <div class="fields">
+              <label>읽은 날<input type="date" id="fDate"></label>
+              <label>시작 쪽<input type="number" id="fStart" min="1" inputmode="numeric"></label>
+              <label>끝 쪽<input type="number" id="fEnd" min="1" inputmode="numeric"></label>
+            </div>
+            <label class="qlabel">오늘의 한 구절 <small>책 제목·저자와 함께 우리 반에 공개돼요.</small>
+              <textarea id="fQuote" rows="3" maxlength="200"></textarea>
+            </label>
+            <p id="logMsg" class="msg" role="alert"></p>
+          </form>
+          <aside class="sum">
+            <small>오늘 읽은 양</small>
+            <p class="big"><b id="sumPages">0</b>쪽</p>
+            <small id="sumRange">시작·끝 쪽을 입력하세요</small>
+            <small id="sumLeft" class="ok"></small>
+            <h3>저장하면 받는 것</h3>
+            <ul id="sumList" class="gain"></ul>
+            <button class="cta wide" id="saveBtn" type="submit" form="logForm">기록 저장하기</button>
+            <small class="note">같은 쪽을 다시 적으면 칩은 한 번만 들어와요</small>
+          </aside>
+        </div>
+        <section>
+          <h2>이번 달 기록</h2>
+          <table class="logtbl">
+            <thead><tr><th>날짜</th><th>책</th><th>쪽</th><th>읽은 양</th><th>받은 칩</th></tr></thead>
+            <tbody id="logRows"></tbody>
+          </table>
+        </section>
+      </main>
+    </div>
+
+    <nav class="tabs" aria-label="서재 메뉴">
+      <button type="button" class="on" data-view="home" aria-current="page">홈</button>
+      <button type="button" data-view="log">독서 기록</button>
+      <button type="button" disabled title="준비 중">내 책장</button>
+      <button type="button" disabled title="준비 중">게시판</button>
+      <button type="button" disabled title="준비 중">칭호</button>
+    </nav>
   </section>
 </div>
 
@@ -123,5 +169,6 @@
   <span id="ver"></span>
 </footer>
 <script src="app.js"></script>
+<script src="log.js"></script>
 </body>
 </html>
