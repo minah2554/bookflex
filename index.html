@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BOOK FLEX | 북플렉스</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <div class="panel">
+    <header class="top">
+      <span class="counter">TODAY <b>1</b> | TOTAL <b>1</b></span>
+      <h1>읽는 것도 FLEX다!</h1>
+      <span class="url">bookflex / my-flex</span>
+    </header>
+
+    <div class="book">
+      <aside class="page profile">
+        <div class="avatar" aria-hidden="true">
+          <svg viewBox="0 0 16 16" shape-rendering="crispEdges">
+            <rect x="3" y="2" width="10" height="5" fill="#6b3f2a"/><rect x="2" y="4" width="2" height="6" fill="#6b3f2a"/><rect x="12" y="4" width="2" height="6" fill="#6b3f2a"/>
+            <rect x="4" y="5" width="8" height="6" fill="#ffd9b8"/><rect x="5" y="7" width="1" height="2" fill="#222"/><rect x="10" y="7" width="1" height="2" fill="#222"/>
+            <rect x="7" y="10" width="2" height="1" fill="#e0556f"/><rect x="4" y="11" width="8" height="4" fill="#e0556f"/><rect x="7" y="12" width="2" height="2" fill="#fff"/>
+          </svg>
+        </div>
+        <p class="today">TODAY IS... <b>몰입</b></p>
+        <p class="nick">책벌레 하늘</p>
+        <p class="lv">Lv.1 첫 장을 넘긴 독자</p>
+        <p class="stat">0 XP · 0 플렉스칩</p>
+        <p class="stat">누적 0쪽 · 완독 0권</p>
+        <a class="mini-btn" href="#" aria-disabled="true">책 추천 BOOK PICK</a>
+      </aside>
+
+      <main class="page content">
+        <section>
+          <h2>Updated news</h2>
+          <ul class="news">
+            <li><span class="tag">PAGE LOG</span> 어린 왕자 11~20쪽 +10칩</li>
+            <li><span class="tag b">FLEX FEED</span> 오늘의 한 구절이 올라왔어요</li>
+            <li><span class="tag c">MISSION</span> 우리 반 미션 진행 중</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Miniroom <small>내 방 꾸미기</small></h2>
+          <div id="room" class="room" role="img" aria-label="꾸밀 수 있는 나만의 서재 방"></div>
+          <div class="ctrl">
+            <div class="row"><span>벽지</span><div id="walls"></div></div>
+            <div class="row"><span>바닥</span><div id="floors"></div></div>
+            <div class="row"><span>소품</span><div id="items"></div></div>
+            <button id="reset" class="reset" type="button">처음 상태로</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <nav class="tabs" aria-label="메뉴">
+      <a class="on" href="#" aria-current="page">MY FLEX</a>
+      <button type="button" disabled title="준비 중">FLEX CLASS</button>
+      <button type="button" disabled title="준비 중">FLEX FEED</button>
+      <button type="button" disabled title="준비 중">FLEX MISSION</button>
+      <button type="button" disabled title="준비 중">FLEX SHOP</button>
+    </nav>
+  </div>
+</div>
+
+<footer class="foot">
+  <b>BOOK FLEX · 북플렉스</b>
+  <span>읽고, 쌓고, 꾸미고, 함께 자랑하는 우리 반 독서 세계</span>
+  <span id="ver"></span>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>
