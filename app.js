@@ -1,4 +1,4 @@
-const APP_VERSION = '0.14.0'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '0.15.0'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
@@ -132,32 +132,41 @@ const escSvg = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&l
 const HAIR_STYLES = [['short', '남 · 짧은 머리'], ['crew', '남 · 스포츠 머리'], ['curly', '남 · 곱슬 머리'], ['bob', '여 · 단발'], ['long', '여 · 긴 머리'], ['twin', '여 · 양갈래']];
 const OUTFITS = [['tee', '티셔츠'], ['hoodie', '후드티'], ['dress', '원피스'], ['uniform', '교복'], ['cardigan', '가디건']];
 function figure(x, y, a) {
-  const hs = a.hs || 'short', os = a.os || 'tee', h = a.hair, t = a.top, hy = y - 38;
-  const arms = c => `<rect x="${x - 12}" y="${y - 28}" width="4" height="12" rx="2" fill="${c}"/><rect x="${x + 8}" y="${y - 28}" width="4" height="12" rx="2" fill="${c}"/>`;
-  const legs = os === 'dress' ? '' : `<rect x="${x - 6}" y="${y - 12}" width="5" height="12" rx="2" fill="#4a4a5a"/><rect x="${x + 1}" y="${y - 12}" width="5" height="12" rx="2" fill="#4a4a5a"/>`;
+  const hs = a.hs || 'short', os = a.os || 'tee', h = a.hair, t = a.top, hy = y - 38, skin = '#ffd9b8';
+  // 점토 인형 느낌: 모든 면에 같은 부드러운 하이라이트·그늘(#clay)을 한 겹 덮는다
+  const K = (tag, at, c, extra = '') => `<${tag} ${at} fill="${c}" ${extra}/><${tag} ${at} fill="url(#clay)"/>`;
+  const R = (rx, ry, w, hh, r, c) => K('rect', `x="${rx}" y="${ry}" width="${w}" height="${hh}" rx="${r}"`, c);
+  const C = (cx, cy, r, c) => K('circle', `cx="${cx}" cy="${cy}" r="${r}"`, c);
+  const Pa = (d, c) => K('path', `d="${d}"`, c);
+  const defs = '<defs><radialGradient id="clay" cx=".35" cy=".28" r=".85"><stop offset="0" stop-color="#fff" stop-opacity=".4"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".18"/></radialGradient></defs>';
+  const arms = c => R(x - 13, y - 29, 5, 12, 2.5, c) + R(x + 8, y - 29, 5, 12, 2.5, c) + C(x - 10.5, y - 16, 2.8, skin) + C(x + 10.5, y - 16, 2.8, skin);
+  const shoes = K('ellipse', `cx="${x - 3.6}" cy="${y - 1.5}" rx="4.6" ry="3"`, '#efe3d0') + K('ellipse', `cx="${x + 3.6}" cy="${y - 1.5}" rx="4.6" ry="3"`, '#efe3d0');
+  const legs = (os === 'dress' ? R(x - 4.5, y - 8, 3.5, 8, 1.5, skin) + R(x + 1, y - 8, 3.5, 8, 1.5, skin)
+    : R(x - 6.5, y - 14, 6, 12, 2.5, '#5e5560') + R(x + 0.5, y - 14, 6, 12, 2.5, '#5e5560')) + shoes;
   const body = {
-    tee: `<rect x="${x - 9}" y="${y - 30}" width="18" height="19" rx="5" fill="${t}"/>` + arms(t),
-    hoodie: `<rect x="${x - 10}" y="${y - 30}" width="20" height="20" rx="6" fill="${t}"/>` + arms(t) + `<ellipse cx="${x}" cy="${y - 30}" rx="9" ry="3.5" fill="#0003"/><path d="M${x - 3} ${y - 28}v7M${x + 3} ${y - 28}v7" stroke="#fff" stroke-width="1.2"/>`,
-    dress: `<path d="M${x - 8} ${y - 30}h16l5 25h-26z" fill="${t}"/>` + arms('#ffd9b8') + `<rect x="${x - 4}" y="${y - 6}" width="3" height="6" fill="#ffd9b8"/><rect x="${x + 1}" y="${y - 6}" width="3" height="6" fill="#ffd9b8"/><path d="M${x - 8} ${y - 21}h16" stroke="#fff6" stroke-width="2"/>`,
-    uniform: `<rect x="${x - 9}" y="${y - 30}" width="18" height="19" rx="5" fill="#fff" stroke="#c9c9d6" stroke-width=".8"/>` + arms('#fff') + `<path d="M${x - 5} ${y - 30}l5 6 5 -6z" fill="${t}"/><path d="M${x} ${y - 24}l-2 8h4z" fill="${t}"/><rect x="${x - 9}" y="${y - 15}" width="18" height="5" fill="#3a4a7a"/>`,
-    cardigan: `<rect x="${x - 9}" y="${y - 30}" width="18" height="19" rx="5" fill="#fff"/><rect x="${x - 9}" y="${y - 30}" width="7" height="19" rx="3" fill="${t}"/><rect x="${x + 2}" y="${y - 30}" width="7" height="19" rx="3" fill="${t}"/>` + arms(t) + `<circle cx="${x}" cy="${y - 24}" r="1" fill="${t}"/><circle cx="${x}" cy="${y - 19}" r="1" fill="${t}"/>`,
+    tee: R(x - 9, y - 31, 18, 20, 6, t) + arms(t),
+    hoodie: R(x - 10, y - 31, 20, 21, 7, t) + arms(t) + `<ellipse cx="${x}" cy="${y - 31}" rx="8" ry="3" fill="#0003"/><path d="M${x - 3} ${y - 28}v7M${x + 3} ${y - 28}v7" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>`,
+    dress: Pa(`M${x - 8} ${y - 31}h16l5 24h-26z`, t) + arms(t) + `<path d="M${x - 8} ${y - 21}h16" stroke="#fff7" stroke-width="2"/>`,
+    uniform: R(x - 9, y - 31, 18, 20, 6, '#fff') + arms('#fff') + Pa(`M${x - 5} ${y - 31}l5 6 5 -6z`, t) + Pa(`M${x} ${y - 25}l-2 8h4z`, t) + R(x - 9, y - 15, 18, 5, 2, '#3a4a7a'),
+    cardigan: R(x - 9, y - 31, 18, 20, 6, '#fff') + R(x - 9, y - 31, 7, 20, 3, t) + R(x + 2, y - 31, 7, 20, 3, t) + arms(t) + `<circle cx="${x}" cy="${y - 24}" r="1" fill="${t}"/><circle cx="${x}" cy="${y - 19}" r="1" fill="${t}"/>`,
   }[os] || '';
-  const back = { long: `<rect x="${x - 12}" y="${hy - 8}" width="24" height="30" rx="9" fill="${h}"/>`, twin: '', bob: '' }[hs] || '';
-  const cap = `<path d="M${x - 11} ${hy + 1} a11 11 0 0 1 22 0 q-11 -6 -22 0z" fill="${h}"/>`;
+  const back = { long: R(x - 13, hy - 8, 26, 32, 10, h), bob: R(x - 13, hy - 7, 26, 22, 9, h) }[hs] || '';
+  const cap = Pa(`M${x - 12} ${hy + 1} a12 12 0 0 1 24 0 q-6 -3 -9 -1 q-3 -3 -6 -1 q-4 -3 -9 2z`, h);
   const front = {
-    short: cap + `<rect x="${x - 11}" y="${hy}" width="3" height="9" rx="1.5" fill="${h}"/><rect x="${x + 8}" y="${hy}" width="3" height="9" rx="1.5" fill="${h}"/>`,
-    crew: `<path d="M${x - 10} ${hy - 1} a10 10 0 0 1 20 0 q-10 -4 -20 0z" fill="${h}"/>`,
-    curly: [-8, -3, 3, 8].map((d, i) => `<circle cx="${x + d}" cy="${hy - 8 + (i % 2) * 2}" r="5" fill="${h}"/>`).join('') + `<path d="M${x - 10} ${hy - 1}q10 -6 20 0" stroke="${h}" stroke-width="3" fill="none"/>`,
-    bob: cap + `<rect x="${x - 12}" y="${hy - 2}" width="5" height="16" rx="2.5" fill="${h}"/><rect x="${x + 7}" y="${hy - 2}" width="5" height="16" rx="2.5" fill="${h}"/>`,
-    long: cap + `<rect x="${x - 12}" y="${hy - 2}" width="4" height="20" rx="2" fill="${h}"/><rect x="${x + 8}" y="${hy - 2}" width="4" height="20" rx="2" fill="${h}"/>`,
-    twin: cap + `<circle cx="${x - 13}" cy="${hy + 6}" r="4.5" fill="${h}"/><circle cx="${x + 13}" cy="${hy + 6}" r="4.5" fill="${h}"/><rect x="${x - 12}" y="${hy - 1}" width="3" height="5" fill="#e0556f"/><rect x="${x + 9}" y="${hy - 1}" width="3" height="5" fill="#e0556f"/>`,
+    short: cap + R(x - 12, hy, 3.5, 10, 1.7, h) + R(x + 8.5, hy, 3.5, 10, 1.7, h),
+    crew: Pa(`M${x - 11} ${hy - 1} a11 11 0 0 1 22 0 q-11 -4 -22 0z`, h),
+    curly: [-9, -3.5, 3.5, 9].map((d, i) => C(x + d, hy - 8 + (i % 2) * 2, 5.5, h)).join('') + Pa(`M${x - 11} ${hy} q11 -7 22 0 q-11 -3 -22 0z`, h),
+    bob: cap + R(x - 13, hy - 1, 5, 14, 2.5, h) + R(x + 8, hy - 1, 5, 14, 2.5, h),
+    long: cap + R(x - 13, hy - 1, 4.5, 20, 2.2, h) + R(x + 8.5, hy - 1, 4.5, 20, 2.2, h),
+    twin: cap + C(x - 14, hy + 6, 5, h) + C(x + 14, hy + 6, 5, h) + R(x - 13, hy - 1, 3, 5, 1, '#e0556f') + R(x + 10, hy - 1, 3, 5, 1, '#e0556f'),
   }[hs] || cap;
-  return legs + body + back + `<circle cx="${x}" cy="${hy}" r="10" fill="#ffd9b8"/>` + front +
-    `<circle cx="${x - 3.5}" cy="${hy + 1}" r="1.3" fill="#333"/><circle cx="${x + 3.5}" cy="${hy + 1}" r="1.3" fill="#333"/>` +
-    `<path d="M${x - 2.5} ${hy + 5} q2.5 2.5 5 0" stroke="#c0505a" stroke-width="1.2" fill="none"/>`;
+  return defs + legs + body + back + C(x, hy, 11, skin) + front +
+    `<circle cx="${x - 6.2}" cy="${hy + 4}" r="2.4" fill="#f4a09a" opacity=".55"/><circle cx="${x + 6.2}" cy="${hy + 4}" r="2.4" fill="#f4a09a" opacity=".55"/>` +
+    `<ellipse cx="${x - 4}" cy="${hy + 1.5}" rx="1.5" ry="1.9" fill="#4a2e22"/><ellipse cx="${x + 4}" cy="${hy + 1.5}" rx="1.5" ry="1.9" fill="#4a2e22"/>` +
+    `<path d="M${x - 2.8} ${hy + 5.8} q2.8 3 5.6 0" stroke="#d1475a" stroke-width="1.5" fill="none" stroke-linecap="round"/>`;
 }
 // 프로필 카드용 상반신(얼굴·어깨만 보이게 잘라 쓴다)
-const bustSvg = () => `<svg viewBox="-27 -54 54 46" width="84" height="72" aria-hidden="true">${figure(0, 0, state.avatar)}</svg>`;
+const bustSvg = () => `<svg viewBox="-27 -55 54 50" width="112" height="104" aria-hidden="true">${figure(0, 0, state.avatar)}</svg>`;
 // 아바타와 말풍선(글은 2줄·줄당 12자). 방 가운데 러그 위에 서 있다.
 function avatarSvg(a = state.avatar, text = state.say) {
   const [x, y] = P(100, 106), say = (text || '').trim();

@@ -81,7 +81,7 @@ h2 small { font-weight: 500; color: var(--muted); margin-left: 6px; font-size: 1
 small { font-size: 12px; } .mute { color: var(--muted); } .ok { color: #247040; display: block; }
 
 .avatar { background: var(--soft); border-radius: 14px; padding: 18px 10px 8px; text-align: center; }
-.avatar span { display: grid; place-items: center; width: 84px; height: 84px; margin: 0 auto 8px; border-radius: 22px; background: #dff0fb; overflow: hidden; }
+.avatar span { display: grid; place-items: center; width: 128px; height: 120px; margin: 0 auto 8px; border-radius: 22px; background: #dff0fb; overflow: hidden; }
 .tiny { display: inline-block; background: #fff; border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 700; text-decoration: none; }
 .quote { margin-top: 10px; } .quote small { color: var(--accent); font-weight: 700; } .quote p { margin: 4px 0; font-weight: 700; line-height: 1.4; }
 .nick { font-size: 15px; margin: 0 0 6px; } .nick small { color: var(--muted); font-weight: 500; }
@@ -326,3 +326,5 @@ small { font-size: 12px; } .mute { color: var(--muted); } .ok { color: #247040; 
 .tcard small { color: var(--ink2); }
 .tcard span { font-size: 12px; }
 .medal-mini { width: 16px; height: 16px; flex: none; }
+.logo img { height: 44px; width: auto; display: block; }
+.logo small { max-width: 72px; line-height: 1.3; }
