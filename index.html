@@ -15,7 +15,7 @@
       <button type="button" class="on" data-page="my" aria-current="page"><i style="--c:#f2765a"></i>MY FLEX</button>
       <button type="button" data-page="class"><i style="--c:#3f9a5c"></i>FLEX CLASS</button>
       <button type="button" disabled title="준비 중"><i style="--c:#f2b84b"></i>FLEX FEED</button>
-      <button type="button" disabled title="준비 중"><i style="--c:#5b86e5"></i>FLEX MISSION</button>
+      <button type="button" data-page="mission"><i style="--c:#5b86e5"></i>FLEX MISSION</button>
       <button type="button" data-page="shop"><i style="--c:#e0556f"></i>FLEX SHOP</button>
     </nav>
     <div class="me">
@@ -76,8 +76,8 @@
           </section>
           <section>
             <h2>오늘의 미션</h2>
-            <div class="mission me1"><p><span>나 · 10쪽 이상 읽기</span><b>+15칩</b></p><div class="bar"><i id="msBar" style="width:8%"></i></div></div>
-            <div class="mission cls"><p><span>우리 반 · 모두 1쪽 읽기</span><b>전원 +30칩</b></p><div class="bar"><i style="width:78%"></i></div><small>21 / 27명 — 6명만 더!</small></div>
+            <div class="mission me1"><p><span id="msName">나 · 10쪽 이상 읽기</span><b>+15칩</b></p><div class="bar"><i id="msBar" style="width:0"></i></div></div>
+            <div class="mission cls"><p><span id="cmName">우리 반 · 모두 1쪽 읽기</span><b>전원 +30칩</b></p><div class="bar"><i id="cmBar" style="width:78%"></i></div><small id="cmSmall">21 / 27명 — 6명만 더!</small></div>
           </section>
         </div>
 
@@ -165,7 +165,7 @@
         </section>
         <section class="page cmis">
           <h2>오늘의 우리 반 미션</h2>
-          <p class="mname">모두 1쪽 이상 읽기</p>
+          <p class="mname" id="cName">모두 1쪽 이상 읽기</p>
           <div class="bar"><i id="cBar"></i></div>
           <p id="cMis" class="mtxt"></p>
         </section>
@@ -183,6 +183,34 @@
           <li><p class="ph">[학생이 직접 고른 한 구절이 들어갈 자리]</p><small>빨간 머리 앤 · 몽고메리 | 바다유리 · 누적 276쪽 | 댓글 6</small></li>
         </ul>
         <small class="note">친구 한 구절에 10자 이상 댓글을 달면 +5칩 (하루 2개)</small>
+      </section>
+    </div>
+
+    <div id="v-mission" hidden>
+      <div class="chead">
+        <h1>FLEX MISSION <small>우리 반 모두 함께 달성!</small></h1>
+        <p class="cstats">오늘 받은 미션 보상 <b id="mGot">0</b>칩</p>
+      </div>
+      <div class="cgrid mgrid">
+        <section class="page mcard">
+          <h2>오늘의 개인 미션 <small>보상 +15칩</small></h2>
+          <p class="mname" id="pmTitle"></p>
+          <div class="bar"><i id="pmBar"></i></div>
+          <p class="mtxt" id="pmTxt"></p>
+        </section>
+        <section class="page mcard cls">
+          <h2>오늘의 우리 반 미션 <small>전원 달성 시 모두 +30칩</small></h2>
+          <p class="mname" id="cmTitle"></p>
+          <div class="bar"><i id="cmBar2"></i></div>
+          <p class="mtxt" id="cmTxt"></p>
+        </section>
+      </div>
+      <p id="mMsg" class="msg" role="status"></p>
+      <section class="page">
+        <h2>미션 풀 <small>매일 한국시간 00:00에 바뀌고, 새로고침해도 그대로예요</small></h2>
+        <ul id="mPool" class="pool"></ul>
+        <button id="mDemo" class="cta mini" type="button">데모용: 반 친구들이 기록했어요</button>
+        <small class="note">친구들의 기록은 학급 서버가 생기기 전까지 샘플 인원입니다.</small>
       </section>
     </div>
 
@@ -227,5 +255,6 @@
 <script src="log.js"></script>
 <script src="class.js"></script>
 <script src="shop.js"></script>
+<script src="mission.js"></script>
 </body>
 </html>

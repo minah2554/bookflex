@@ -29,9 +29,10 @@
     $('cWeek').textContent = fmt(BASE.week + st.addedWeek);
     document.querySelectorAll('.myp').forEach(e => (e.textContent = st.pages));
 
-    const done = BASE.others + (st.readToday ? 1 : 0), left = BASE.total - done;
-    $('cBar').style.width = `${Math.round(done / BASE.total * 100)}%`;
-    $('cMis').textContent = left > 0 ? `${done} / ${BASE.total}명 — ${left}명만 더 읽으면 모두 +30칩` : '우리 반 모두 달성! 전원 +30칩';
+    const c = window.MISSION.classInfo();
+    $('cName').textContent = c.title;
+    $('cBar').style.width = `${Math.round(c.done / c.total * 100)}%`;
+    $('cMis').textContent = c.left > 0 ? `${c.done} / ${c.total}명 — ${c.left}명만 더 ${c.more} 모두 +30칩` : '우리 반 모두 달성! 전원 +30칩';
 
     const seen = todayVisits(), capped = seen.length >= CAP;
     $('friends').innerHTML = [...FRIENDS].sort((a, b) => a[0].localeCompare(b[0], 'ko')).map(([n, t, p, b, d, me]) => {
@@ -55,12 +56,14 @@
     try { localStorage.setItem(KEY, JSON.stringify(v)); } catch {}
     if (gain) window.BF.addChips(gain);
     render();
+    document.dispatchEvent(new Event('bf:change'));
     $('vMsg').className = 'msg okm';
     $('vMsg').textContent = gain ? `FLEX VISIT — ${name}의 서재에 다녀왔어요! +${gain} 플렉스칩` : `${name}의 서재에 다녀왔어요. 오늘 칩은 3명까지만 받아요.`;
   });
 
   function show(page) {
-    const cls = page === 'class', sub = cls || page === 'shop';
+    const cls = page === 'class', sub = page !== 'my';
+    $('v-mission').hidden = page !== 'mission';
     document.querySelectorAll('[data-page]').forEach(b => { b.classList.toggle('on', b.dataset.page === page); b.toggleAttribute('aria-current', b.dataset.page === page); });
     $('v-class').hidden = !cls;
     $('v-shop').hidden = page !== 'shop';

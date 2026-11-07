@@ -21,7 +21,7 @@
   const reads = () => st.entries.filter(e => e.kind === 'read' && e.book === BOOK);
   const reached = () => Math.max(0, ...reads().map(e => e.end));
 
-  // 하루 첫 기록 +10, 5쪽당 +2(하루 최대 20), 한 구절 +5, 오늘의 미션(10쪽 이상) +15칩. XP는 미션 제외.
+  // 하루 첫 기록 +10, 5쪽당 +2(하루 최대 20), 한 구절 +5. 미션 보상은 mission.js가 따로 지급한다.
   function reward(entries, missions, date, pages, quote) {
     const same = entries.filter(e => e.date === date && e.kind === 'read');
     const list = [];
@@ -31,12 +31,10 @@
     if (pc) list.push([`새로 읽은 ${pages}쪽`, pc]);
     if (quote && !same.some(e => e.quote)) list.push(['한 구절', 5]);
     const xp = list.reduce((s, [, n]) => s + n, 0);
-    const dayPages = same.reduce((s, e) => s + e.pages, 0) + pages;
-    if (date === today && dayPages >= 10 && !missions.includes(date)) list.push(['미션 · 10쪽 이상', 15]);
-    return { list, chips: list.reduce((s, [, n]) => s + n, 0), xp, pc, mission: list.some(([l]) => l.startsWith('미션')) };
+    return { list, chips: xp, xp, pc };
   }
-  // 자체 점검: 목업의 12쪽 + 한 구절 = 34칩, 19 XP
-  { const r = reward([], [], today, 12, 'x'); console.assert(r.chips === 34 && r.xp === 19, 'reward 규칙 불일치', r); }
+  // 자체 점검: 12쪽 + 한 구절 = 19칩, 19 XP
+  { const r = reward([], [], today, 12, 'x'); console.assert(r.chips === 19 && r.xp === 19, 'reward 규칙 불일치', r); }
 
   function check(date, s, e) {
     if (!date || date > today || date < ago(7)) return '오늘부터 7일 전까지만 기록할 수 있어요.';
@@ -74,13 +72,13 @@
     const pages = e - s + 1, r = reward(st.entries, st.missions, date, pages, q);
     st.entries.push({ date, book: BOOK, kind: 'read', start: s, end: e, pages, quote: q, chips: r.chips, pageChips: r.pc, mine: true });
     st.chips += r.chips; st.xp += r.xp;
-    if (r.mission) st.missions.push(date);
     save();
     $('fEnd').value = ''; $('fQuote').value = '';
     $('fStart').value = reached() + 1;
     render();
     $('logMsg').className = 'msg okm';
     $('logMsg').textContent = `오늘의 PAGE LOG 완료! +${r.chips} 플렉스칩`;
+    document.dispatchEvent(new Event('bf:change'));
   });
 
   // 달력
@@ -113,14 +111,12 @@
     const chips = BASE.chips + st.chips, xp = BASE.xp + st.xp;
     const days = new Set(st.entries.map(e => e.date)), reachedP = reached();
     const wk = [...Array(7).keys()].filter(i => days.has(ago(i))).length;
-    const todayPages = st.entries.filter(e => e.date === today && e.kind === 'read').reduce((s, e) => s + e.pages, 0);
     let i = LV.length - 1; while (xp < LV[i]) i--;
     const next = LV[i + 1];
     $('chipN').textContent = `${chips} 칩`; $('lvPill').textContent = `Lv.${i + 1}`;
     $('totPages').textContent = BASE.pages + st.entries.reduce((s, e) => s + e.pages, 0);
     $('weekDays').textContent = wk;
     $('rdBar').style.width = `${Math.round(reachedP / TOTAL * 100)}%`; $('rdTxt').textContent = `${reachedP}/${TOTAL}`;
-    $('msBar').style.width = `${Math.min(100, todayPages * 10)}%`;
     $('lvTxt').textContent = next ? `Lv.${i + 1} · ${xp} XP · Lv.${i + 2}까지 ${next - xp} XP` : `Lv.${i + 1} · ${xp} XP · 최고 레벨`;
     $('xpBar').style.width = next ? `${Math.round((xp - LV[i]) / (next - LV[i]) * 100)}%` : '100%';
     $('bookInfo').textContent = `지난번 ${reachedP}쪽까지 · 내 판본 ${TOTAL}쪽`;
@@ -146,6 +142,8 @@
         addedWeek: sum(es.filter(e => e.mine && e.date >= ago(6))),
         readToday: es.some(e => e.date === today && e.kind === 'read'),
         today,
+        todayPages: sum(es.filter(e => e.date === today && e.kind === 'read')),
+        todayQuotes: es.filter(e => e.date === today && e.quote).length,
         chips: BASE.chips + st.chips,
         days: new Set(es.map(e => e.date)).size,
         reached: reached(),
