@@ -1,4 +1,4 @@
-const APP_VERSION = '0.12.0'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '0.13.0'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
@@ -47,18 +47,18 @@ const ITEMS = [
     return poly([P(68, 92), P(132, 92), P(132, 158), P(68, 158)], '#f7e8d0') +
       poly([P(73, 97), P(127, 97), P(127, 153), P(73, 153)], '#e98ba0') +
       poly([P(82, 106), P(118, 106), P(118, 144), P(82, 144)], '#f7c9d4'); } },
-  { id: 'bed', label: '침대', layer: 3, draw() {
-    return box(8, 4, 60, 6, 52, DARK) +
-      box(8, 10, 60, 104, 20, ['#fff', '#e8eef7', '#d6deec']) +
-      box(8, 48, 60, 66, 26, ['#f6a5b8', '#ef8fa6', '#e07890']) +
-      box(14, 14, 48, 22, 27, ['#fff', '#eef1f7', '#dde3ef'], 20); } },
-  { id: 'shelf', label: '책장', layer: 3, shop: true, draw() {
+  // 침대는 그림 파일(assets/bed.png). 방 뒤쪽 구석, 머리판이 오른쪽 벽에 붙는다.
+  { id: 'bed', label: '침대', layer: 3, draw() { return '<image href="assets/bed.png" x="112" y="83" width="190" height="160"/>'; } },
+  // 책장은 기본 가구. 책을 완독할 때마다 아래 칸부터 한 권씩 꽂힌다(books: 완독 권수).
+  { id: 'shelf', label: '책장', layer: 3, draw(books) {
     const F = (a, b) => P(a, 22, b);
+    const n = books ?? (window.BF ? window.BF.books().filter(b => b.s.startsWith('완독')).length : 0);
     let s = box(100, 2, 64, 20, 100, DARK) + poly([F(103, 3), F(161, 3), F(161, 97), F(103, 97)], '#4a2f1b');
     const colors = ['#e0556f', '#3a7bd5', '#f2b84b', '#4f9d69', '#8e63c9', '#2aa0c8'];
+    let left = n;
     [4, 36, 68].forEach((z, i) => {
       s += poly([F(103, z), F(161, z), F(161, z + 2), F(103, z + 2)], '#c89b6a');
-      for (let a = 105, k = 0; a < 156; k++) {
+      for (let a = 105, k = 0; a < 156 && left > 0; k++, left--) {
         const w = 4 + (k + i) % 3, h = 18 + ((k * 7 + i * 3) % 9);
         s += poly([F(a, z + 2), F(a + w, z + 2), F(a + w, z + 2 + h), F(a, z + 2 + h)], colors[(k + i * 2) % 6], 'stroke="#0003" stroke-width=".5"');
         a += w + 1;
@@ -85,7 +85,6 @@ const ITEMS = [
     const R = (u, z) => P(u, 0, z);
     return poly([R(72, 70), R(92, 70), R(92, 92), R(72, 92)], '#fff', 'stroke="#c9b48f"') +
       poly([R(75, 73), R(89, 73), R(89, 89), R(75, 89)], '#f6c6d4') + poly([R(75, 73), R(82, 84), R(89, 73)], '#e98ba0'); } },
-  { id: 'cushion', label: '초록 쿠션', layer: 3.5, shop: true, draw() { return box(20, 36, 28, 10, 33, ['#6fc58a', '#4fa86c', '#3f9159'], 20); } },
   { id: 'books', label: '책더미', layer: 4.5, shop: true, draw() {
     return box(150, 88, 20, 14, 6, ['#e0556f', '#c8435c', '#b33a52']) + box(151, 89, 18, 12, 12, ['#5b86e5', '#486fc8', '#3b5fae'], 6) +
       box(152, 90, 16, 10, 17, ['#4fa86c', '#3f9159', '#357b4b'], 12); } },
@@ -185,13 +184,26 @@ function roomSvg(px, over = {}) {
     `<polygon points="${pts(pts4)}" fill="#000" opacity="${shade}" stroke="#0003"/>`;
   const list = ITEMS.filter(i => over.ids ? over.ids.includes(i.id) : over.add === i.id || ((!i.shop || own(i.id)) && !state.off.includes(i.id))).sort((a, b) => a.layer - b.layer);
   // 책장은 마우스를 올리면 읽은 책 목록이 뜨는 영역. 아바타는 책상(5~6)까지 그린 뒤, 의자 앞에 선다.
-  const draw = i => i.id === 'shelf' ? `<g class="shelf-hit" tabindex="0" role="img" aria-label="책장 — 읽은 책 목록 보기">${i.draw()}</g>` : i.draw();
+  const draw = i => i.id === 'shelf' ? `<g class="shelf-hit" tabindex="0" role="img" aria-label="책장 — 읽은 책 목록 보기">${i.draw(over.books)}</g>` : i.draw();
   const items = list.filter(i => i.layer <= 6.1).map(draw).join('') + (over.noAvatar ? '' : over.avatar ? avatarSvg(over.avatar, over.say) : avatarSvg()) + list.filter(i => i.layer > 6.1).map(draw).join('');
-  return `<svg viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg"><defs>${pats}</defs>
-    <rect width="480" height="360" fill="#fdf6ec"/>
+  // 부드러운 점토 느낌: 바닥 두께, 걸레받이, 모서리 그늘, 방 아래 그림자
+  const slab = pts([P(0, 190), P(190, 190), P(190, 190, -10), P(0, 190, -10)]) + '';
+  const slabR = pts([P(190, 190), P(190, 0), P(190, 0, -10), P(190, 190, -10)]);
+  const base = (a, b) => `<polygon points="${pts(a)}" fill="#fff" opacity=".55"/>`;
+  return `<svg viewBox="30 14 420 342" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"><defs>${pats}
+      <filter id="${px}blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="9"/></filter>
+      <linearGradient id="${px}gl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".25"/><stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient>
+      <linearGradient id="${px}gr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".1"/><stop offset="1" stop-color="#fff" stop-opacity=".2"/></linearGradient>
+      <linearGradient id="${px}gf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".1"/><stop offset=".5" stop-color="#fff" stop-opacity=".08"/><stop offset="1" stop-color="#fff" stop-opacity=".22"/></linearGradient></defs>
+    <polygon points="${pts([P(0, 190, -8), P(190, 190, -8), P(190, 0, -8), P(0, 0, -8)])}" fill="#7a5b8c" opacity=".28" filter="url(#${px}blur)" transform="translate(0 12)"/>
+    <polygon points="${slab}" fill="#c99a62"/><polygon points="${slabR}" fill="#b8854f"/>
     ${wall([P(0, 0, 120), P(0, 190, 120), P(0, 190), P(0, 0)], 0.08)}
+    <polygon points="${pts([P(0, 0, 120), P(0, 190, 120), P(0, 190), P(0, 0)])}" fill="url(#${px}gl)"/>
     ${wall([P(0, 0, 120), P(190, 0, 120), P(190, 0), P(0, 0)], 0)}
-    <polygon points="${pts([P(0, 0), P(190, 0), P(190, 190), P(0, 190)])}" fill="url(#${px}f-${fk})" stroke="#0003"/>
+    <polygon points="${pts([P(0, 0, 120), P(190, 0, 120), P(190, 0), P(0, 0)])}" fill="url(#${px}gr)"/>
+    ${base([P(0, 0, 7), P(0, 190, 7), P(0, 190), P(0, 0)])}${base([P(0, 0, 7), P(190, 0, 7), P(190, 0), P(0, 0)])}
+    <polygon points="${pts([P(0, 0), P(190, 0), P(190, 190), P(0, 190)])}" fill="url(#${px}f-${fk})" stroke="#fff6"/>
+    <polygon points="${pts([P(0, 0), P(190, 0), P(190, 190), P(0, 190)])}" fill="url(#${px}gf)"/>
     ${items}</svg>`;
 }
 const room = () => (document.getElementById('room').innerHTML = roomSvg('h-'));
@@ -340,3 +352,6 @@ function setTheme(t) {
 document.querySelectorAll('.themes button').forEach(b => (b.onclick = () => setTheme(b.dataset.t)));
 try { const t = localStorage.getItem(THEME_KEY); if (['cy', 'peach', 'green'].includes(t)) setTheme(t); } catch {}
 render();
+// 책장의 책 수는 독서 기록(log.js)이 로드된 뒤, 그리고 기록이 바뀔 때마다 다시 그린다
+window.addEventListener('load', room);
+document.addEventListener('bf:change', room);

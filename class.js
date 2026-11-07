@@ -11,13 +11,13 @@
   ];
   // 친구 방(샘플): 많이 읽은 친구일수록 물건이 많다. 나머지는 학급 서버가 생기면 실제 데이터로 바뀐다.
   const ROOMS = {
-    고양이문고: { wall: 'cream', floor: 'wood', ids: ['bed', 'plant'], avatar: { hair: '#222222', top: '#5b86e5' }, say: '고양이 책 추천해 줘!' },
-    구름빵집: { wall: 'cream', floor: 'wood', ids: ['bed', 'rug', 'poster'], avatar: { hair: '#e07a9a', top: '#f2b84b' }, say: '빵 냄새 나는 책이 좋아' },
+    고양이문고: { wall: 'cream', floor: 'wood', ids: ['bed', 'shelf', 'plant'], avatar: { hair: '#222222', top: '#5b86e5' }, say: '고양이 책 추천해 줘!' },
+    구름빵집: { wall: 'cream', floor: 'wood', ids: ['bed', 'shelf', 'rug', 'poster'], avatar: { hair: '#e07a9a', top: '#f2b84b' }, say: '빵 냄새 나는 책이 좋아' },
     바다유리: { wall: 'blue', floor: 'wood', ids: ['bed', 'rug', 'shelf', 'window', 'plant'], avatar: { hair: '#6b3f2a', top: '#4f9d69' }, say: '앤 얘기 같이 해요~' },
     새벽세시: { wall: 'blue', floor: 'tile', ids: ['bed', 'shelf', 'desk', 'lamp', 'window', 'chair', 'books'], avatar: { hair: '#222222', top: '#e0556f' }, say: '밤에 읽는 게 제일 좋아' },
     책갈피탐험가: { wall: 'cream', floor: 'carpet', ids: ['bed', 'shelf', 'desk', 'bmark', 'mug', 'rug', 'frame'], avatar: { hair: '#c98a3c', top: '#5b86e5' }, say: '여기 책갈피 구경해!' },
-    초록연필: { wall: 'cream', floor: 'wood', ids: ['bed'], avatar: { hair: '#6b3f2a', top: '#4f9d69' }, say: '이제 막 시작했어요' },
-    해바라기: { wall: 'cream', floor: 'wood', ids: ['bed', 'shelf', 'sunset', 'roundrug', 'cushion', 'plant'], avatar: { hair: '#c98a3c', top: '#f2b84b' }, say: '노을 보며 읽는 중' },
+    초록연필: { wall: 'cream', floor: 'wood', ids: ['bed', 'shelf'], avatar: { hair: '#6b3f2a', top: '#4f9d69' }, say: '이제 막 시작했어요' },
+    해바라기: { wall: 'cream', floor: 'wood', ids: ['bed', 'shelf', 'sunset', 'roundrug', 'plant'], avatar: { hair: '#c98a3c', top: '#f2b84b' }, say: '노을 보며 읽는 중' },
   };
   const POOL = ['어린 왕자', '데미안', '동물농장', '노인과 바다', '변신', '빨간 머리 앤', '1984'];
   const PH = '[학생이 직접 쓴 글이 들어갈 자리]';
@@ -86,7 +86,7 @@
     const T = new Date(today() + 'T00:00:00');
     const day = k => { const d = new Date(T - k * 864e5); return `${d.getMonth() + 1}.${d.getDate()}`; };
     if (ftab === 'room') {
-      return `<h2>미니서재 <small>${esc(title)}</small></h2><div class="roomwrap"><div class="room" role="img" aria-label="${esc(name)}의 서재 방">${window.ROOM.roomSvg('v-', { ...cfg, ids: cfg.ids })}</div><div class="tip" id="vTip" hidden></div></div>
+      return `<h2>미니서재 <small>${esc(title)}</small></h2><div class="roomwrap"><div class="room" role="img" aria-label="${esc(name)}의 서재 방">${window.ROOM.roomSvg('v-', { ...cfg, books: nb })}</div><div class="tip" id="vTip" hidden></div></div>
         <p class="cap">${cfg.ids.includes('shelf') ? `책장에 마우스를 올리면 ${esc(name)}이(가) 읽은 책이 보여요` : '아직 책장이 없어요'}</p>`;
     }
     if (ftab === 'log') {
