@@ -29,7 +29,7 @@
       ...window.BF.quotes().map(q => ({ id: q.id, who: ME, me: true, type: 'quote', text: `“${q.text}”`, book: '어린 왕자', writer: '생텍쥐페리', date: q.date, n: 0, k: 1 })),
       ...f.reviews.map(r => ({ ...r, me: true, who: ME, type: 'review', book: '어린 왕자', writer: '생텍쥐페리', n: 0, k: 1 })),
     ];
-    return [...mine, ...SEED].map(p => ({ ...p, pages: p.me ? pages : p.pages }))
+    return [...mine, ...SEED].map(p => ({ ...p, who: p.me ? window.PROFILE.name : p.who, pages: p.me ? pages : p.pages }))
       .sort((a, b) => b.date.localeCompare(a.date) || (b.k || 0) - (a.k || 0));
   }
 
@@ -46,7 +46,7 @@
         <p class="${p.text === PH ? 'ph' : 'ptxt'}">${esc(p.text)}</p>
         <small class="src">${esc(p.book)} · ${esc(p.writer)}</small>
         <button type="button" class="cbtn" data-toggle="${p.id}" aria-expanded="${isOpen}">댓글 ${p.n + cs.length}</button>
-        ${isOpen ? `<div class="cm">${cs.map(c => `<p><b>${ME}</b> ${esc(c.text)}<time>${when(c.date)}</time></p>`).join('')}
+        ${isOpen ? `<div class="cm">${cs.map(c => `<p><b>${esc(window.PROFILE.name)}</b> ${esc(c.text)}<time>${when(c.date)}</time></p>`).join('')}
           ${p.me ? '<small class="note">내 글에는 친구들이 댓글을 달아요.</small>'
             : `<form class="say" data-form="${p.id}" novalidate><input maxlength="100" placeholder="10자 이상 댓글"><button class="cta mini" type="submit">달기</button></form><small class="msg"></small>`}</div>` : ''}
       </article>`;

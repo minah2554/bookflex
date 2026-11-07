@@ -48,12 +48,12 @@
     $('cMis').textContent = c.left > 0 ? `${c.done} / ${c.total}명 — ${c.left}명만 더 ${c.more} 모두 +30칩` : '우리 반 모두 달성! 전원 +30칩';
 
     const seen = todayVisits(), capped = seen.length >= CAP;
-    $('friends').innerHTML = [...FRIENDS].sort((a, b) => a[0].localeCompare(b[0], 'ko')).map(([n, t, p, b, d, me]) => {
-      const pages = me ? st.pages : p;
+    $('friends').innerHTML = [...FRIENDS].sort((a, b) => (a[5] ? window.PROFILE.name : a[0]).localeCompare(b[5] ? window.PROFILE.name : b[0], 'ko')).map(([n, t, p, b, d, me]) => {
+      const pages = me ? st.pages : p, nm = me ? window.PROFILE.name : n;
       const btn = me ? '<button type="button" class="cta mini" data-go="my">내 서재</button>'
         : seen.includes(n) ? `<button type="button" class="cta mini done" data-again="${n}">오늘 다녀옴 · 다시 보기</button>`
         : `<button type="button" class="cta mini" data-visit="${n}">놀러가기${capped ? '' : ` +${CHIP}칩`}</button>`;
-      return `<article class="fcard${me ? ' me' : ''}"><b>${n}</b><span class="badge">${t}</span><small>누적 ${pages}쪽 · 완독 ${b}권 · 이번 주 ${d}일</small>${btn}</article>`;
+      return `<article class="fcard${me ? ' me' : ''}"><b>${esc(nm)}</b><span class="badge">${t}</span><small>누적 ${pages}쪽 · 완독 ${b}권 · 이번 주 ${d}일</small>${btn}</article>`;
     }).join('');
   }
 

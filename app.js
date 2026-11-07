@@ -1,4 +1,4 @@
-const APP_VERSION = '0.11.0'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '0.12.0'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
@@ -116,24 +116,53 @@ const owned = new Set((() => {
 const own = id => owned.has(id);
 
 const state = (() => {
-  const d = { wall: 'cream', floor: 'wood', off: [], avatar: { hair: '#6b3f2a', top: '#e0556f' }, say: '어서 와, 내 서재에 놀러 왔구나!' };
-  try { return { ...d, ...JSON.parse(localStorage.getItem(KEY)) }; } catch { return d; }
+  const d = { wall: 'cream', floor: 'wood', off: [], avatar: { hair: '#6b3f2a', top: '#e0556f', hs: 'short', os: 'tee' }, say: '어서 와, 내 서재에 놀러 왔구나!' };
+  try { const s = JSON.parse(localStorage.getItem(KEY)) || {}; return { ...d, ...s, avatar: { ...d.avatar, ...s.avatar } }; } catch { return d; }
 })();
+// 프로필: 닉네임과 서재 이름(비우면 '닉네임의 서재')
+const PROF_KEY = 'bookflex.profile.v1';
+const profile = (() => {
+  const d = { name: '별빛책방', title: '' };
+  try { return { ...d, ...JSON.parse(localStorage.getItem(PROF_KEY)) }; } catch { return d; }
+})();
+window.PROFILE = { get name() { return profile.name; } };
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch {} };
 
 const escSvg = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+// 아바타 스타일: 머리 6종(남 3·여 3), 옷 5종. 색은 hair/top 에서 고른다.
+const HAIR_STYLES = [['short', '남 · 짧은 머리'], ['crew', '남 · 스포츠 머리'], ['curly', '남 · 곱슬 머리'], ['bob', '여 · 단발'], ['long', '여 · 긴 머리'], ['twin', '여 · 양갈래']];
+const OUTFITS = [['tee', '티셔츠'], ['hoodie', '후드티'], ['dress', '원피스'], ['uniform', '교복'], ['cardigan', '가디건']];
+function figure(x, y, a) {
+  const hs = a.hs || 'short', os = a.os || 'tee', h = a.hair, t = a.top, hy = y - 38;
+  const arms = c => `<rect x="${x - 12}" y="${y - 28}" width="4" height="12" rx="2" fill="${c}"/><rect x="${x + 8}" y="${y - 28}" width="4" height="12" rx="2" fill="${c}"/>`;
+  const legs = os === 'dress' ? '' : `<rect x="${x - 6}" y="${y - 12}" width="5" height="12" rx="2" fill="#4a4a5a"/><rect x="${x + 1}" y="${y - 12}" width="5" height="12" rx="2" fill="#4a4a5a"/>`;
+  const body = {
+    tee: `<rect x="${x - 9}" y="${y - 30}" width="18" height="19" rx="5" fill="${t}"/>` + arms(t),
+    hoodie: `<rect x="${x - 10}" y="${y - 30}" width="20" height="20" rx="6" fill="${t}"/>` + arms(t) + `<ellipse cx="${x}" cy="${y - 30}" rx="9" ry="3.5" fill="#0003"/><path d="M${x - 3} ${y - 28}v7M${x + 3} ${y - 28}v7" stroke="#fff" stroke-width="1.2"/>`,
+    dress: `<path d="M${x - 8} ${y - 30}h16l5 25h-26z" fill="${t}"/>` + arms('#ffd9b8') + `<rect x="${x - 4}" y="${y - 6}" width="3" height="6" fill="#ffd9b8"/><rect x="${x + 1}" y="${y - 6}" width="3" height="6" fill="#ffd9b8"/><path d="M${x - 8} ${y - 21}h16" stroke="#fff6" stroke-width="2"/>`,
+    uniform: `<rect x="${x - 9}" y="${y - 30}" width="18" height="19" rx="5" fill="#fff" stroke="#c9c9d6" stroke-width=".8"/>` + arms('#fff') + `<path d="M${x - 5} ${y - 30}l5 6 5 -6z" fill="${t}"/><path d="M${x} ${y - 24}l-2 8h4z" fill="${t}"/><rect x="${x - 9}" y="${y - 15}" width="18" height="5" fill="#3a4a7a"/>`,
+    cardigan: `<rect x="${x - 9}" y="${y - 30}" width="18" height="19" rx="5" fill="#fff"/><rect x="${x - 9}" y="${y - 30}" width="7" height="19" rx="3" fill="${t}"/><rect x="${x + 2}" y="${y - 30}" width="7" height="19" rx="3" fill="${t}"/>` + arms(t) + `<circle cx="${x}" cy="${y - 24}" r="1" fill="${t}"/><circle cx="${x}" cy="${y - 19}" r="1" fill="${t}"/>`,
+  }[os] || '';
+  const back = { long: `<rect x="${x - 12}" y="${hy - 8}" width="24" height="30" rx="9" fill="${h}"/>`, twin: '', bob: '' }[hs] || '';
+  const cap = `<path d="M${x - 11} ${hy + 1} a11 11 0 0 1 22 0 q-11 -6 -22 0z" fill="${h}"/>`;
+  const front = {
+    short: cap + `<rect x="${x - 11}" y="${hy}" width="3" height="9" rx="1.5" fill="${h}"/><rect x="${x + 8}" y="${hy}" width="3" height="9" rx="1.5" fill="${h}"/>`,
+    crew: `<path d="M${x - 10} ${hy - 1} a10 10 0 0 1 20 0 q-10 -4 -20 0z" fill="${h}"/>`,
+    curly: [-8, -3, 3, 8].map((d, i) => `<circle cx="${x + d}" cy="${hy - 8 + (i % 2) * 2}" r="5" fill="${h}"/>`).join('') + `<path d="M${x - 10} ${hy - 1}q10 -6 20 0" stroke="${h}" stroke-width="3" fill="none"/>`,
+    bob: cap + `<rect x="${x - 12}" y="${hy - 2}" width="5" height="16" rx="2.5" fill="${h}"/><rect x="${x + 7}" y="${hy - 2}" width="5" height="16" rx="2.5" fill="${h}"/>`,
+    long: cap + `<rect x="${x - 12}" y="${hy - 2}" width="4" height="20" rx="2" fill="${h}"/><rect x="${x + 8}" y="${hy - 2}" width="4" height="20" rx="2" fill="${h}"/>`,
+    twin: cap + `<circle cx="${x - 13}" cy="${hy + 6}" r="4.5" fill="${h}"/><circle cx="${x + 13}" cy="${hy + 6}" r="4.5" fill="${h}"/><rect x="${x - 12}" y="${hy - 1}" width="3" height="5" fill="#e0556f"/><rect x="${x + 9}" y="${hy - 1}" width="3" height="5" fill="#e0556f"/>`,
+  }[hs] || cap;
+  return legs + body + back + `<circle cx="${x}" cy="${hy}" r="10" fill="#ffd9b8"/>` + front +
+    `<circle cx="${x - 3.5}" cy="${hy + 1}" r="1.3" fill="#333"/><circle cx="${x + 3.5}" cy="${hy + 1}" r="1.3" fill="#333"/>` +
+    `<path d="M${x - 2.5} ${hy + 5} q2.5 2.5 5 0" stroke="#c0505a" stroke-width="1.2" fill="none"/>`;
+}
+// 프로필 카드용 상반신(얼굴·어깨만 보이게 잘라 쓴다)
+const bustSvg = () => `<svg viewBox="-27 -54 54 46" width="84" height="72" aria-hidden="true">${figure(0, 0, state.avatar)}</svg>`;
 // 아바타와 말풍선(글은 2줄·줄당 12자). 방 가운데 러그 위에 서 있다.
 function avatarSvg(a = state.avatar, text = state.say) {
   const [x, y] = P(100, 106), say = (text || '').trim();
-  let s = `<ellipse cx="${x}" cy="${y}" rx="11" ry="4" fill="#0002"/>
-    <rect x="${x - 6}" y="${y - 12}" width="5" height="12" rx="2" fill="#4a4a5a"/><rect x="${x + 1}" y="${y - 12}" width="5" height="12" rx="2" fill="#4a4a5a"/>
-    <rect x="${x - 9}" y="${y - 30}" width="18" height="19" rx="5" fill="${a.top}"/>
-    <rect x="${x - 12}" y="${y - 28}" width="4" height="12" rx="2" fill="${a.top}"/><rect x="${x + 8}" y="${y - 28}" width="4" height="12" rx="2" fill="${a.top}"/>
-    <circle cx="${x}" cy="${y - 38}" r="10" fill="#ffd9b8"/>
-    <path d="M${x - 11} ${y - 37} a11 11 0 0 1 22 0 q-11 -6 -22 0z" fill="${a.hair}"/>
-    <rect x="${x - 11}" y="${y - 38}" width="3" height="9" rx="1.5" fill="${a.hair}"/><rect x="${x + 8}" y="${y - 38}" width="3" height="9" rx="1.5" fill="${a.hair}"/>
-    <circle cx="${x - 3.5}" cy="${y - 37}" r="1.3" fill="#333"/><circle cx="${x + 3.5}" cy="${y - 37}" r="1.3" fill="#333"/>
-    <path d="M${x - 2.5} ${y - 33} q2.5 2.5 5 0" stroke="#c0505a" stroke-width="1.2" fill="none"/>`;
+  let s = `<ellipse cx="${x}" cy="${y}" rx="11" ry="4" fill="#0002"/>` + figure(x, y, a);
   if (say) {
     const lines = [say.slice(0, 12), say.slice(12, 24)].filter(Boolean);
     const w = Math.max(...lines.map(l => [...l].length)) * 11 + 18, h = lines.length * 14 + 10;
@@ -226,15 +255,65 @@ function swatches(id, colors, key) {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'sw'; b.style.background = c; b.setAttribute('aria-label', c);
     b.setAttribute('aria-pressed', state.avatar[key] === c);
-    b.onclick = () => { state.avatar[key] = c; save(); swatches(id, colors, key); room(); };
+    b.onclick = () => { state.avatar[key] = c; save(); swatches(id, colors, key); room(); applyProfile(); };
     el.append(b);
   });
 }
 const sayIn = document.getElementById('sayIn');
 sayIn.value = state.say;
 sayIn.oninput = () => { state.say = sayIn.value.slice(0, 24); save(); room(); };
+// 스타일 버튼(머리·옷)과 프로필 이름 반영
+function styleBtns(id, list, key) {
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  list.forEach(([k, label]) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = label; b.setAttribute('aria-pressed', (state.avatar[key] || list[0][0]) === k);
+    b.onclick = () => { state.avatar[key] = k; save(); styleBtns(id, list, key); room(); applyProfile(); };
+    el.append(b);
+  });
+}
+const $p = id => document.getElementById(id);
+const nameIn = $p('nameIn'), titleIn = $p('titleIn'), pMsg = $p('pMsg');
+const FRIEND_NAMES = ['고양이문고', '구름빵집', '바다유리', '새벽세시', '책갈피탐험가', '초록연필', '해바라기'];
+function applyProfile() {
+  const title = profile.title.trim() || `${profile.name}의 서재`;
+  $p('profTitle').textContent = title;
+  document.title = `${title} | BOOK FLEX`;
+  $p('nickName').textContent = profile.name;
+  document.querySelector('.menu .av, .av').textContent = [...profile.name][0];
+  $p('profAvatar').innerHTML = bustSvg();
+  $p('cheerIn').placeholder = `${profile.name}에게 응원 한마디`;
+  document.querySelectorAll('.myname').forEach(e => (e.textContent = profile.name));
+}
+function saveName(inp, key, max) {
+  const v = inp.value.trim().slice(0, max);
+  if (key === 'name') {
+    if (!v) { pMsg.textContent = '닉네임을 한 글자 이상 적어 주세요.'; return; }
+    if (FRIEND_NAMES.includes(v)) { pMsg.textContent = '같은 반 친구가 쓰는 이름이에요. 다른 이름을 골라 주세요.'; return; }
+  }
+  profile[key] = v;
+  pMsg.textContent = '';
+  try { localStorage.setItem(PROF_KEY, JSON.stringify(profile)); } catch {}
+  applyProfile();
+  document.dispatchEvent(new Event('bf:change'));
+}
+nameIn.value = profile.name; titleIn.value = profile.title;
+nameIn.oninput = () => saveName(nameIn, 'name', 10);
+titleIn.oninput = () => saveName(titleIn, 'title', 16);
+titleIn.placeholder = '비우면 "닉네임의 서재"';
+// 프로필 카드의 '프로필 바꾸기'는 설정 패널을 열어 이름 칸으로 보낸다
+$p('profEdit').onclick = e => {
+  e.preventDefault();
+  $p('setp').hidden = false; $p('ctrl').hidden = true;
+  $p('setBtn').setAttribute('aria-expanded', 'true'); $p('deco').setAttribute('aria-expanded', 'false');
+  nameIn.scrollIntoView({ block: 'center' }); nameIn.focus();
+};
+styleBtns('hstyles', HAIR_STYLES, 'hs');
+styleBtns('ostyles', OUTFITS, 'os');
 swatches('hairs', HAIRS, 'hair');
 swatches('tops', TOPS, 'top');
+applyProfile();
 
 // 책장에 마우스(또는 키보드 포커스)를 올리면 내가 읽은 책 목록
 const tip = document.getElementById('shelfTip'), wrap = tip.parentElement;

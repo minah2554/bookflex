@@ -34,7 +34,7 @@
   <section class="panel">
     <div class="head">
       <span class="week">이번 주 <b id="weekDays">4</b>일 읽음 <em>|</em> 누적 <b id="totPages">214</b>쪽</span>
-      <h1>별빛책방의 서재</h1>
+      <h1 id="profTitle">별빛책방의 서재</h1>
       <span class="now">
         <i class="play"></i>지금 읽는 중 · 어린 왕자
         <span class="bar"><i id="rdBar" style="width:69%"></i></span><span id="rdTxt">96/140</span>
@@ -44,14 +44,14 @@
 
     <div class="book" id="v-home">
       <aside class="page profile">
-        <div class="avatar"><span>별</span><a href="#" class="tiny">프로필 바꾸기</a></div>
+        <div class="avatar"><span id="profAvatar"></span><a href="#" class="tiny" id="profEdit">프로필 바꾸기</a></div>
         <div class="quote">
           <small>오늘의 한 구절</small>
           <p>“정말 중요한 건 눈에 보이지 않아.”</p>
           <small class="mute">어린 왕자 · 생텍쥐페리</small>
         </div>
         <hr>
-        <h2 class="nick">별빛책방 <small>2학년 2반</small></h2>
+        <h2 class="nick"><span id="nickName">별빛책방</span> <small>2학년 2반</small></h2>
         <span class="badge" id="eqBadge">문장 수집가</span>
         <div class="xp"><i id="xpBar" style="width:60%"></i></div>
         <small class="lvtxt" id="lvTxt">Lv.3 · 182 XP · Lv.4까지 118 XP</small>
@@ -94,9 +94,14 @@
           </div>
           <p class="cap">선반 빈자리 4칸 — 다음 책을 기다리는 중</p>
           <div id="setp" class="ctrl" hidden>
+            <div class="row"><span>닉네임</span><div class="grow"><input id="nameIn" maxlength="10" placeholder="닉네임 (10자까지)" aria-label="닉네임"></div></div>
+            <div class="row"><span>서재</span><div class="grow"><input id="titleIn" maxlength="16" aria-label="서재 이름"></div></div>
+            <p id="pMsg" class="msg" role="alert"></p>
             <div class="row"><span>말풍선</span><div class="grow"><input id="sayIn" maxlength="24" placeholder="방문한 친구에게 하고 싶은 말 (24자까지)" aria-label="말풍선 글"></div></div>
-            <div class="row"><span>머리</span><div id="hairs"></div></div>
-            <div class="row"><span>옷</span><div id="tops"></div></div>
+            <div class="row"><span>머리 모양</span><div id="hstyles"></div></div>
+            <div class="row"><span>머리색</span><div id="hairs"></div></div>
+            <div class="row"><span>옷 모양</span><div id="ostyles"></div></div>
+            <div class="row"><span>옷색</span><div id="tops"></div></div>
           </div>
           <div id="ctrl" class="ctrl" hidden>
             <div class="row"><span>벽지</span><div id="walls"></div></div>
@@ -108,7 +113,7 @@
 
         <section>
           <h2>책친구 한마디 <small>10자 이상 남기면 +5칩 · 하루 2개까지</small></h2>
-          <form class="say" onsubmit="return false"><input placeholder="별빛책방에게 응원 한마디" maxlength="100"><button class="cta" type="submit">남기기</button></form>
+          <form class="say" onsubmit="return false"><input id="cheerIn" placeholder="별빛책방에게 응원 한마디" maxlength="100"><button class="cta" type="submit">남기기</button></form>
           <ul class="talk">
             <li><b>책갈피탐험가</b>여우랑 길들이기 얘기하는 장면 나도 제일 좋았어. 다 읽으면 감상 알려줘!<time>11.6</time></li>
             <li><b>새벽세시</b>미니서재 창문 귀엽다 ㅋㅋ 노인과 바다 다음엔 뭐 읽어?<time>11.4</time></li>
@@ -258,7 +263,7 @@
       <section class="page">
         <h2>방금 올라온 한 구절 <button type="button" class="linkbtn" data-page="feed">FLEX FEED 전체 ›</button></h2>
         <ul class="quotes">
-          <li><p>“정말 중요한 건 눈에 보이지 않아.”</p><small>어린 왕자 · 생텍쥐페리 | 별빛책방 · 누적 <span class="myp">214</span>쪽 | 댓글 4</small></li>
+          <li><p>“정말 중요한 건 눈에 보이지 않아.”</p><small>어린 왕자 · 생텍쥐페리 | <span class="myname">별빛책방</span> · 누적 <span class="myp">214</span>쪽 | 댓글 4</small></li>
           <li><p class="ph">[학생이 직접 고른 한 구절이 들어갈 자리]</p><small>노인과 바다 · 헤밍웨이 | 새벽세시 · 누적 512쪽 | 댓글 2</small></li>
           <li><p class="ph">[학생이 직접 고른 한 구절이 들어갈 자리]</p><small>빨간 머리 앤 · 몽고메리 | 바다유리 · 누적 276쪽 | 댓글 6</small></li>
         </ul>
