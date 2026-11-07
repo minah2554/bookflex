@@ -1,4 +1,4 @@
-const APP_VERSION = '0.16.0'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '0.17.0'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
@@ -51,9 +51,9 @@ const ITEMS = [
   { id: 'bed', label: '침대', layer: 3, draw() { return '<image href="assets/bed.png" x="153" y="102" width="140" height="118"/>'; } },
   // 책장은 기본 가구. 책을 완독할 때마다 아래 칸부터 한 권씩 꽂힌다(books: 완독 권수).
   { id: 'shelf', label: '책장', layer: 3, draw(books) {
-    const F = (a, b) => P(a, 22, b);
+    const F = (a, b) => P(a - 34, 22, b);
     const n = books ?? (window.BF ? window.BF.books().filter(b => b.s.startsWith('완독')).length : 0);
-    let s = box(100, 2, 64, 20, 100, DARK) + poly([F(103, 3), F(161, 3), F(161, 97), F(103, 97)], '#4a2f1b');
+    let s = box(66, 2, 64, 20, 100, DARK) + poly([F(103, 3), F(161, 3), F(161, 97), F(103, 97)], '#4a2f1b');
     const colors = ['#e0556f', '#3a7bd5', '#f2b84b', '#4f9d69', '#8e63c9', '#2aa0c8'];
     let left = n;
     [4, 36, 68].forEach((z, i) => {
@@ -105,6 +105,27 @@ const ITEMS = [
   { id: 'bigrug', label: '대형 러그', layer: 1.8, shop: true, draw() {
     return poly([P(60, 80), P(145, 80), P(145, 185), P(60, 185)], '#2f7d8a') + poly([P(66, 86), P(139, 86), P(139, 179), P(66, 179)], '#8cc9cf'); } },
 ];
+
+// 상점 물건 그림(assets/items). 일곱 가지 물건은 디자인 4종 중 하나를 고를 수 있다(상점에서).
+const DIM = {"bmark-1":[440,280],"bmark-2":[440,251],"bmark-3":[440,282],"bmark-4":[440,225],"clock-1":[312,440],"clock-2":[319,440],"clock-3":[368,440],"clock-4":[332,440],"mug-1":[440,402],"mug-2":[440,387],"mug-3":[439,440],"mug-4":[440,429],"plant-1":[371,440],"plant-2":[259,440],"plant-3":[355,440],"plant-4":[270,440],"rug-1":[440,236],"rug-2":[440,258],"rug-3":[440,236],"rug-4":[440,249],"frame-1":[321,440],"frame-2":[345,440],"frame-3":[384,440],"frame-4":[341,440],"poster-1":[382,440],"poster-2":[294,440],"poster-3":[396,440],"poster-4":[238,440],"chair":[348,440],"sofa":[440,412],"bigrug":[440,232],"wall-blue":[330,440],"wall-wood":[325,440],"floor-carpet":[440,239],"floor-tile":[440,247],"books":[204,167],"desk":[203,204],"lamp":[150,204],"roundrug":[204,115],"sunset":[130,204],"window":[150,204]};
+const VAR_KEY = 'bookflex.variant.v1', HAS_VAR = ['bmark', 'clock', 'mug', 'plant', 'rug', 'frame', 'poster'];
+const variants = (() => { try { return JSON.parse(localStorage.getItem(VAR_KEY)) || {}; } catch { return {}; } })();
+const spriteKey = id => (HAS_VAR.includes(id) ? id + '-' + (variants[id] || 1) : id);
+// 방 안 자리: [가운데 x, 기준 y, 가로폭, mid(1이면 y가 그림 가운데, 아니면 바닥)] — 방 좌표(480×360 기준)
+const PLACE = {
+  plant: [106, 312, 40], rug: [222, 262, 150, 1], roundrug: [225, 272, 120, 1], bigrug: [225, 255, 250, 1],
+  desk: [395, 300, 140], chair: [340, 312, 50], sofa: [170, 306, 100], books: [322, 292, 44],
+  lamp: [358, 217, 24], mug: [382, 232, 15], clock: [434, 236, 19], bmark: [412, 242, 24, 1],
+  window: [105, 138, 66, 1], sunset: [185, 98, 36, 1], poster: [283, 92, 40, 1], frame: [392, 120, 34, 1],
+};
+ITEMS.forEach(i => {
+  const p = PLACE[i.id];
+  if (!p) return;
+  i.draw = () => {
+    const k = spriteKey(i.id), d = DIM[k], w = p[2], h = w * d[1] / d[0];
+    return `<image href="assets/items/${k}.webp" x="${p[0] - w / 2}" y="${p[3] ? p[1] - h / 2 : p[1] - h}" width="${w}" height="${h}"/>`;
+  };
+});
 
 // 구매한 상점 물건(기본: 초록 쿠션 보유). 벽지·바닥은 'wall-키' / 'floor-키' 로 저장
 const SHOP_KEY = 'bookflex.shop.v1';
@@ -214,7 +235,9 @@ function roomSvg(px, over = {}) {
 const room = () => (document.getElementById('room').innerHTML = roomSvg('h-'));
 // 상점 화면이 쓰는 창구: 구매하면 방에 바로 놓이고(벽지·바닥은 바로 적용) 저장한다
 window.ROOM = {
-  roomSvg, ITEMS, WALLS, FLOORS, own,
+  roomSvg, ITEMS, WALLS, FLOORS, own, HAS_VAR, spriteKey,
+  variant: id => variants[id] || 1,
+  setVariant(id, n) { variants[id] = n; try { localStorage.setItem(VAR_KEY, JSON.stringify(variants)); } catch {} render(); },
   buy(id) {
     owned.add(id);
     try { localStorage.setItem(SHOP_KEY, JSON.stringify([...owned])); } catch {}

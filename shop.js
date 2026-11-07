@@ -41,7 +41,7 @@
       const has = window.ROOM.own(c.id) && !c.soon;
       const state = c.soon ? '준비 중' : has ? '가지고 있음' : !open ? '잠겨 있어요' : c.id === sel ? '놓아 보는 중' : chips >= c.price ? '살 수 있어요' : `${c.price - chips}칩 더 모으면`;
       return `<button type="button" class="scard${c.id === sel ? ' sel' : ''}${has ? ' has' : ''}" data-id="${c.id}" ${c.soon || !open ? 'disabled' : ''}>
-        <i style="--c:${c.sw}"></i><b>${c.name}</b><span class="price">${c.price}칩</span><small>${state}</small></button>`;
+        ${c.soon ? `<i style="--c:${c.sw}"></i>` : `<img class="th" src="assets/items/${window.ROOM.spriteKey(c.id)}.webp" alt="">`}<b>${c.name}</b><span class="price">${c.price}칩</span><small>${state}</small></button>`;
     }).join('');
 
     const next = STAGES.find(s => !unlocked(s, st));
@@ -57,6 +57,10 @@
     $('shopRoom').innerHTML = window.ROOM.roomSvg('s-', over);
     $('pName').textContent = c ? `놓아 보는 중 · ${c.name}` : '';
     $('pAfter').textContent = c ? (chips >= c.price ? `${chips} → ${chips - c.price} 칩` : `${c.price - chips}칩이 더 필요해요`) : '';
+    // 디자인 고르기(4종이 있는 물건만)
+    const vr = $('vRow'), hv = c && window.ROOM.HAS_VAR.includes(c.id);
+    vr.hidden = !hv;
+    vr.innerHTML = hv ? '<small>디자인</small>' + [1, 2, 3, 4].map(n => `<button type="button" data-v="${n}" aria-pressed="${window.ROOM.variant(c.id) === n}" aria-label="디자인 ${n}"><img src="assets/items/${c.id}-${n}.webp" alt=""></button>`).join('') : '';
     const btn = $('buyBtn');
     btn.disabled = !canBuy || chips < c.price;
     btn.textContent = !c ? '' : window.ROOM.own(c.id) ? '이미 가지고 있어요' : `${c.name} 사기 · ${c.price}칩`;
@@ -75,6 +79,10 @@
     const b = e.target.closest('[data-id]');
     if (!b) return;
     sel = b.dataset.id; $('sMsg').textContent = ''; render();
+  });
+  $('vRow').addEventListener('click', e => {
+    const b = e.target.closest('[data-v]');
+    if (b) { window.ROOM.setVariant(sel, +b.dataset.v); render(); }
   });
   $('buyBtn').addEventListener('click', () => {
     const c = byId(sel), st = window.BF.stats();

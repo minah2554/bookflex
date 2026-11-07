@@ -340,3 +340,12 @@ small { font-size: 12px; } .mute { color: var(--muted); } .ok { color: #247040; 
 }
 @media (max-width: 999px) { #v-home .room { height: auto; aspect-ratio: 16 / 10; } }
 #vBody .roomwrap { max-width: 880px; margin: 0 auto; }
+
+/* 상점 물건 그림 */
+.scard .th { width: 72px; height: 72px; object-fit: contain; align-self: center; }
+.vrow { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; }
+.vrow[hidden] { display: none; }
+.vrow small { color: var(--ink2); font-weight: 700; }
+.vrow button { width: 48px; height: 48px; padding: 4px; border: 2px solid transparent; border-radius: 12px; background: var(--soft); cursor: pointer; }
+.vrow button[aria-pressed="true"] { border-color: var(--accent); background: #fff; }
+.vrow img { width: 100%; height: 100%; object-fit: contain; display: block; }
