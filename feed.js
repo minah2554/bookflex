@@ -85,6 +85,9 @@
     msg.className = 'msg okm'; msg.textContent = '한줄평을 올렸어요. 우리 반에 공개됩니다.';
   });
 
+  // 내 게시판(tabs.js)이 쓰는 창구: 내가 쓴 글과 댓글 수
+  window.FEED = { when, mine: () => posts().filter(p => p.me).map(p => ({ ...p, count: p.n + (f.c[p.id] || []).length })) };
+
   document.querySelector('[data-page=feed]').addEventListener('click', () => { $('fdMsg').textContent = ''; render(); });
   document.querySelectorAll('.linkbtn[data-page=feed]').forEach(b => b.addEventListener('click', render));
 })();

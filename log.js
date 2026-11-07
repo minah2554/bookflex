@@ -152,6 +152,8 @@
         todayPages: sum(es.filter(e => e.date === today && e.kind === 'read')),
         todayQuotes: es.filter(e => e.date === today && e.quote).length,
         chips: BASE.chips + st.chips,
+        xp: BASE.xp + st.xp,
+        reads: es.filter(e => e.kind === 'read').length,
         days: new Set(es.map(e => e.date)).size,
         reached: reached(),
         total: TOTAL,
@@ -162,7 +164,6 @@
   // 탭 전환
   document.querySelectorAll('.tabs [data-view]').forEach(b => b.addEventListener('click', () => {
     document.querySelectorAll('.tabs [data-view]').forEach(x => { x.classList.toggle('on', x === b); x.toggleAttribute('aria-current', x === b); });
-    $('v-home').hidden = b.dataset.view !== 'home';
-    $('v-log').hidden = b.dataset.view !== 'log';
+    ['home', 'log', 'shelf', 'board', 'titles'].forEach(n => ($('v-' + n).hidden = b.dataset.view !== n));
   }));
 })();

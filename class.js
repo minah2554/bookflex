@@ -73,9 +73,8 @@
     $('v-shop').hidden = page !== 'shop';
     document.querySelector('.panel .head').hidden = sub;
     document.querySelector('.tabs').hidden = sub;
-    const log = document.querySelector('.tabs .on')?.dataset.view === 'log';
-    $('v-home').hidden = sub || log;
-    $('v-log').hidden = sub || !log;
+    const view = document.querySelector('.tabs .on')?.dataset.view || 'home';
+    ['home', 'log', 'shelf', 'board', 'titles'].forEach(n => ($('v-' + n).hidden = sub || n !== view));
     if (cls) render();
   }
   document.querySelectorAll('[data-page]').forEach(b => b.addEventListener('click', () => show(b.dataset.page)));

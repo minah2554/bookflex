@@ -52,10 +52,10 @@
         </div>
         <hr>
         <h2 class="nick">별빛책방 <small>2학년 2반</small></h2>
-        <span class="badge">문장 수집가</span>
+        <span class="badge" id="eqBadge">문장 수집가</span>
         <div class="xp"><i id="xpBar" style="width:60%"></i></div>
         <small class="lvtxt" id="lvTxt">Lv.3 · 182 XP · Lv.4까지 118 XP</small>
-        <a class="link" href="#">칭호 모음 3 / 10 보기</a>
+        <a class="link" href="#" id="titLink">칭호 모음 3 / 10 보기</a>
         <hr>
         <label class="visit">책친구 서재 놀러가기
           <select><option>책갈피탐험가 · 누적 340쪽</option><option>새벽세시 · 누적 512쪽</option><option>바다유리 · 누적 276쪽</option></select>
@@ -161,6 +161,61 @@
           </table>
         </section>
       </main>
+    </div>
+
+    <div class="solo" id="v-shelf" hidden>
+      <div class="chead">
+        <h1>내 책장 <small>책을 끝낼 때마다 한 권씩 꽂혀요</small></h1>
+        <p class="cstats">완독 <b id="shDone">0</b>권 <i>|</i> 읽는 중 <b>1</b>권</p>
+      </div>
+      <section class="page">
+        <h2>책장</h2>
+        <div id="spines" class="spines"></div>
+      </section>
+      <section class="page">
+        <h2>완독 기록</h2>
+        <table class="logtbl"><thead><tr><th>책</th><th>독서 분야</th><th>완독 승인일</th></tr></thead><tbody id="shRows"></tbody></table>
+      </section>
+      <section class="page">
+        <h2>읽고 싶어서 담은 책 <button type="button" class="linkbtn" data-page="pick">BOOK PICK ›</button></h2>
+        <div id="wish" class="chips"></div>
+      </section>
+    </div>
+
+    <div class="solo" id="v-board" hidden>
+      <div class="chead">
+        <h1>게시판 <small>내가 쓴 글과 친구들이 남긴 한마디</small></h1>
+        <button type="button" class="linkbtn" data-page="feed">FLEX FEED에서 글 쓰기 ›</button>
+      </div>
+      <section class="page">
+        <h2>내 글</h2>
+        <div id="bdPosts" class="flist"></div>
+      </section>
+      <section class="page">
+        <h2>받은 한마디</h2>
+        <ul class="talk">
+          <li><b>책갈피탐험가</b>여우랑 길들이기 얘기하는 장면 나도 제일 좋았어. 다 읽으면 감상 알려줘!<time>11.6</time></li>
+          <li><b>새벽세시</b>미니서재 창문 귀엽다 ㅋㅋ 노인과 바다 다음엔 뭐 읽어?<time>11.4</time></li>
+        </ul>
+      </section>
+    </div>
+
+    <div class="solo" id="v-titles" hidden>
+      <div class="chead">
+        <h1>FLEX LEVEL <small>독서 XP와 칭호</small></h1>
+        <p class="cstats">획득한 칭호 <b id="tCnt">0</b> / 10</p>
+      </div>
+      <section class="page">
+        <h2 id="tLv"></h2>
+        <div class="xp"><i id="tXp"></i></div>
+        <small class="lvtxt" id="tXpTxt"></small>
+        <ul id="lvTable" class="lvtab"></ul>
+        <small class="note">플렉스칩을 써도 레벨·칭호는 줄지 않아요.</small>
+      </section>
+      <section class="page">
+        <h2>칭호 모음 <small>획득한 칭호를 누르면 장착돼요</small></h2>
+        <div id="tGrid" class="tgrid"></div>
+      </section>
     </div>
 
     <div id="v-class" hidden>
@@ -276,9 +331,9 @@
     <nav class="tabs" aria-label="서재 메뉴">
       <button type="button" class="on" data-view="home" aria-current="page">홈</button>
       <button type="button" data-view="log">독서 기록</button>
-      <button type="button" disabled title="준비 중">내 책장</button>
-      <button type="button" disabled title="준비 중">게시판</button>
-      <button type="button" disabled title="준비 중">칭호</button>
+      <button type="button" data-view="shelf">내 책장</button>
+      <button type="button" data-view="board">게시판</button>
+      <button type="button" data-view="titles">칭호</button>
     </nav>
   </section>
 </div>
@@ -295,5 +350,6 @@
 <script src="mission.js"></script>
 <script src="feed.js"></script>
 <script src="pick.js"></script>
+<script src="tabs.js"></script>
 </body>
 </html>
