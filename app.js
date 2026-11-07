@@ -1,4 +1,4 @@
-const APP_VERSION = '0.22.0'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '0.22.1'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
@@ -120,17 +120,24 @@ const spriteKey = id => (HAS_VAR.includes(id) ? id + '-' + (variants[id] || 1) :
 // 방 안 자리: [가운데 x, 기준 y, 가로폭, mid(1이면 y가 그림 가운데, 아니면 바닥)] — 방 좌표(480×360 기준)
 const PLACE = {
   plant: [106, 312, 40], rug: [222, 262, 150, 1], roundrug: [225, 272, 120, 1], bigrug: [225, 255, 250, 1],
-  desk: [395, 302, 170], chair: [336, 314, 56], sofa: [170, 306, 100], books: [322, 292, 44],
-  lamp: [352, 226, 24], mug: [392, 238, 14], clock: [434, 232, 19], bmark: [416, 246, 22, 1],
+  desk: [384, 302, 170], chair: [344, 318, 54], sofa: [170, 306, 100], books: [322, 292, 44],
+  lamp: [341, 226, 24], mug: [381, 238, 14], clock: [423, 232, 19], bmark: [405, 246, 22, 1],
   window: [105, 138, 66, 1], sunset: [185, 98, 36, 1], poster: [283, 92, 40, 1], frame: [392, 120, 34, 1],
 };
+// 그림에 이미 들어 있는 윗선 기울기(dy/dx). 방 벽·가구 선(±0.5)에 맞도록 모자란 만큼 기울인다.
+//   왼쪽 벽 물건은 오른쪽으로 갈수록 올라가고(-0.5), 오른쪽 벽·책상은 내려간다(+0.5).
+const BAKED = { 'window-1': -.24, 'window-2': -.24, 'sunset-1': -.31, 'sunset-2': -.22, 'poster-1': .4, 'poster-2': .38, 'poster-3': .41, 'poster-4': .41, 'frame-1': .38, 'frame-2': .4, 'frame-3': .43, 'frame-4': .4, 'desk-1': .24, 'desk-2': .28 };
+const GOAL = { window: -.5, sunset: -.5, poster: .5, frame: .5, desk: .5 };
+const TILT = (id, k) => (BAKED[k] === undefined ? 0 : +(Math.atan(GOAL[id] - BAKED[k]) * 180 / Math.PI).toFixed(1));
 // 책상이 없으면 책상 위 작은 물건은 협탁 위에 놓인다
 const ALT = { lamp: [118, 203, 22], clock: [133, 205, 15], mug: [123, 209, 12], bmark: [111, 207, 16, 1] };
 ITEMS.forEach(i => {
   if (!PLACE[i.id]) return;
   i.draw = (_, list = []) => {
     const p = ALT[i.id] && !list.some(x => x.id === 'desk') ? ALT[i.id] : PLACE[i.id], k = spriteKey(i.id), d = DIM[k], w = p[2], h = w * d[1] / d[0];
-    return `<image href="assets/items/${k}.webp" x="${p[0] - w / 2}" y="${p[3] ? p[1] - h / 2 : p[1] - h}" width="${w}" height="${h}"/>`;
+    const x = p[0] - w / 2, y = p[3] ? p[1] - h / 2 : p[1] - h, img = `<image href="assets/items/${k}.webp" x="${x}" y="${y}" width="${w}" height="${h}"/>`;
+    const a = TILT(i.id, k);
+    return a ? `<g transform="translate(${p[0]} ${y + h / 2}) skewY(${a}) translate(${-p[0]} ${-(y + h / 2)})">${img}</g>` : img;
   };
 });
 
