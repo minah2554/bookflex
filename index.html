@@ -61,6 +61,7 @@
           <select><option>책갈피탐험가 · 누적 340쪽</option><option>새벽세시 · 누적 512쪽</option><option>바다유리 · 누적 276쪽</option></select>
         </label>
         <small class="ok">오늘 처음 놀러 가면 +3칩 (하루 3명까지)</small>
+        <button type="button" class="cta pickbtn" data-page="pick"><small>어떤 책을 읽을지 모른다면?</small><b>BOOK PICK · 나에게 맞는 책 찾기</b></button>
       </aside>
 
       <main class="page content">
@@ -186,6 +187,14 @@
       </section>
     </div>
 
+    <div id="v-pick" hidden>
+      <div class="chead">
+        <h1>BOOK PICK <small>질문 3개로 나에게 맞는 책 찾기</small></h1>
+        <button type="button" class="linkbtn" data-page="my">‹ 내 서재로</button>
+      </div>
+      <section id="pickBox" class="page"></section>
+    </div>
+
     <div id="v-feed" hidden>
       <div class="chead">
         <h1>FLEX FEED <small>우리 반 독서 소식</small></h1>
@@ -276,5 +285,6 @@
 <script src="shop.js"></script>
 <script src="mission.js"></script>
 <script src="feed.js"></script>
+<script src="pick.js"></script>
 </body>
 </html>
