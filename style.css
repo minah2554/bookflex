@@ -121,7 +121,28 @@ small { font-size: 11px; } .mute { color: #999; } .ok { color: #2f9a5c; display:
 .say .cta { background: #f2b84b; color: #4a3600; }
 :focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
 
-.book[hidden], [hidden].head, .tabs[hidden], #v-class[hidden] { display: none; }
+.book[hidden], [hidden].head, .tabs[hidden], #v-class[hidden], #v-shop[hidden] { display: none; }
+#v-shop { display: grid; gap: 12px; }
+.sgrid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 12px; align-items: start; }
+.spre .room { border-radius: 12px; overflow: hidden; background: var(--soft); }
+.spre .room svg { display: block; width: 100%; }
+.pname { margin: 10px 0 6px; font-weight: 800; }
+.after { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 10px; border-radius: 10px; background: color-mix(in srgb, var(--accent) 14%, #fff); margin-bottom: 4px; }
+.after b { color: var(--hi); font-size: 16px; }
+.spre .note { display: block; margin: 0 0 10px; text-align: left; }
+.stages { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.stages button { border: 0; border-radius: 999px; padding: 6px 11px; background: var(--soft); font-size: 12px; font-weight: 600; cursor: pointer; color: #555; }
+.stages button.on { background: var(--accent); color: #fff; }
+.scards { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+.scard { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 10px; border: 2px solid transparent; border-radius: 14px; background: var(--soft); text-align: left; cursor: pointer; color: inherit; }
+.scard i { width: 36px; height: 36px; border-radius: 10px; background: var(--c); border: 1px solid #0002; }
+.scard .price { font-weight: 800; color: var(--hi); }
+.scard small { color: #777; }
+.scard.sel { border-color: var(--accent); background: #fff; }
+.scard.has small { color: #2f8a4f; font-weight: 700; }
+.scard:disabled { opacity: .55; cursor: not-allowed; }
+.unlock { margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: #fff3d6; display: grid; gap: 3px; }
+.unlock small { color: #7a6420; }
 #v-class { display: grid; gap: 12px; padding-right: 0; }
 .chead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; padding: 2px 8px; }
 .chead h1 { margin: 0; font-size: 18px; } .chead h1 small { font-size: 12px; font-weight: 600; color: #666; margin-left: 6px; }
@@ -195,7 +216,7 @@ small { font-size: 11px; } .mute { color: #999; } .ok { color: #2f9a5c; display:
 
 @media (max-width: 760px) {
   .book { grid-template-columns: 1fr; padding-right: 0; }
-  .two, .logtop, .cgrid { grid-template-columns: 1fr; }
+  .two, .logtop, .cgrid, .sgrid { grid-template-columns: 1fr; }
   .tabs { position: static; flex-direction: row; flex-wrap: wrap; order: 3; }
   .tabs a, .tabs button { width: auto; padding: 8px 12px; border-radius: 10px; }
   .head h1 { order: -1; flex-basis: 100%; }

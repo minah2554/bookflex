@@ -60,14 +60,15 @@
   });
 
   function show(page) {
-    const cls = page === 'class';
+    const cls = page === 'class', sub = cls || page === 'shop';
     document.querySelectorAll('[data-page]').forEach(b => { b.classList.toggle('on', b.dataset.page === page); b.toggleAttribute('aria-current', b.dataset.page === page); });
     $('v-class').hidden = !cls;
-    document.querySelector('.panel .head').hidden = cls;
-    document.querySelector('.tabs').hidden = cls;
+    $('v-shop').hidden = page !== 'shop';
+    document.querySelector('.panel .head').hidden = sub;
+    document.querySelector('.tabs').hidden = sub;
     const log = document.querySelector('.tabs .on')?.dataset.view === 'log';
-    $('v-home').hidden = cls || log;
-    $('v-log').hidden = cls || !log;
+    $('v-home').hidden = sub || log;
+    $('v-log').hidden = sub || !log;
     if (cls) render();
   }
   document.querySelectorAll('[data-page]').forEach(b => b.addEventListener('click', () => show(b.dataset.page)));

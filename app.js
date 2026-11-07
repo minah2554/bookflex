@@ -1,4 +1,4 @@
-const APP_VERSION = '0.4.0'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '0.5.0'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
@@ -18,13 +18,13 @@ const DARK = ['#8a5a36', '#6e4527', '#5a371d'];
 
 const WALLS = {
   cream: { name: '크림', base: '#fbf1d9', line: '#ecdcb2', w: 10, h: 10, mark: '<rect width="1.5" height="10" fill="#ecdcb2"/>' },
-  blue: { name: '하늘', base: '#c3d9f0', line: '#a9c6e8', w: 16, h: 16, mark: '<rect width="6" height="16" fill="#aac8ea"/><circle cx="11" cy="8" r="1.4" fill="#fff"/>' },
-  wood: { name: '우드', base: '#c9935a', line: '#a9763f', w: 20, h: 14, mark: '<rect y="13" width="20" height="1.5" fill="#a9763f"/>' },
+  blue: { shop: true, name: '하늘', base: '#c3d9f0', line: '#a9c6e8', w: 16, h: 16, mark: '<rect width="6" height="16" fill="#aac8ea"/><circle cx="11" cy="8" r="1.4" fill="#fff"/>' },
+  wood: { shop: true, name: '우드', base: '#c9935a', line: '#a9763f', w: 20, h: 14, mark: '<rect y="13" width="20" height="1.5" fill="#a9763f"/>' },
 };
 const FLOORS = {
   wood: { name: '원목', w: 24, h: 12, mark: '<rect width="24" height="12" fill="#e2b783"/><rect y="11" width="24" height="1" fill="#c99a62"/><rect x="12" width="1" height="11" fill="#d1a56f"/>' },
-  tile: { name: '타일', w: 24, h: 24, mark: '<rect width="24" height="24" fill="#f3f3ee"/><rect width="12" height="12" fill="#cfd8e3"/><rect x="12" y="12" width="12" height="12" fill="#cfd8e3"/>' },
-  carpet: { name: '카펫', w: 12, h: 12, mark: '<rect width="12" height="12" fill="#f4d6d6"/><circle cx="3" cy="3" r="1.4" fill="#e3a4a4"/><circle cx="9" cy="9" r="1.4" fill="#e3a4a4"/>' },
+  tile: { shop: true, name: '타일', w: 24, h: 24, mark: '<rect width="24" height="24" fill="#f3f3ee"/><rect width="12" height="12" fill="#cfd8e3"/><rect x="12" y="12" width="12" height="12" fill="#cfd8e3"/>' },
+  carpet: { shop: true, name: '카펫', w: 12, h: 12, mark: '<rect width="12" height="12" fill="#f4d6d6"/><circle cx="3" cy="3" r="1.4" fill="#e3a4a4"/><circle cx="9" cy="9" r="1.4" fill="#e3a4a4"/>' },
 };
 
 const ITEMS = [
@@ -73,11 +73,47 @@ const ITEMS = [
     return leg(112, 50) + leg(174, 50) + leg(112, 78) + leg(174, 78) +
       box(110, 48, 72, 36, 34, WOOD, 30) +
       box(146, 58, 16, 22, 38, ['#f2b84b', '#d99a2f', '#c28622'], 34); } },
-  { id: 'lamp', label: '독서등', layer: 6, draw() {
+  // shop: true 는 FLEX SHOP에서 사야 방에 나타난다
+  { id: 'lamp', label: '독서등', layer: 6, shop: true, draw() {
     return box(120, 56, 10, 10, 37, ['#555', '#444', '#333'], 34) +
       box(124, 60, 2, 2, 58, ['#666', '#555', '#444'], 37) +
       box(118, 54, 14, 14, 66, ['#ffe27a', '#f5c94a', '#e0b030'], 58); } },
+  { id: 'mug', label: '머그컵', layer: 6.2, shop: true, draw() { return box(136, 70, 7, 7, 42, ['#fff', '#e8eef7', '#d6deec'], 34); } },
+  { id: 'clock', label: '탁상시계', layer: 6.2, shop: true, draw() { return box(168, 52, 8, 5, 45, ['#6aa7e8', '#4f8fd6', '#3f7cc0'], 34); } },
+  { id: 'bmark', label: '책갈피', layer: 6.2, shop: true, draw() { return box(150, 62, 3, 10, 40, ['#e0556f', '#c8435c', '#b33a52'], 38); } },
+  { id: 'frame', label: '미니 액자', layer: 1, shop: true, draw() {
+    const R = (u, z) => P(u, 0, z);
+    return poly([R(72, 70), R(92, 70), R(92, 92), R(72, 92)], '#fff', 'stroke="#c9b48f"') +
+      poly([R(75, 73), R(89, 73), R(89, 89), R(75, 89)], '#f6c6d4') + poly([R(75, 73), R(82, 84), R(89, 73)], '#e98ba0'); } },
+  { id: 'cushion', label: '초록 쿠션', layer: 3.5, shop: true, draw() { return box(20, 36, 28, 10, 33, ['#6fc58a', '#4fa86c', '#3f9159'], 20); } },
+  { id: 'books', label: '책더미', layer: 4.5, shop: true, draw() {
+    return box(150, 88, 20, 14, 6, ['#e0556f', '#c8435c', '#b33a52']) + box(151, 89, 18, 12, 12, ['#5b86e5', '#486fc8', '#3b5fae'], 6) +
+      box(152, 90, 16, 10, 17, ['#4fa86c', '#3f9159', '#357b4b'], 12); } },
+  { id: 'sunset', label: '노을 포스터', layer: 1, shop: true, draw() {
+    const L = (v, z) => P(0, v, z);
+    return poly([L(30, 64), L(72, 64), L(72, 104), L(30, 104)], '#fff', 'stroke="#c9b48f"') +
+      poly([L(34, 68), L(68, 68), L(68, 100), L(34, 100)], '#f7a65a') + poly([L(34, 68), L(68, 68), L(68, 82), L(34, 82)], '#f9d27a') +
+      poly([L(34, 100), L(68, 100), L(68, 90), L(34, 90)], '#8e63c9'); } },
+  { id: 'roundrug', label: '동그란 러그', layer: 2.5, shop: true, draw() {
+    const ring = r => Array.from({ length: 28 }, (_, i) => P(115 + r * Math.cos(i / 28 * 6.2832), 140 + r * Math.sin(i / 28 * 6.2832)));
+    return poly(ring(27), '#f3c76b') + poly(ring(19), '#fbe8b3'); } },
+  { id: 'sofa', label: '소파', layer: 4.6, shop: true, draw() {
+    const c = ['#7aa6e0', '#5f8fd0', '#4d7bbb'];
+    return box(150, 110, 10, 62, 40, c) + box(160, 110, 24, 62, 18, c); } },
+  { id: 'chair', label: '의자', layer: 6.3, shop: true, draw() {
+    const c = ['#e8b87a', '#cf9a5a', '#b9854a'];
+    return box(132, 94, 10, 10, 14, DARK) + box(128, 90, 18, 18, 18, c, 14) + box(128, 105, 18, 3, 40, c, 18); } },
+  { id: 'bigrug', label: '대형 러그', layer: 1.8, shop: true, draw() {
+    return poly([P(60, 80), P(145, 80), P(145, 185), P(60, 185)], '#2f7d8a') + poly([P(66, 86), P(139, 86), P(139, 179), P(66, 179)], '#8cc9cf'); } },
 ];
+
+// 구매한 상점 물건(기본: 초록 쿠션 보유). 벽지·바닥은 'wall-키' / 'floor-키' 로 저장
+const SHOP_KEY = 'bookflex.shop.v1';
+const owned = new Set((() => {
+  try { const s = JSON.parse(localStorage.getItem(SHOP_KEY)); if (Array.isArray(s)) return s; } catch {}
+  return ['cushion'];
+})());
+const own = id => owned.has(id);
 
 const state = (() => {
   const d = { wall: 'cream', floor: 'wood', off: [] };
@@ -85,21 +121,36 @@ const state = (() => {
 })();
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch {} };
 
-function room() {
-  const wl = WALLS[state.wall], fl = FLOORS[state.floor];
-  const pats = Object.entries({ ...prefix('w-', WALLS), ...prefix('f-', FLOORS) }).map(([id, p]) =>
+// px: 한 화면에 방이 둘(홈·상점) 있어 패턴 id가 겹치지 않게 붙이는 접두어
+// over: 상점 미리보기용 { wall, floor, add } — 안 산 물건도 임시로 놓아 본다
+function roomSvg(px, over = {}) {
+  const wk = over.wall || state.wall, fk = over.floor || state.floor, wl = WALLS[wk];
+  const pats = Object.entries({ ...prefix(px + 'w-', WALLS), ...prefix(px + 'f-', FLOORS) }).map(([id, p]) =>
     `<pattern id="${id}" width="${p.w}" height="${p.h}" patternUnits="userSpaceOnUse">${p.mark}</pattern>`).join('');
-  const wall = (pts4, shade) => `<polygon points="${pts(pts4)}" fill="${wl.base}"/><polygon points="${pts(pts4)}" fill="url(#w-${state.wall})"/>` +
+  const wall = (pts4, shade) => `<polygon points="${pts(pts4)}" fill="${wl.base}"/><polygon points="${pts(pts4)}" fill="url(#${px}w-${wk})"/>` +
     `<polygon points="${pts(pts4)}" fill="#000" opacity="${shade}" stroke="#0003"/>`;
-  const items = ITEMS.filter(i => !state.off.includes(i.id)).sort((a, b) => a.layer - b.layer).map(i => i.draw()).join('');
-  document.getElementById('room').innerHTML =
-    `<svg viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg"><defs>${pats}</defs>
+  const items = ITEMS.filter(i => over.add === i.id || ((!i.shop || own(i.id)) && !state.off.includes(i.id)))
+    .sort((a, b) => a.layer - b.layer).map(i => i.draw()).join('');
+  return `<svg viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg"><defs>${pats}</defs>
     <rect width="480" height="360" fill="#fdf6ec"/>
     ${wall([P(0, 0, 120), P(0, 190, 120), P(0, 190), P(0, 0)], 0.08)}
     ${wall([P(0, 0, 120), P(190, 0, 120), P(190, 0), P(0, 0)], 0)}
-    <polygon points="${pts([P(0, 0), P(190, 0), P(190, 190), P(0, 190)])}" fill="url(#f-${state.floor})" stroke="#0003"/>
+    <polygon points="${pts([P(0, 0), P(190, 0), P(190, 190), P(0, 190)])}" fill="url(#${px}f-${fk})" stroke="#0003"/>
     ${items}</svg>`;
 }
+const room = () => (document.getElementById('room').innerHTML = roomSvg('h-'));
+// 상점 화면이 쓰는 창구: 구매하면 방에 바로 놓이고(벽지·바닥은 바로 적용) 저장한다
+window.ROOM = {
+  roomSvg, ITEMS, WALLS, FLOORS, own,
+  buy(id) {
+    owned.add(id);
+    try { localStorage.setItem(SHOP_KEY, JSON.stringify([...owned])); } catch {}
+    if (id.startsWith('wall-')) state.wall = id.slice(5);
+    else if (id.startsWith('floor-')) state.floor = id.slice(6);
+    else state.off = state.off.filter(x => x !== id);
+    save(); render();
+  },
+};
 function prefix(p, o) { return Object.fromEntries(Object.entries(o).map(([k, v]) => [p + k, v])); }
 
 function buttons(id, entries, isOn, onClick) {
@@ -115,9 +166,9 @@ function buttons(id, entries, isOn, onClick) {
   });
 }
 function render() {
-  buttons('walls', Object.entries(WALLS).map(([k, v]) => [k, v.name]), k => state.wall === k, k => (state.wall = k));
-  buttons('floors', Object.entries(FLOORS).map(([k, v]) => [k, v.name]), k => state.floor === k, k => (state.floor = k));
-  buttons('items', ITEMS.map(i => [i.id, i.label]), k => !state.off.includes(k),
+  buttons('walls', Object.entries(WALLS).filter(([k, v]) => !v.shop || own('wall-' + k)).map(([k, v]) => [k, v.name]), k => state.wall === k, k => (state.wall = k));
+  buttons('floors', Object.entries(FLOORS).filter(([k, v]) => !v.shop || own('floor-' + k)).map(([k, v]) => [k, v.name]), k => state.floor === k, k => (state.floor = k));
+  buttons('items', ITEMS.filter(i => !i.shop || own(i.id)).map(i => [i.id, i.label]), k => !state.off.includes(k),
     k => (state.off = state.off.includes(k) ? state.off.filter(x => x !== k) : [...state.off, k]));
   room();
 }

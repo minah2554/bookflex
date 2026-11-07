@@ -146,6 +146,10 @@
         addedWeek: sum(es.filter(e => e.mine && e.date >= ago(6))),
         readToday: es.some(e => e.date === today && e.kind === 'read'),
         today,
+        chips: BASE.chips + st.chips,
+        days: new Set(es.map(e => e.date)).size,
+        reached: reached(),
+        total: TOTAL,
       };
     },
   };

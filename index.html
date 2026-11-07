@@ -16,7 +16,7 @@
       <button type="button" data-page="class"><i style="--c:#3f9a5c"></i>FLEX CLASS</button>
       <button type="button" disabled title="준비 중"><i style="--c:#f2b84b"></i>FLEX FEED</button>
       <button type="button" disabled title="준비 중"><i style="--c:#5b86e5"></i>FLEX MISSION</button>
-      <button type="button" disabled title="준비 중"><i style="--c:#e0556f"></i>FLEX SHOP</button>
+      <button type="button" data-page="shop"><i style="--c:#e0556f"></i>FLEX SHOP</button>
     </nav>
     <div class="me">
       <div class="themes" role="group" aria-label="테마 색">
@@ -186,6 +186,28 @@
       </section>
     </div>
 
+    <div id="v-shop" hidden>
+      <div class="chead">
+        <h1>FLEX SHOP <small>사기 전에 내 방에 놓아 보기</small></h1>
+        <p class="cstats">보유 <b id="sChips">120</b>칩</p>
+      </div>
+      <div class="sgrid">
+        <aside class="page spre">
+          <div id="shopRoom" class="room"></div>
+          <p class="pname" id="pName"></p>
+          <div class="after"><small>사고 나면 남는 칩</small><b id="pAfter"></b></div>
+          <small class="note">칩을 써도 레벨·칭호는 그대로</small>
+          <button id="buyBtn" class="cta wide" type="button"></button>
+          <p id="sMsg" class="msg" role="status"></p>
+        </aside>
+        <section class="page sright">
+          <div id="stageTabs" class="stages" role="tablist"></div>
+          <div id="shopCards" class="scards"></div>
+          <div id="unlockBox" class="unlock"></div>
+        </section>
+      </div>
+    </div>
+
     <nav class="tabs" aria-label="서재 메뉴">
       <button type="button" class="on" data-view="home" aria-current="page">홈</button>
       <button type="button" data-view="log">독서 기록</button>
@@ -204,5 +226,6 @@
 <script src="app.js"></script>
 <script src="log.js"></script>
 <script src="class.js"></script>
+<script src="shop.js"></script>
 </body>
 </html>
