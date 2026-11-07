@@ -396,3 +396,12 @@ small { font-size: 12px; } .mute { color: var(--muted); } .ok { color: #247040; 
 .tabs { right: 16px; top: 86px; gap: 6px; z-index: 2; }
 .tabs a, .tabs button { width: 66px; padding: 14px 4px; border-radius: 0 12px 12px 0; box-shadow: none; transition: background-color .15s, filter .15s; }
 .tabs .on { position: relative; margin-left: -2px; width: 68px; border-left: 0; box-shadow: none; }
+
+/* v0.21: 내용이 짧은 탭 화면도 오른쪽 탭 높이(약 290px)만큼은 채움 */
+.solo { display: flex; flex-direction: column; min-height: 340px; }
+.solo > .page:last-child { flex: 1; }
+@media (max-width: 760px) { .solo { min-height: 0; } }
+@media (max-width: 760px) {
+  .tabs { right: auto; top: auto !important; gap: 4px; }
+  .tabs a, .tabs button, .tabs .on { width: auto; margin-left: 0; padding: 8px 12px; border-radius: 10px; border-left: 2px solid color-mix(in srgb, var(--hi) 45%, transparent); }
+}

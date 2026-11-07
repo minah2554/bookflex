@@ -104,5 +104,16 @@
   document.addEventListener('bf:change', render);
   // 상단 「기록하기」: 독서 기록 탭으로 이동
   document.querySelector('.now .cta').addEventListener('click', () => document.querySelector('.tabs [data-view=log]').click());
-  render();
+  // 오른쪽 탭의 첫 줄을 지금 보이는 화면의 첫 카드 위쪽에 맞춘다
+  function place() {
+    const v = [...document.querySelectorAll('#v-home,#v-log,#v-shelf,#v-board,#v-titles')].find(e => !e.hidden), t = document.querySelector('.tabs');
+    const p = v && v.querySelector('.page');
+    if (!p || t.hidden) return;
+    t.style.top = `${Math.round(p.getBoundingClientRect().top - document.querySelector('.panel').getBoundingClientRect().top + 16)}px`;
+  }
+  const later = () => requestAnimationFrame(place);
+  document.querySelectorAll('[data-page],.tabs [data-view]').forEach(b => b.addEventListener('click', later));
+  document.addEventListener('bf:change', later);
+  addEventListener('resize', later); addEventListener('load', later);
+  render(); later();
 })();
