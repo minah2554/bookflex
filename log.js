@@ -72,7 +72,7 @@
     const err = check(date, s, e);
     if (err) { $('logMsg').className = 'msg'; $('logMsg').textContent = err; return; }
     const pages = e - s + 1, r = reward(st.entries, st.missions, date, pages, q);
-    st.entries.push({ date, book: BOOK, kind: 'read', start: s, end: e, pages, quote: q, chips: r.chips, pageChips: r.pc });
+    st.entries.push({ date, book: BOOK, kind: 'read', start: s, end: e, pages, quote: q, chips: r.chips, pageChips: r.pc, mine: true });
     st.chips += r.chips; st.xp += r.xp;
     if (r.mission) st.missions.push(date);
     save();
@@ -134,6 +134,21 @@
   $('fDate').max = today; $('fDate').min = ago(7); $('fDate').value = today;
   $('fStart').value = reached() + 1;
   render();
+
+  // 다른 화면(FLEX CLASS)이 쓰는 같은 데이터 창구
+  window.BF = {
+    addChips(n) { st.chips += n; save(); sync(); },
+    stats() {
+      const es = st.entries, sum = a => a.reduce((s, e) => s + e.pages, 0);
+      return {
+        pages: BASE.pages + sum(es),
+        added: sum(es.filter(e => e.mine)),
+        addedWeek: sum(es.filter(e => e.mine && e.date >= ago(6))),
+        readToday: es.some(e => e.date === today && e.kind === 'read'),
+        today,
+      };
+    },
+  };
 
   // 탭 전환
   document.querySelectorAll('.tabs [data-view]').forEach(b => b.addEventListener('click', () => {

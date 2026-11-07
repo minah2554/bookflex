@@ -12,8 +12,8 @@
   <header class="nav">
     <div class="logo"><i></i><span><b>BOOK FLEX</b><small>읽는 것도 FLEX다!</small></span></div>
     <nav class="menu" aria-label="메뉴">
-      <a class="on" href="#" aria-current="page"><i style="--c:#f2765a"></i>MY FLEX</a>
-      <button type="button" disabled title="준비 중"><i style="--c:#3f9a5c"></i>FLEX CLASS</button>
+      <button type="button" class="on" data-page="my" aria-current="page"><i style="--c:#f2765a"></i>MY FLEX</button>
+      <button type="button" data-page="class"><i style="--c:#3f9a5c"></i>FLEX CLASS</button>
       <button type="button" disabled title="준비 중"><i style="--c:#f2b84b"></i>FLEX FEED</button>
       <button type="button" disabled title="준비 중"><i style="--c:#5b86e5"></i>FLEX MISSION</button>
       <button type="button" disabled title="준비 중"><i style="--c:#e0556f"></i>FLEX SHOP</button>
@@ -153,6 +153,39 @@
       </main>
     </div>
 
+    <div id="v-class" hidden>
+      <div class="chead">
+        <h1>FLEX CLASS <small>2학년 2반이 함께 쌓은 책장</small></h1>
+        <p class="cstats">함께 읽은 쪽 <b id="cPages">4,812</b> <i>|</i> 완독 <b>37</b>권 <i>|</i> 이번 주 <b id="cWeek">612</b>쪽</p>
+      </div>
+      <div class="cgrid">
+        <section class="page">
+          <h2>우리 반 책장 <small>다음 칸은 누구 책?</small></h2>
+          <div id="shelf" class="shelf" role="img" aria-label="우리 반이 완독한 책 37권이 꽂힌 책장"></div>
+        </section>
+        <section class="page cmis">
+          <h2>오늘의 우리 반 미션</h2>
+          <p class="mname">모두 1쪽 이상 읽기</p>
+          <div class="bar"><i id="cBar"></i></div>
+          <p id="cMis" class="mtxt"></p>
+        </section>
+      </div>
+      <section class="page">
+        <h2>책친구 서재 놀러가기 <small>가나다순 · 오늘 처음 놀러 가면 +3칩 (하루 3명까지)</small></h2>
+        <div id="friends" class="friends"></div>
+        <p id="vMsg" class="msg" role="status"></p>
+      </section>
+      <section class="page">
+        <h2>방금 올라온 한 구절 <small>FLEX FEED 전체</small></h2>
+        <ul class="quotes">
+          <li><p>“정말 중요한 건 눈에 보이지 않아.”</p><small>어린 왕자 · 생텍쥐페리 | 별빛책방 · 누적 <span class="myp">214</span>쪽 | 댓글 4</small></li>
+          <li><p class="ph">[학생이 직접 고른 한 구절이 들어갈 자리]</p><small>노인과 바다 · 헤밍웨이 | 새벽세시 · 누적 512쪽 | 댓글 2</small></li>
+          <li><p class="ph">[학생이 직접 고른 한 구절이 들어갈 자리]</p><small>빨간 머리 앤 · 몽고메리 | 바다유리 · 누적 276쪽 | 댓글 6</small></li>
+        </ul>
+        <small class="note">친구 한 구절에 10자 이상 댓글을 달면 +5칩 (하루 2개)</small>
+      </section>
+    </div>
+
     <nav class="tabs" aria-label="서재 메뉴">
       <button type="button" class="on" data-view="home" aria-current="page">홈</button>
       <button type="button" data-view="log">독서 기록</button>
@@ -170,5 +203,6 @@
 </footer>
 <script src="app.js"></script>
 <script src="log.js"></script>
+<script src="class.js"></script>
 </body>
 </html>
