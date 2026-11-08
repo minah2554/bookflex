@@ -1,4 +1,4 @@
-const APP_VERSION = '6.6'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '6.7'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
@@ -218,7 +218,7 @@ function avatarSvg(a = state.avatar, text = state.say) {
   }
   return `<g class="avatar-g">${s}</g>`;
 }
-const xfStyle = p => (p ? `transform:translate(${p.x || 0}px,${p.y || 0}px) rotate(${p.r || 0}deg) scaleX(${p.f ? -1 : 1})` : '');
+const xfStyle = p => (p ? `transform:translate(${p.x || 0}px,${p.y || 0}px) scaleX(${p.f ? -1 : 1})` : '');
 // px: 한 화면에 방이 둘(홈·상점) 있어 패턴 id가 겹치지 않게 붙이는 접두어
 // over: 상점 미리보기용 { wall, floor, add } — 안 산 물건도 임시로 놓아 본다
 function roomSvg(px, over = {}) {

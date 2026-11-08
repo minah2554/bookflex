@@ -21,7 +21,8 @@
   };
   const POOL = ['어린 왕자', '데미안', '동물농장', '노인과 바다', '변신', '빨간 머리 앤', '1984'];
   const CATS = ['문학', '인문', '사회', '과학', '예술'], WISH = ['모모', '소나기', '완득이', '82년생 김지영', '코스모스', '사피엔스', '아몬드', '지구 끝의 온실', '불편한 편의점'];
-  const PH ='[학생이 직접 쓴 글이 들어갈 자리]';
+  const RV = ['끝까지 읽고 나니 제목이 다시 보이는 책이었어요.', '전개가 빨라서 하루 만에 읽었어요. 추천해요.', '조용한 문장들이 오래 남아요.', '친구랑 같이 읽고 싶은 책이에요.'];
+  const PH = '[학생이 직접 쓴 글이 들어갈 자리]';
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const fmt = n => n.toLocaleString('ko-KR');
   const today = () => window.BF.stats().today;
@@ -140,7 +141,16 @@
         <h3>완독 기록</h3>${nb ? `<table class="logtbl"><thead><tr><th>책</th><th>독서 분야</th><th>읽은 기간</th><th>완독 승인일</th></tr></thead><tbody>${rows}</tbody></table>` : '<p class="note">아직 승인된 완독이 없어요.</p>'}
         <h3>읽고 싶어서 담은 책</h3><div class="chips">${wish.map(t => `<span class="badge">${esc(t)}</span>`).join('')}</div>`;
     }
-    return `<h2>게시판 <small>${esc(name)}이(가) 쓴 글</small></h2><div class="flist">${[['quote', '한 구절'], ['review', '한줄평']].map(([t, l]) => `<article class="post"><header><span class="tag ${t === 'quote' ? '' : 'b'}">${l}</span><time>${day(1)}</time></header><p class="ph">${PH}</p><small class="src">${esc(books[0] || POOL[0])}</small></article>`).join('')}</div>`;
+    // 친구 글(샘플)에 댓글을 달 수 있다: 10자 이상, 서로 다른 글 하루 2개까지 +5칩
+    const q = FQ[hue(name) % FQ.length], rv = RV[hue(name) % RV.length];
+    const posts = [{ id: `fb-${name}-q`, type: 'quote', label: '한 구절', text: `“${q[1]}”`, src: q[0], n: 1 + (hue(name) % 3) }, { id: `fb-${name}-r`, type: 'review', label: '한줄평', text: rv, src: books[0] || POOL[0], n: hue(name + 'r') % 3 }];
+    return `<h2>게시판 <small>${esc(name)}이(가) 쓴 글 · 댓글 달면 +${TCHIP}칩</small></h2><div class="flist">${posts.map(p => {
+      const cs = window.FEED.comments(p.id);
+      return `<article class="post" data-id="${p.id}"><header><span class="tag ${p.type === 'quote' ? '' : 'b'}">${p.label}</span><time>${day(1)}</time></header>
+        <p class="ptxt">${esc(p.text)}</p><small class="src">${esc(p.src)}</small><span class="cbtn">댓글 ${p.n + cs.length}</span>
+        <div class="cm">${cs.map(c => `<p><b>${esc(window.PROFILE.name)}</b> ${esc(c.text)}<time>${c.date.slice(5).replace('-', '.')}</time></p>`).join('')}
+          <form class="say" data-cform="${p.id}" novalidate><input maxlength="100" placeholder="${esc(name)}님 글에 댓글 쓰기 (10자 이상 · +5칩)" aria-label="댓글"><button class="cta mini" type="submit">댓글 달기</button></form><p class="msg" role="status"></p></div></article>`;
+    }).join('')}</div>`;
   }
   // 친구 서재 왼쪽 프로필: 내 홈 화면과 같은 모양(프로필·오늘의 한 구절·레벨·칭호·다른 친구 서재로 이동). 친구 글·레벨은 샘플
   const LVS = [0, 50, 150, 300, 500];
@@ -172,6 +182,7 @@
     $('vTitle').textContent = `${fr[0]}의 서재`;
     document.querySelectorAll('#vTabs [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === ftab));
     $('vBody').innerHTML = visitBody();
+    $('vDays').textContent = fr[4]; $('vPages').textContent = fr[2];
     $('vSide').innerHTML = sideHtml();
   }
   function openVisit(name) {
@@ -182,6 +193,16 @@
   $('vTabs').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (b) { ftab = b.dataset.v; renderVisit(); } });
   $('vBack').addEventListener('click', () => show('class'));
   $('vBody').addEventListener('submit', e => {
+    const cf = e.target.dataset && e.target.dataset.cform;
+    if (cf) {
+      e.preventDefault();
+      const res = window.FEED.comment(cf, e.target.querySelector('input').value);
+      if (res.err) { const m = e.target.nextElementSibling; m.className = 'msg'; m.textContent = res.err; return; }
+      renderVisit(); document.dispatchEvent(new Event('bf:change'));
+      const m = document.querySelector(`[data-id="${cf}"] .msg`);
+      m.className = 'msg okm'; m.textContent = res.reward ? `댓글 완료! +${window.FEED.CHIP} 플렉스칩` : '댓글을 남겼어요. 오늘 칩은 서로 다른 글 2개까지만 받아요.';
+      return;
+    }
     if (e.target.id !== 'gbForm') return;
     e.preventDefault();
     const name = fr[0], inp = $('gbIn'), text = inp.value.trim(), d = today(), msg = $('gbMsg');

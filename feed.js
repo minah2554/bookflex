@@ -60,17 +60,25 @@
     open.has(b.dataset.toggle) ? open.delete(b.dataset.toggle) : open.add(b.dataset.toggle);
     render();
   });
-  $('fdList').addEventListener('submit', e => {
-    e.preventDefault();
-    const form = e.target, id = form.dataset.form, input = form.querySelector('input'), msg = form.nextElementSibling;
-    const text = input.value.trim(), d = today();
-    if (text.length < MIN) { msg.className = 'msg'; msg.textContent = `${MIN}자 이상 적어 주세요.`; return; }
+  // 댓글 하나 달기(피드와 친구 게시판이 같이 씀): 10자 이상, 서로 다른 글 하루 2개까지 +5칩
+  function addComment(id, raw) {
+    const text = raw.trim(), d = today();
+    if (text.length < MIN) return { err: `${MIN}자 이상 적어 주세요.` };
     (f.c[id] = f.c[id] || []).push({ text, date: d });
     f.v[d] = (f.v[d] || 0) + 1;
     const got = f.r[d] = f.r[d] || [];
     const reward = got.length < DAILY && !got.includes(id);
     if (reward) { got.push(id); window.BF.addChips(CHIP); }
-    save(); render();
+    save();
+    return { reward };
+  }
+  $('fdList').addEventListener('submit', e => {
+    e.preventDefault();
+    const form = e.target, id = form.dataset.form, input = form.querySelector('input'), msg = form.nextElementSibling;
+    const res = addComment(id, input.value);
+    if (res.err) { msg.className = 'msg'; msg.textContent = res.err; return; }
+    const reward = res.reward;
+    render();
     const m = document.querySelector(`[data-id="${id}"] .cm .msg`);
     if (m) { m.className = 'msg okm'; m.textContent = reward ? `댓글 완료! +${CHIP} 플렉스칩` : '댓글을 남겼어요. 오늘 칩은 서로 다른 글 2개까지만 받아요.'; }
     document.dispatchEvent(new Event('bf:change'));
@@ -86,7 +94,7 @@
   });
 
   // 내 게시판(tabs.js)이 쓰는 창구: 내가 쓴 글과 댓글 수
-  window.FEED = { when, mine: () => posts().filter(p => p.me).map(p => ({ ...p, count: p.n + (f.c[p.id] || []).length })) };
+  window.FEED = { when, comments: id => (f.c[id] || []).map(c => ({ ...c })), comment: addComment, CHIP, mine: () => posts().filter(p => p.me).map(p => ({ ...p, count: p.n + (f.c[p.id] || []).length })) };
 
   document.querySelector('[data-page=feed]').addEventListener('click', () => { $('fdMsg').textContent = ''; $('fdBook').textContent = window.BF.stats().book; render(); });
   document.querySelectorAll('.linkbtn[data-page=feed]').forEach(b => b.addEventListener('click', render));

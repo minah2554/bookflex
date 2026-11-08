@@ -533,3 +533,11 @@ small { font-size: 12px; } .mute { color: var(--muted); } .ok { color: #247040; 
 
 /* v6.6: 편집 중에는 아바타가 가구 끌기를 막지 않게 */
 .room.editing .avatar-g { pointer-events: none; }
+
+/* v6.7: 친구 서재 균형 — 머리글을 내 홈과 같은 한 줄로, 빈 알림 줄 숨김, 왼쪽 프로필과 탭 높이 맞춤 */
+#vNote:empty { display: none; }
+#v-visit .vhead { padding: 2px 8px 4px; }
+#v-visit .vtabs { margin: 0 0 8px; }
+.vgrid > .profile { position: sticky; top: 12px; }
+@media (max-width: 760px) { .vgrid > .profile { position: static; } }
+#vBody .post { padding: 12px 14px; border-radius: 12px; background: var(--soft); margin-bottom: 10px; }
