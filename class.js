@@ -142,10 +142,37 @@
     }
     return `<h2>게시판 <small>${esc(name)}이(가) 쓴 글</small></h2><div class="flist">${[['quote', '한 구절'], ['review', '한줄평']].map(([t, l]) => `<article class="post"><header><span class="tag ${t === 'quote' ? '' : 'b'}">${l}</span><time>${day(1)}</time></header><p class="ph">${PH}</p><small class="src">${esc(books[0] || POOL[0])}</small></article>`).join('')}</div>`;
   }
+  // 친구 서재 왼쪽 프로필: 내 홈 화면과 같은 모양(프로필·오늘의 한 구절·레벨·칭호·다른 친구 서재로 이동). 친구 글·레벨은 샘플
+  const LVS = [0, 50, 150, 300, 500];
+  const FQ = [['어린 왕자 · 생텍쥐페리', '길들인다는 건 관계를 맺는다는 거야.'], ['노인과 바다 · 헤밍웨이', '인간은 파괴될 수는 있어도 패배하지는 않는다.'],
+    ['동물농장 · 오웰', '모든 동물은 평등하다.'], ['데미안 · 헤세', '새는 알에서 나오려고 투쟁한다.']];
+  function sideHtml() {
+    const [name, title, pages, nb] = fr, cfg = ROOMS[name], xp = Math.round(pages * 0.9);
+    let i = LVS.length - 1; while (xp < LVS[i]) i--;
+    const next = LVS[i + 1], dn = Math.floor(Date.parse(today() + 'T00:00:00Z') / 864e5);
+    const [src, txt] = FQ[(hue(name) + dn) % FQ.length];
+    const hop = [...FRIENDS].filter(f => f[0] !== name).sort((a, b) => (a[5] ? 'ㅂ' : a[0]).localeCompare(b[5] ? 'ㅂ' : b[0], 'ko'))
+      .map(f => f[5] ? `<option value="__me">${esc(window.PROFILE.name)} (내 서재)</option>` : `<option value="${esc(f[0])}">${esc(f[0])} · 누적 ${f[2]}쪽</option>`).join('');
+    return `<div class="avatar"><span>${window.ROOM.bust(cfg.avatar)}</span></div>
+      <div class="quote"><small>오늘의 한 구절</small><p>“${esc(txt)}”</p><small class="mute">${esc(src)}</small></div><hr>
+      <h2 class="nick">${esc(name)} <small>2학년 2반</small></h2><div class="eqs"><span class="badge">${esc(title)}</span></div>
+      <div class="xp"><i style="width:${next ? Math.round((xp - LVS[i]) / (next - LVS[i]) * 100) : 100}%"></i></div>
+      <div class="lvtxt"><b>Lv.${i + 1} · ${xp} XP</b><span>${next ? `다음 Lv.${i + 2}까지 ${next - xp} XP` : '최고 레벨이에요'}</span></div>
+      <small class="mute">누적 ${pages}쪽 · 완독 ${nb}권</small><hr>
+      <label class="visit" for="vHop">다른 책친구 서재 놀러가기</label>
+      <div class="visitrow"><select id="vHop">${hop}</select><button type="button" class="cta mini" id="vHopGo">가기</button></div>
+      <small class="ok">처음 놀러 가면 +${CHIP}칩 (하루 ${CAP}명까지)</small>`;
+  }
+  $('vSide').addEventListener('click', e => {
+    if (e.target.id !== 'vHopGo') return;
+    const n = $('vHop').value;
+    if (n === '__me') show('my'); else visitFriend(n);
+  });
   function renderVisit() {
     $('vTitle').textContent = `${fr[0]}의 서재`;
     document.querySelectorAll('#vTabs [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === ftab));
     $('vBody').innerHTML = visitBody();
+    $('vSide').innerHTML = sideHtml();
   }
   function openVisit(name) {
     fr = FRIENDS.find(f => f[0] === name); ftab = 'room';

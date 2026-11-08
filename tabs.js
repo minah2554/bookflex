@@ -34,10 +34,10 @@
   ];
   const view = x => TITLES.map(t => ({ ...t, cur: Math.min(t.goal, t.v(x)), got: t.v(x) >= t.goal }));
 
-  function equipped(list) {
-    const eq = (read(KEY) || {}).eq, got = list.filter(t => t.got);
-    return got.find(t => t.n === eq) || got.find(t => t.n === '문장 수집가') || got[0] || null;
-  }
+  // 칭호는 최대 3개까지 함께 장착해 자랑할 수 있다(예전 저장값 {eq: 이름}도 읽는다)
+  const MAXEQ = 3;
+  const savedEq = () => { const r = read(KEY) || {}; return Array.isArray(r.eqs) ? r.eqs : r.eq ? [r.eq] : ['문장 수집가']; };
+  const equipped = list => list.filter(t => t.got && savedEq().includes(t.n));
   // 칭호 뱃지: 칭호마다 색과 24×24 선 아이콘이 하나씩 있고, 못 얻은 칭호는 회색
   const MEDAL = {
     '첫 장을 넘긴 독자': ['#e5a62c', 'M4 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4z M20 5h-6a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h6z'],
@@ -67,6 +67,29 @@
     $('wish').innerHTML = wish.length ? wish.map(t => `<span class="badge">${esc(t)}</span>`).join('') : '<small class="note">BOOK PICK에서 마음에 드는 책을 담으면 여기에 모여요.</small>';
   }
 
+  // 완독 독서 기록(독후 기록): 책마다 느낀 점을 남긴다. 처음 두 권은 예시 글이 들어 있다.
+  const RKEY = 'bookflex.review.v1';
+  const SAMPLE_R = { '노인과 바다': '노인이 청새치와 사흘 동안 싸우는 장면에서 끝까지 포기하지 않는 마음이 멋졌다. 결과보다 과정이 소중하다는 걸 배웠다.' };
+  const reviewsOf = () => ({ ...SAMPLE_R, ...(read(RKEY) || {}) });
+  function reviews(x) {
+    const box = $('rvList'), rv = reviewsOf(), list = window.BF.books().filter(b => b.s.startsWith('완독') || b.s.startsWith('승인 대기'));
+    const sig = JSON.stringify([list.map(b => b.t + b.s), rv]);
+    if (box.dataset.sig === sig) return; // 입력 중인 글이 지워지지 않게 바뀐 게 없으면 다시 그리지 않는다
+    box.dataset.sig = sig;
+    box.innerHTML = list.map(b => `<form class="rv" data-t="${esc(b.t)}"><div><b>${esc(b.t)}</b> <small>${esc(b.s)}</small></div>
+      <textarea maxlength="200" rows="3" placeholder="이 책에서 기억에 남는 장면이나 느낀 점을 적어 보세요" aria-label="${esc(b.t)} 독서 기록">${esc(rv[b.t] || '')}</textarea>
+      <div class="rvact"><button type="submit" class="cta mini">저장</button><small class="msg"></small></div></form>`).join('') || '<p class="note">완독한 책이 생기면 여기에 독서 기록을 남길 수 있어요.</p>';
+  }
+  $('rvList').addEventListener('submit', e => {
+    e.preventDefault();
+    const f = e.target, v = f.querySelector('textarea').value.trim(), m = f.querySelector('.msg');
+    if (v.length < 10) { m.className = 'msg'; m.textContent = '10자 이상 적어 주세요.'; return; }
+    const all = read(RKEY) || {}; all[f.dataset.t] = v;
+    try { localStorage.setItem(RKEY, JSON.stringify(all)); } catch {}
+    $('rvList').dataset.sig = ''; m.className = 'msg okm'; m.textContent = '저장했어요';
+  });
+  window.REVIEWS = { get: t => reviewsOf()[t] || '' };
+
   function board() {
     const ps = window.FEED ? window.FEED.mine() : [];
     $('bdPosts').innerHTML = ps.map(p => `<article class="post mine"><header><span class="tag ${p.type === 'quote' ? '' : 'b'}">${p.type === 'quote' ? '한 구절' : '한줄평'}</span><time>${window.FEED.when(p.date)}</time></header>
@@ -74,7 +97,7 @@
   }
 
   function titles(x) {
-    const list = view(x), eq = equipped(list), got = list.filter(t => t.got).length;
+    const list = view(x), eqs = equipped(list), got = list.filter(t => t.got).length;
     const xp = x.s.xp;
     let i = LV.length - 1; while (xp < LV[i]) i--;
     const next = LV[i + 1];
@@ -83,20 +106,31 @@
     $('tXp').style.width = next ? `${Math.round((xp - LV[i]) / (next - LV[i]) * 100)}%` : '100%';
     $('tXpTxt').textContent = next ? `다음 레벨 Lv.${i + 2}까지 ${next - xp} XP` : '최고 레벨이에요';
     $('lvTable').innerHTML = LV.map((n, k) => `<li class="${k === i ? 'cur' : ''}">Lv.${k + 1}<small>${n} XP</small></li>`).join('');
-    $('tGrid').innerHTML = list.map(t => `<button type="button" class="tcard${t.got ? ' got' : ''}" data-t="${t.n}" ${t.got ? '' : 'disabled'} aria-pressed="${!!eq && eq.n === t.n}">
+    $('tGrid').innerHTML = list.map(t => `<button type="button" class="tcard${t.got ? ' got' : ''}" data-t="${t.n}" ${t.got ? '' : 'disabled'} aria-pressed="${eqs.some(e => e.n === t.n)}">
       ${medal(t.n, t.got)}<b>${t.n}</b><small>${t.c}</small><div class="bar"><i style="width:${Math.round(t.cur / t.goal * 100)}%"></i></div>
-      <span>${t.got ? (eq && eq.n === t.n ? '장착 중' : '획득 · 눌러서 장착') : `${t.cur} / ${t.goal}`}</span></button>`).join('');
+      <span>${t.got ? (eqs.some(e => e.n === t.n) ? '장착 중 · 눌러서 해제' : '획득 · 눌러서 장착') : `${t.cur} / ${t.goal}`}</span></button>`).join('');
     // 홈 화면의 배지·링크
-    $('eqBadge').innerHTML = eq ? medal(eq.n, true, 'medal-mini') + esc(eq.n) : '칭호 없음';
+    $('eqBadge').innerHTML = eqs.length ? eqs.map(e => `<span class="badge">${medal(e.n, true, 'medal-mini')}${esc(e.n)}</span>`).join(' ') : '<span class="badge">칭호 없음</span>';
     $('titLink').textContent = `칭호 모음 ${got} / ${TITLES.length} 보기`;
   }
 
-  function render() { const x = ctx(); shelf(x); board(); titles(x); }
+  // 프로필의 「오늘의 한 구절」: 오늘 내가 남긴 한 구절이 있으면 그것, 없으면 매일 다음 문장으로 바뀜
+  const DQ = [['정말 중요한 건 눈에 보이지 않아.', '어린 왕자 · 생텍쥐페리'], ['인간은 파괴될 수는 있어도 패배하지는 않는다.', '노인과 바다 · 헤밍웨이'],
+    ['새는 알에서 나오려고 투쟁한다. 알은 세계다.', '데미안 · 헤세'], ['모든 동물은 평등하다. 그러나 어떤 동물은 더 평등하다.', '동물농장 · 오웰'],
+    ['내일은 아직 아무 실수도 하지 않은 새날이에요.', '빨간 머리 앤 · 몽고메리'], ['시간을 아끼는 사람은 오히려 시간을 잃어버려.', '모모 · 엔데']];
+  function dailyQuote() {
+    const t = window.BF.stats().today, mine = window.BF.quotes().filter(q => q.date === t).pop();
+    const [txt, src] = mine ? [mine.text, `${mine.book} · ${mine.writer}`] : DQ[Math.floor(Date.parse(t + 'T00:00:00Z') / 864e5) % DQ.length];
+    $('dqText').textContent = `“${txt}”`; $('dqSrc').textContent = src;
+  }
+  function render() { const x = ctx(); shelf(x); reviews(x); board(); titles(x); dailyQuote(); }
 
   $('tGrid').addEventListener('click', e => {
     const b = e.target.closest('[data-t]');
     if (!b) return;
-    try { localStorage.setItem(KEY, JSON.stringify({ eq: b.dataset.t })); } catch {}
+    const n = b.dataset.t, cur = savedEq();
+    const next = cur.includes(n) ? cur.filter(x => x !== n) : [...cur, n].slice(-MAXEQ); // 4개째를 고르면 가장 먼저 단 칭호가 빠짐
+    try { localStorage.setItem(KEY, JSON.stringify({ eqs: next })); } catch {}
     render();
   });
   $('titLink').addEventListener('click', () => document.querySelector('.tabs [data-view=titles]').click());

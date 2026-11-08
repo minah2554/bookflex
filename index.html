@@ -7,7 +7,7 @@
 <link rel="icon" type="image/png" href="assets/favicon-64.png">
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="style.css?v=16.0">
+<link rel="stylesheet" href="style.css?v=17.0">
 </head>
 <body>
 <div class="app">
@@ -53,14 +53,14 @@
         <div class="avatar"><span id="profAvatar"></span><a href="#" class="tiny" id="profEdit">프로필 바꾸기</a></div>
         <div class="quote">
           <small>오늘의 한 구절</small>
-          <p>“정말 중요한 건 눈에 보이지 않아.”</p>
-          <small class="mute">어린 왕자 · 생텍쥐페리</small>
+          <p id="dqText">“정말 중요한 건 눈에 보이지 않아.”</p>
+          <small class="mute" id="dqSrc">어린 왕자 · 생텍쥐페리</small>
         </div>
         <hr>
         <h2 class="nick"><span id="nickName">별빛책방</span> <small>2학년 2반</small></h2>
-        <span class="badge" id="eqBadge">문장 수집가</span>
+        <div class="eqs" id="eqBadge"><span class="badge">문장 수집가</span></div>
         <div class="xp"><i id="xpBar" style="width:60%"></i></div>
-        <small class="lvtxt" id="lvTxt">Lv.3 · 182 XP · Lv.4까지 118 XP</small>
+        <div class="lvtxt" id="lvTxt"><b>Lv.3 · 182 XP</b><span>다음 Lv.4까지 118 XP</span></div>
         <a class="link" href="#" id="titLink">칭호 모음 3 / 10 보기</a>
         <hr>
         <label class="visit" for="visitSel">책친구 서재 놀러가기</label>
@@ -196,6 +196,10 @@
         <table class="logtbl"><thead><tr><th>책</th><th>독서 분야</th><th>읽은 기간</th><th>완독 승인일</th></tr></thead><tbody id="shRows"></tbody></table>
       </section>
       <section class="page">
+        <h2>완독 독서 기록 <small>책을 끝낸 뒤 느낀 점을 남겨요 (선생님 승인 때 함께 보여요)</small></h2>
+        <div id="rvList" class="rvlist"></div>
+      </section>
+      <section class="page">
         <h2>읽고 싶어서 담은 책 <button type="button" class="linkbtn" data-page="pick">BOOK PICK ›</button></h2>
         <div id="wish" class="chips"></div>
       </section>
@@ -243,6 +247,7 @@
         <button type="button" class="linkbtn" id="vBack">‹ FLEX CLASS로 돌아가기</button>
       </div>
       <p id="vNote" class="msg" role="status"></p>
+      <div class="vgrid"><aside class="page profile" id="vSide"></aside><div class="vmain">
       <div class="vtabs" role="tablist" id="vTabs">
         <button type="button" role="tab" data-v="room" class="on">미니서재</button>
         <button type="button" role="tab" data-v="log">독서 기록</button>
@@ -250,6 +255,7 @@
         <button type="button" role="tab" data-v="board">게시판</button>
       </div>
       <section class="page" id="vBody"></section>
+      </div></div>
     </div>
 
     <div id="v-class" hidden>
@@ -339,7 +345,7 @@
       </section>
       <section class="page guide">
         <h2>레벨과 칭호</h2>
-        <p><b>독서 XP</b>는 독서 기록(첫 기록·읽은 쪽·한 구절)에서만 쌓여요. 친구 방문·댓글·미션 칩은 XP가 아니라서 칩만 늘어나요. XP가 쌓이면 레벨이 오르고, 조건을 채우면 <b>칭호</b>가 열려요. 칭호 탭에서 하나를 골라 장착하면 프로필에 보여요.</p>
+        <p><b>독서 XP</b>는 독서 기록(첫 기록·읽은 쪽·한 구절)에서만 쌓여요. 친구 방문·댓글·미션 칩은 XP가 아니라서 칩만 늘어나요. XP가 쌓이면 레벨이 오르고, 조건을 채우면 <b>칭호</b>가 열려요. 칭호 탭에서 최대 3개까지 골라 장착하면 프로필에 함께 보여요.</p>
       </section>
       <section class="page guide">
         <h2>메뉴 안내</h2>
@@ -458,16 +464,16 @@
     <div class="adact"><button type="button" class="cta ghost" id="adminCancel">취소</button><button type="submit" class="cta">접속</button></div>
   </form>
 </dialog>
-<script src="app.js?v=16.0"></script>
-<script src="log.js?v=16.0"></script>
-<script src="class.js?v=16.0"></script>
-<script src="place.js?v=16.0"></script>
-<script src="shop.js?v=16.0"></script>
-<script src="mission.js?v=16.0"></script>
-<script src="feed.js?v=16.0"></script>
-<script src="pick.js?v=16.0"></script>
-<script src="tabs.js?v=16.0"></script>
-<script src="admin.js?v=16.0"></script>
-<script src="notify.js?v=16.0"></script>
+<script src="app.js?v=17.0"></script>
+<script src="log.js?v=17.0"></script>
+<script src="class.js?v=17.0"></script>
+<script src="place.js?v=17.0"></script>
+<script src="shop.js?v=17.0"></script>
+<script src="mission.js?v=17.0"></script>
+<script src="feed.js?v=17.0"></script>
+<script src="pick.js?v=17.0"></script>
+<script src="tabs.js?v=17.0"></script>
+<script src="admin.js?v=17.0"></script>
+<script src="notify.js?v=17.0"></script>
 </body>
 </html>

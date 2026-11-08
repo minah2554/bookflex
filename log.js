@@ -130,7 +130,7 @@
     $('totPages').textContent = BASE.pages + st.entries.reduce((s, e) => s + e.pages, 0);
     $('weekDays').textContent = wk;
     $('rdBar').style.width = `${Math.round(reachedP / tot() * 100)}%`; $('rdTxt').textContent = `${reachedP}/${tot()}`; $('rdBook').textContent = cb().t;
-    $('lvTxt').textContent = next ? `Lv.${i + 1} · ${xp} XP · Lv.${i + 2}까지 ${next - xp} XP` : `Lv.${i + 1} · ${xp} XP · 최고 레벨`;
+    $('lvTxt').innerHTML = `<b>Lv.${i + 1} · ${xp} XP</b><span>${next ? `다음 Lv.${i + 2}까지 ${next - xp} XP` : '최고 레벨이에요'}</span>`;
     $('xpBar').style.width = next ? `${Math.round((xp - LV[i]) / (next - LV[i]) * 100)}%` : '100%';
     $('bookInfo').textContent = `지난번 ${reachedP}쪽까지 · 내 판본 ${tot()}쪽`;
     $('bookSel').innerHTML = st.lib.map(b => `<option value="${esc(b.t)}"${b.t === st.cur ? ' selected' : ''}>${esc(b.t)}${b.ok ? ' (완독)' : b.fin ? ' (완독 신청)' : ''}</option>`).join('');

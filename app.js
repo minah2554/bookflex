@@ -1,4 +1,4 @@
-const APP_VERSION = '16.0'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '17.0'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
@@ -202,7 +202,7 @@ function figure(x, y, a) {
     `<path d="M${x - 2.8} ${hy + 5.8} q2.8 3 5.6 0" stroke="#d1475a" stroke-width="1.5" fill="none" stroke-linecap="round"/>`;
 }
 // 프로필 카드용 상반신(얼굴·어깨만 보이게 잘라 쓴다)
-const bustSvg = () => `<svg viewBox="-27 -57 54 52" width="112" height="108" aria-hidden="true">${figure(0, 0, state.avatar)}</svg>`;
+const bustSvg = (a = state.avatar) => `<svg viewBox="-27 -57 54 52" width="112" height="108" aria-hidden="true">${figure(0, 0, a)}</svg>`;
 // 아바타와 말풍선(글은 2줄·줄당 12자). 방 가운데 러그 위에 서 있다.
 function avatarSvg(a = state.avatar, text = state.say) {
   const [x, y] = P(100, 106), say = (text || '').trim();
@@ -252,6 +252,7 @@ function roomSvg(px, over = {}) {
 const room = () => (document.getElementById('room').innerHTML = roomSvg('h-'));
 // 상점 화면이 쓰는 창구: 구매하면 방에 바로 놓이고(벽지·바닥은 바로 적용) 저장한다
 window.ROOM = {
+  bust: bustSvg,
   xfStyle, draft: {}, pos: id => ({ x: 0, y: 0, r: 0, f: 0, ...state.pos[id] }),
   setPos(id, p) { if (p) state.pos[id] = p; else delete state.pos[id]; save(); render(); },
   // 지금 방에 놓인(보이는) 가구 목록

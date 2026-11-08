@@ -509,3 +509,24 @@ small { font-size: 12px; } .mute { color: var(--muted); } .ok { color: #247040; 
 .placebar button { min-height: 36px; padding: 0 12px; border: 0; border-radius: 10px; background: var(--soft); color: var(--hi); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
 .placebar button:hover { background: var(--hi); color: #fff; }
 .spre .placewrap { margin-top: 8px; }
+
+/* v17.0: 화면 간격, 레벨·이번 주 표시 키움, 칭호 여러 개, 친구 서재 왼쪽 프로필 */
+#v-admin:not([hidden]), #v-guide:not([hidden]), #v-visit:not([hidden]), #v-feed:not([hidden]), #v-mission:not([hidden]) { display: grid; gap: 12px; align-content: start; }
+#v-admin > .page, #v-guide > .page { min-height: 0; }
+.week { font-size: 15px; font-weight: 700; color: #3a3330; }
+.week b { font-size: 22px; font-variant-numeric: tabular-nums; }
+.xp { margin: 12px 0 8px; }
+.lvtxt { display: grid; gap: 4px; margin-bottom: 8px; }
+.lvtxt b { font-size: 16px; color: #2f4a96; }
+.lvtxt span { font-size: 13px; font-weight: 600; color: var(--ink2); }
+.eqs { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; }
+.vgrid { display: grid; grid-template-columns: 272px minmax(0, 1fr); gap: 16px; align-items: start; }
+.vmain { min-width: 0; }
+.vside .visitrow { margin-top: 6px; }
+@media (max-width: 760px) { .vgrid { grid-template-columns: 1fr; } .week { font-size: 14px; } }
+.rvlist { display: grid; gap: 12px; }
+.rv { display: grid; gap: 6px; padding: 12px; border-radius: 12px; background: var(--soft); }
+.rv small { color: var(--ink2); }
+.rv textarea { box-sizing: border-box; width: 100%; padding: 8px 10px; border: 2px solid color-mix(in srgb, var(--hi) 25%, transparent); border-radius: 10px; font: inherit; line-height: 1.5; resize: vertical; background: #fff; }
+.rvact { display: flex; align-items: center; gap: 10px; }
+.adrow .rvtxt { flex-basis: 100%; margin: 0; padding: 8px 10px; border-radius: 8px; background: var(--soft); font-size: 13px; line-height: 1.5; }
