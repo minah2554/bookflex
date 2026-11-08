@@ -1,4 +1,4 @@
-const APP_VERSION = '15.0'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '16.0'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
@@ -150,7 +150,7 @@ const owned = new Set((() => {
 const own = id => owned.has(id);
 
 const state = (() => {
-  const d = { wall: 'cream', floor: 'wood', off: [], avatar: { hair: '#6b3f2a', top: '#e0556f', hs: 'short', os: 'tee' }, say: '어서 와, 내 서재에 놀러 왔구나!' };
+  const d = { wall: 'cream', floor: 'wood', off: [], pos: {}, avatar: { hair: '#6b3f2a', top: '#e0556f', hs: 'short', os: 'tee' }, say: '어서 와, 내 서재에 놀러 왔구나!' };
   try { const s = JSON.parse(localStorage.getItem(KEY)) || {}; return { ...d, ...s, avatar: { ...d.avatar, ...s.avatar } }; } catch { return d; }
 })();
 // 프로필: 닉네임과 서재 이름(비우면 '닉네임의 서재')
@@ -218,6 +218,7 @@ function avatarSvg(a = state.avatar, text = state.say) {
   }
   return `<g class="avatar-g">${s}</g>`;
 }
+const xfStyle = p => (p ? `transform:translate(${p.x || 0}px,${p.y || 0}px) rotate(${p.r || 0}deg) scaleX(${p.f ? -1 : 1})` : '');
 // px: 한 화면에 방이 둘(홈·상점) 있어 패턴 id가 겹치지 않게 붙이는 접두어
 // over: 상점 미리보기용 { wall, floor, add } — 안 산 물건도 임시로 놓아 본다
 function roomSvg(px, over = {}) {
@@ -230,7 +231,9 @@ function roomSvg(px, over = {}) {
   const list = ITEMS.filter(i => over.ids ? over.ids.includes(i.id) : over.add === i.id || ((!i.shop || own(i.id)) && !state.off.includes(i.id))).sort((a, b) => a.layer - b.layer);
   // 책장은 마우스를 올리면 읽은 책 목록이 뜨는 영역. 아바타는 책상(5~6)까지 그린 뒤, 의자 앞에 선다.
   const draw = i => i.id === 'shelf' ? `<g class="shelf-hit" tabindex="0" role="img" aria-label="책장 — 읽은 책 목록 보기">${i.draw(over.books, list)}</g>` : i.draw(over.books, list);
-  const items = list.filter(i => i.layer <= 6.1).map(draw).join('') + (over.noAvatar ? '' : over.avatar ? avatarSvg(over.avatar, over.say) : avatarSvg()) + list.filter(i => i.layer > 6.1).map(draw).join('');
+  // 가구마다 옮김·돌림·뒤집기(pos: x, y, r, f)를 CSS 변환으로 얹는다
+  const wrap = i => `<g class="itm" data-id="${i.id}" style="${xfStyle((over.pos && over.pos[i.id]) || (over.ids ? null : state.pos[i.id]))}">${draw(i)}</g>`;
+  const items = list.filter(i => i.layer <= 6.1).map(wrap).join('') + (over.noAvatar ? '' : over.avatar ? avatarSvg(over.avatar, over.say) : avatarSvg()) + list.filter(i => i.layer > 6.1).map(wrap).join('');
   // 방이 틀 전체를 채우도록 벽·바닥을 화면 밖까지 늘려 그린다(점토 느낌: 모서리 그늘, 걸레받이)
   const E = 330, H = 420;
   const L = [P(0, 0, H), P(0, E, H), P(0, E), P(0, 0)], Rw = [P(0, 0, H), P(E, 0, H), P(E, 0), P(0, 0)];
@@ -249,6 +252,10 @@ function roomSvg(px, over = {}) {
 const room = () => (document.getElementById('room').innerHTML = roomSvg('h-'));
 // 상점 화면이 쓰는 창구: 구매하면 방에 바로 놓이고(벽지·바닥은 바로 적용) 저장한다
 window.ROOM = {
+  xfStyle, draft: {}, pos: id => ({ x: 0, y: 0, r: 0, f: 0, ...state.pos[id] }),
+  setPos(id, p) { if (p) state.pos[id] = p; else delete state.pos[id]; save(); render(); },
+  // 지금 방에 놓인(보이는) 가구 목록
+  shown: () => ITEMS.filter(i => (!i.shop || own(i.id)) && !state.off.includes(i.id)).map(i => [i.id, i.label]),
   roomSvg, ITEMS, WALLS, FLOORS, own, HAS_VAR, spriteKey, varCount,
   variant: id => variants[id] || 1,
   setVariant(id, n) { variants[id] = n; try { localStorage.setItem(VAR_KEY, JSON.stringify(variants)); } catch {} render(); },
@@ -283,7 +290,7 @@ function render() {
   room();
 }
 
-document.getElementById('reset').onclick = () => { Object.assign(state, { wall: 'cream', floor: 'wood', off: [] }); save(); render(); };
+document.getElementById('reset').onclick = () => { Object.assign(state, { wall: 'cream', floor: 'wood', off: [], pos: {} }); save(); render(); };
 document.getElementById('ver').textContent = 'v' + APP_VERSION;
 document.querySelectorAll('a[href="#"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
 

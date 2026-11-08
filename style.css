@@ -495,3 +495,17 @@ small { font-size: 12px; } .mute { color: var(--muted); } .ok { color: #247040; 
   .vtabs button { padding: 8px 14px; }
   .foot { padding: 10px 14px; }
 }
+
+/* v16.0: 가구 배치(끌어 옮기기·돌리기·뒤집기) */
+.itm { transform-box: fill-box; transform-origin: center; }
+.room.editing svg { touch-action: none; }
+.room.editing .itm { cursor: grab; }
+.room.editing .itm:active { cursor: grabbing; }
+.itm.sel { filter: drop-shadow(0 0 2px var(--accent)) drop-shadow(0 0 5px var(--accent)); }
+.placewrap { display: grid; gap: 8px; min-width: 0; }
+.placewrap label { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px; }
+.placewrap select { min-height: 36px; padding: 0 10px; border: 2px solid color-mix(in srgb, var(--hi) 30%, transparent); border-radius: 10px; font: inherit; background: #fff; }
+.placebar { display: flex; flex-wrap: wrap; gap: 6px; }
+.placebar button { min-height: 36px; padding: 0 12px; border: 0; border-radius: 10px; background: var(--soft); color: var(--hi); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.placebar button:hover { background: var(--hi); color: #fff; }
+.spre .placewrap { margin-top: 8px; }

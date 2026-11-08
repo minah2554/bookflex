@@ -53,8 +53,10 @@
 
     // 미리보기
     const c = byId(sel), canBuy = c && !c.soon && open && !window.ROOM.own(c.id);
-    const over = { noAvatar: true, ...(c ? (c.wall ? { wall: c.wall } : c.floor ? { floor: c.floor } : { add: c.id }) : {}) };
+    const over = { noAvatar: true, pos: window.ROOM.draft, ...(c ? (c.wall ? { wall: c.wall } : c.floor ? { floor: c.floor } : { add: c.id }) : {}) };
+    window.ROOM.shopSel = c && !c.soon && !c.wall && !c.floor ? c.id : ''; // 끌어서 놓아 볼 수 있는 물건
     $('shopRoom').innerHTML = window.ROOM.roomSvg('s-', over);
+    $('shopPlace').parentElement.hidden = !window.ROOM.shopSel;
     $('pName').textContent = c ? `놓아 보는 중 · ${c.name}` : '';
     $('pAfter').textContent = c ? (chips >= c.price ? `${chips} → ${chips - c.price} 칩` : `${c.price - chips}칩이 더 필요해요`) : '';
     // 디자인 고르기(4종이 있는 물건만)
@@ -88,10 +90,13 @@
     const c = byId(sel), st = window.BF.stats();
     if (!c || c.soon || window.ROOM.own(c.id) || st.chips < c.price || !unlocked(STAGES[c.stage - 1], st)) return;
     window.BF.addChips(-c.price);
+    const draft = window.ROOM.draft[c.id];
     window.ROOM.buy(c.id);
+    if (draft) { window.ROOM.setPos(c.id, draft); delete window.ROOM.draft[c.id]; } // 놓아 본 자리 그대로 내 방에
     $('sMsg').className = 'msg okm';
     $('sMsg').textContent = `FLEX SHOP — ${c.name}을(를) 내 방에 놓았어요! −${c.price} 플렉스칩`;
     render();
   });
+  window.ROOM.shopRender = render;
   document.querySelector('[data-page=shop]').addEventListener('click', render);
 })();
