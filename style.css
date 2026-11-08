@@ -541,3 +541,11 @@ small { font-size: 12px; } .mute { color: var(--muted); } .ok { color: #247040; 
 .vgrid > .profile { position: sticky; top: 12px; }
 @media (max-width: 760px) { .vgrid > .profile { position: static; } }
 #vBody .post { padding: 12px 14px; border-radius: 12px; background: var(--soft); margin-bottom: 10px; }
+
+/* v6.8: 친구 미니서재를 줄여 왼쪽 프로필과 높이를 맞추고 스크롤을 없앰 */
+#vBody .roomwrap { max-width: 520px; }
+#vBody .cap { margin: 6px 0; }
+#v-visit .gbook { margin-top: 8px; }
+.vgrid { align-items: stretch; }
+.vmain { display: flex; flex-direction: column; }
+.vmain > #vBody { flex: 1; }

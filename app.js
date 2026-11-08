@@ -1,4 +1,4 @@
-const APP_VERSION = '6.7'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '6.8'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
