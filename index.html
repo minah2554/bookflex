@@ -4,8 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>BOOK FLEX | 북플렉스</title>
+<link rel="icon" type="image/png" href="assets/favicon-64.png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="style.css?v=1.1">
+<link rel="stylesheet" href="style.css?v=1.28">
 </head>
 <body>
 <div class="app">
@@ -31,7 +33,7 @@
         <button type="button" class="bell" id="bell" aria-label="알림" aria-expanded="false" aria-controls="notif"><b id="bellN" hidden>0</b></button>
         <div id="notif" class="notif" role="region" aria-label="알림" hidden></div>
       </span>
-      <span class="av">별</span>
+      <button type="button" class="gear" id="adminBtn" aria-label="관리자 설정" title="관리자"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
     </div>
   </header>
 
@@ -284,6 +286,30 @@
       </section>
     </div>
 
+    <div id="v-admin" hidden>
+      <div class="chead">
+        <h1>FLEX ADMIN <small>교사용 대시보드 · 2학년 2반</small></h1>
+        <button type="button" class="linkbtn" id="adminOut">관리자 나가기 ›</button>
+      </div>
+      <section class="page">
+        <h2>학급 현황</h2>
+        <div id="adSum" class="adsum"></div>
+      </section>
+      <section class="page">
+        <h2>완독 승인 <small>학생이 끝까지 읽은 책을 확인하고 분야와 함께 승인해요</small></h2>
+        <div id="adPend"></div>
+        <p id="adMsg" class="msg" role="status"></p>
+      </section>
+      <section class="page">
+        <h2>학생 명단 <small>친구 서재 데이터는 샘플이에요</small></h2>
+        <table class="logtbl"><thead><tr><th>학생</th><th>대표 칭호</th><th>누적 쪽</th><th>승인 완독</th><th>이번 주 기록일</th></tr></thead><tbody id="adRows"></tbody></table>
+      </section>
+      <section class="page">
+        <h2>기록 다운로드 <small>엑셀에서 한글이 깨지지 않는 CSV(UTF-8)로 받아요</small></h2>
+        <div class="adbtns"><button type="button" class="cta" id="dlSum">학생 요약 CSV</button><button type="button" class="cta ghost" id="dlLog">내 독서 기록 CSV</button></div>
+      </section>
+    </div>
+
     <div id="v-guide" hidden>
       <div class="chead">
         <h1>BOOK FLEX 사용설명서 <small>읽고, 칩 모으고, 서재 꾸미기</small></h1>
@@ -421,14 +447,24 @@
   <span>읽고, 쌓고, 꾸미고, 함께 자랑하는 우리 반 독서 세계</span>
   <span id="ver"></span>
 </footer>
-<script src="app.js?v=1.1"></script>
-<script src="log.js?v=1.1"></script>
-<script src="class.js?v=1.1"></script>
-<script src="shop.js?v=1.1"></script>
-<script src="mission.js?v=1.1"></script>
-<script src="feed.js?v=1.1"></script>
-<script src="pick.js?v=1.1"></script>
-<script src="tabs.js?v=1.1"></script>
-<script src="notify.js?v=1.1"></script>
+<dialog id="adminDlg" class="adlg" aria-labelledby="adT">
+  <form id="adminForm" novalidate>
+    <h2 id="adT">관리자 로그인</h2>
+    <p>교사용 대시보드(FLEX ADMIN)예요. 비밀번호를 입력하세요.</p>
+    <input type="password" id="adminPw" inputmode="numeric" autocomplete="off" aria-label="관리자 비밀번호">
+    <p id="adminMsg" class="msg" role="alert"></p>
+    <div class="adact"><button type="button" class="cta ghost" id="adminCancel">취소</button><button type="submit" class="cta">접속</button></div>
+  </form>
+</dialog>
+<script src="app.js?v=1.28"></script>
+<script src="log.js?v=1.28"></script>
+<script src="class.js?v=1.28"></script>
+<script src="shop.js?v=1.28"></script>
+<script src="mission.js?v=1.28"></script>
+<script src="feed.js?v=1.28"></script>
+<script src="pick.js?v=1.28"></script>
+<script src="tabs.js?v=1.28"></script>
+<script src="admin.js?v=1.28"></script>
+<script src="notify.js?v=1.28"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-const APP_VERSION = '1.1'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '1.28'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
@@ -335,7 +335,6 @@ function applyProfile() {
   $p('profTitle').textContent = title;
   document.title = `${title} | BOOK FLEX`;
   $p('nickName').textContent = profile.name;
-  document.querySelector('.menu .av, .av').textContent = [...profile.name][0];
   $p('profAvatar').innerHTML = bustSvg();
   document.querySelectorAll('.myname').forEach(e => (e.textContent = profile.name));
 }

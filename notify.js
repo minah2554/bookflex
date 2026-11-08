@@ -22,7 +22,9 @@
       ...m.p.map(x => ({ id: 'n-mp-' + x, k: x, d: md([x])[0], t: '개인 미션을 달성했어요', s: '+15 플렉스칩', go: ['mission'] })),
       ...m.c.map(x => ({ id: 'n-mc-' + x, k: x, d: md([x])[0], t: '우리 반 미션 전원 달성', s: '+30 플렉스칩', go: ['mission'] })),
     ].sort((a, b) => b.k.localeCompare(a.k));
-    return [...dyn, ...BASE];
+    let ok = [];
+    try { ok = (JSON.parse(localStorage.getItem('bookflex.log.v1')).entries || []).filter(e => e.kind === 'done' && e.cat).map(e => ({ id: 'n-ok-' + e.book, k: e.date, d: e.date.slice(5).replace('-', '.'), t: `「${e.book}」 완독이 승인됐어요`, s: `분야 ${e.cat} · +40 플렉스칩`, go: ['my', 'shelf'] })); } catch {}
+    return [...ok, ...dyn, ...BASE];
   }
 
   function render() {

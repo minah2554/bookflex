@@ -183,6 +183,7 @@
     $('v-feed').hidden = page !== 'feed';
     $('v-pick').hidden = page !== 'pick';
     $('v-guide').hidden = page !== 'guide';
+    $('v-admin').hidden = page !== 'admin';
     document.querySelectorAll('.menu [data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === page));
     document.querySelectorAll('.linkbtn').forEach(b => b.classList.remove('on'));
     document.querySelectorAll('[data-page]').forEach(b => { b.classList.toggle('on', b.dataset.page === page); b.toggleAttribute('aria-current', b.dataset.page === page); });
@@ -195,5 +196,7 @@
     if (cls) render();
   }
   document.querySelectorAll('[data-page]').forEach(b => b.addEventListener('click', () => show(b.dataset.page)));
+  window.SHOWPAGE = show;
+  window.CLASS_DATA = { friends: FRIENDS, total: 27, pages: () => BASE.pages + window.BF.stats().added };
   shelf(); talk(); fill();
 })();

@@ -127,7 +127,7 @@
     $('lvTxt').textContent = next ? `Lv.${i + 1} · ${xp} XP · Lv.${i + 2}까지 ${next - xp} XP` : `Lv.${i + 1} · ${xp} XP · 최고 레벨`;
     $('xpBar').style.width = next ? `${Math.round((xp - LV[i]) / (next - LV[i]) * 100)}%` : '100%';
     $('bookInfo').textContent = `지난번 ${reachedP}쪽까지 · 내 판본 ${tot()}쪽`;
-    $('bookSel').innerHTML = st.lib.map(b => `<option value="${esc(b.t)}"${b.t === st.cur ? ' selected' : ''}>${esc(b.t)}${b.fin ? ' (완독 신청)' : ''}</option>`).join('');
+    $('bookSel').innerHTML = st.lib.map(b => `<option value="${esc(b.t)}"${b.t === st.cur ? ' selected' : ''}>${esc(b.t)}${b.ok ? ' (완독)' : b.fin ? ' (완독 신청)' : ''}</option>`).join('');
     const n = days.size;
     $('goal').innerHTML = n >= 7 ? '<b>일주일 책벌레</b> 조건 달성!' :
       `<b>일주일 책벌레까지</b><br>서로 다른 날 7일 중 ${n}일${days.has(today) ? '' : `<br><small>오늘 기록하면 ${n + 1}일째</small>`}`;
@@ -200,12 +200,22 @@
   // 다른 화면(FLEX CLASS)이 쓰는 같은 데이터 창구
   window.BF = {
     addChips(n) { st.chips += n; save(); sync(); },
+    // 교사용: 완독 승인(분야 기록, +40칩)·반려
+    pending: () => st.lib.filter(b => b.fin && !b.ok).map(b => ({ ...b })),
+    approve(t, cat) {
+      const b = st.lib.find(x => x.t === t);
+      if (!b || !b.fin || b.ok) return false;
+      b.ok = true; st.entries.push({ date: today, book: t, kind: 'done', pages: 0, chips: 40, cat: cat || '기타' });
+      st.chips += 40; save(); render(); document.dispatchEvent(new Event('bf:change')); return true;
+    },
+    reject(t) { const b = st.lib.find(x => x.t === t); if (!b || !b.fin || b.ok) return false; b.fin = false; save(); render(); document.dispatchEvent(new Event('bf:change')); return true; },
+    entries: () => st.entries.map(e => ({ ...e })),
     addBook,
     library: () => st.lib.map(b => b.t),
     // 책장 툴팁용: 읽는 중인 책 + 승인된 완독(최신순)
     books: () => [
-      ...[cb(), ...st.lib.filter(b => b !== cb())].map(b => ({ t: b.t, s: b.fin ? '승인 대기 · 끝까지 읽음' : `읽는 중 · ${reachedOf(b)}/${b.total}쪽` })),
-      ...st.entries.filter(e => e.kind === 'done').sort((a, b) => b.date.localeCompare(a.date)).map(e => ({ t: e.book, s: `완독 · ${e.date.slice(5).replace('-', '.')}` })),
+      ...[cb(), ...st.lib.filter(b => b !== cb())].filter(b => !b.ok).map(b => ({ t: b.t, s: b.fin ? '승인 대기 · 끝까지 읽음' : `읽는 중 · ${reachedOf(b)}/${b.total}쪽` })),
+      ...st.entries.filter(e => e.kind === 'done').sort((a, b) => b.date.localeCompare(a.date)).map(e => ({ t: e.book, s: `완독 · ${e.date.slice(5).replace('-', '.')}`, c: e.cat })),
     ],
     quotes: () => st.entries.filter(e => e.quote).map(e => ({ id: `q-${e.date}-${e.start}`, date: e.date, text: e.quote, book: e.book, writer: (st.lib.find(b => b.t === e.book) || {}).w || '' })),
     stats() {
