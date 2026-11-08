@@ -1,4 +1,4 @@
-const APP_VERSION = '17.0'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '6.6'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
@@ -120,8 +120,8 @@ const spriteKey = id => (HAS_VAR.includes(id) ? id + '-' + (variants[id] || 1) :
 // 방 안 자리: [가운데 x, 기준 y, 가로폭, mid(1이면 y가 그림 가운데, 아니면 바닥)] — 방 좌표(480×360 기준)
 const PLACE = {
   plant: [106, 312, 40], rug: [222, 262, 150, 1], roundrug: [225, 272, 120, 1], bigrug: [225, 255, 250, 1],
-  desk: [384, 302, 170], chair: [344, 318, 54], sofa: [170, 306, 100], books: [322, 292, 44],
-  lamp: [341, 226, 24], mug: [381, 238, 14], clock: [423, 232, 19], bmark: [405, 246, 22, 1],
+  desk: [384, 302, 130], chair: [344, 318, 54], sofa: [170, 306, 100], books: [322, 292, 44],
+  lamp: [351, 244, 22], mug: [382, 253, 13], clock: [414, 248, 17], bmark: [400, 259, 20, 1],
   window: [105, 138, 66, 1], sunset: [185, 98, 36, 1], poster: [283, 92, 40, 1], frame: [392, 120, 34, 1],
 };
 // 그림에 이미 들어 있는 윗선 기울기(dy/dx). 방 벽·가구 선(±0.5)에 맞도록 모자란 만큼 기울인다.

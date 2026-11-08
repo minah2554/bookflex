@@ -166,9 +166,9 @@ small { font-size: 12px; } .mute { color: var(--muted); } .ok { color: #247040; 
 .pool small { color: var(--muted); }
 .pool em { margin-left: auto; font-style: normal; font-size: 11px; font-weight: 800; color: var(--hi); }
 .cta:disabled { opacity: .6; cursor: default; }
-.sgrid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 12px; align-items: start; }
+.sgrid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 12px; align-items: start; }
 .spre .room { border-radius: 12px; overflow: hidden; background: var(--soft); }
-.spre .room { height: auto; } .spre .room svg { display: block; width: 100%; height: auto; }
+.spre .room { height: auto; aspect-ratio: 16 / 10; } .spre .room svg { display: block; width: 100%; height: 100%; }
 .pname { margin: 10px 0 6px; font-weight: 800; }
 .after { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 10px; border-radius: 10px; background: color-mix(in srgb, var(--accent) 14%, #fff); margin-bottom: 4px; }
 .after b { color: var(--hi); font-size: 16px; }
@@ -530,3 +530,6 @@ small { font-size: 12px; } .mute { color: var(--muted); } .ok { color: #247040; 
 .rv textarea { box-sizing: border-box; width: 100%; padding: 8px 10px; border: 2px solid color-mix(in srgb, var(--hi) 25%, transparent); border-radius: 10px; font: inherit; line-height: 1.5; resize: vertical; background: #fff; }
 .rvact { display: flex; align-items: center; gap: 10px; }
 .adrow .rvtxt { flex-basis: 100%; margin: 0; padding: 8px 10px; border-radius: 8px; background: var(--soft); font-size: 13px; line-height: 1.5; }
+
+/* v6.6: 편집 중에는 아바타가 가구 끌기를 막지 않게 */
+.room.editing .avatar-g { pointer-events: none; }

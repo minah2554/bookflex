@@ -1,8 +1,8 @@
-// 가구 배치: 방에서 가구를 끌어 옮기고, 돌리고, 좌우로 뒤집는다. 내 방 꾸미기와 상점 미리보기가 같은 도구를 쓴다.
+// 가구 배치: 방에서 가구를 끌어 옮기고, 회전 단추로 8방향으로 돌린다. 내 방 꾸미기와 상점 미리보기가 같은 도구를 쓴다.
 // 위치·각도는 가구마다 {x, y, r, f}(기본 자리에서 얼마나 옮겼는지)로 저장된다(app.js의 state.pos).
 (() => {
   const $ = id => document.getElementById(id);
-  const R = window.ROOM, STEP = 6, ROT = 15, LIM = 300;
+  const R = window.ROOM, STEP = 6, ROT = 45, LIM = 300;
   const clamp = v => Math.max(-LIM, Math.min(LIM, v));
   let homeSel = '';
 
@@ -36,9 +36,7 @@
     const acts = [
       ['◀', '왼쪽으로', p => ({ ...p, x: clamp(p.x - STEP) })], ['▲', '위로', p => ({ ...p, y: clamp(p.y - STEP) })],
       ['▼', '아래로', p => ({ ...p, y: clamp(p.y + STEP) })], ['▶', '오른쪽으로', p => ({ ...p, x: clamp(p.x + STEP) })],
-      ['↺ 돌리기', '왼쪽으로 돌리기', p => ({ ...p, r: (((p.r || 0) - ROT) % 360 + 360) % 360 })],
-      ['↻ 돌리기', '오른쪽으로 돌리기', p => ({ ...p, r: ((p.r || 0) + ROT) % 360 })],
-      ['좌우 뒤집기', '좌우 뒤집기', p => ({ ...p, f: p.f ? 0 : 1 })],
+      ['회전', '45도씩 돌리기 (8방향)', p => ({ ...p, f: 0, r: ((p.r || 0) + ROT) % 360 })],
       ['제자리로', '기본 자리로 되돌리기', () => null],
     ];
     c.bar.innerHTML = acts.map(([t, l], i) => `<button type="button" data-a="${i}" aria-label="${l}">${t}</button>`).join('');

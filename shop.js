@@ -53,7 +53,7 @@
 
     // 미리보기
     const c = byId(sel), canBuy = c && !c.soon && open && !window.ROOM.own(c.id);
-    const over = { noAvatar: true, pos: window.ROOM.draft, ...(c ? (c.wall ? { wall: c.wall } : c.floor ? { floor: c.floor } : { add: c.id }) : {}) };
+    const over = { pos: window.ROOM.draft, ...(c ? (c.wall ? { wall: c.wall } : c.floor ? { floor: c.floor } : { add: c.id }) : {}) };
     window.ROOM.shopSel = c && !c.soon && !c.wall && !c.floor ? c.id : ''; // 끌어서 놓아 볼 수 있는 물건
     $('shopRoom').innerHTML = window.ROOM.roomSvg('s-', over);
     $('shopPlace').parentElement.hidden = !window.ROOM.shopSel;
