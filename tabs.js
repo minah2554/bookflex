@@ -109,9 +109,9 @@
     const v = [...document.querySelectorAll('#v-home,#v-log,#v-shelf,#v-board,#v-titles')].find(e => !e.hidden), t = document.querySelector('.tabs');
     const p = v && v.querySelector('.page');
     if (!p || t.hidden) return;
-    t.style.top = `${Math.round(p.getBoundingClientRect().top - document.querySelector('.panel').getBoundingClientRect().top + 16)}px`;
+    t.style.top = `${Math.round(p.getBoundingClientRect().top - document.querySelector('.panel').getBoundingClientRect().top + 20)}px`; // 카드 모서리 곡률(16px)이 끝난 뒤부터 탭을 놓는다
   }
-  const later = () => requestAnimationFrame(place);
+  const later = () => setTimeout(place, 0); // 숨겨진 탭에서도 멈추지 않도록 rAF 대신 타이머
   document.querySelectorAll('[data-page],.tabs [data-view]').forEach(b => b.addEventListener('click', later));
   document.addEventListener('bf:change', later);
   addEventListener('resize', later); addEventListener('load', later);
