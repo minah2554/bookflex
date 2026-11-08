@@ -7,7 +7,7 @@
 <link rel="icon" type="image/png" href="assets/favicon-64.png">
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="style.css?v=1.28">
+<link rel="stylesheet" href="style.css?v=15.0">
 </head>
 <body>
 <div class="app">
@@ -192,7 +192,7 @@
       </section>
       <section class="page">
         <h2>완독 기록</h2>
-        <table class="logtbl"><thead><tr><th>책</th><th>독서 분야</th><th>완독 승인일</th></tr></thead><tbody id="shRows"></tbody></table>
+        <table class="logtbl"><thead><tr><th>책</th><th>독서 분야</th><th>읽은 기간</th><th>완독 승인일</th></tr></thead><tbody id="shRows"></tbody></table>
       </section>
       <section class="page">
         <h2>읽고 싶어서 담은 책 <button type="button" class="linkbtn" data-page="pick">BOOK PICK ›</button></h2>
@@ -394,7 +394,7 @@
           <p class="mtxt" id="pmTxt"></p>
         </section>
         <section class="page mcard cls">
-          <h2>오늘의 우리 반 미션 <small>전원 달성 시 모두 +30칩</small></h2>
+          <h2>우리 반 미션 <small>전원 달성 시 모두 +30칩 · 달성하면 다음 미션</small></h2>
           <p class="mname" id="cmTitle"></p>
           <div class="bar"><i id="cmBar2"></i></div>
           <p class="mtxt" id="cmTxt"></p>
@@ -402,7 +402,7 @@
       </div>
       <p id="mMsg" class="msg" role="status"></p>
       <section class="page">
-        <h2>미션 풀 <small>매일 한국시간 00:00에 바뀌고, 새로고침해도 그대로예요</small></h2>
+        <h2>미션 풀 <small>개인 미션은 매일 바뀌고, 우리 반 미션은 전원 달성하면 다음 미션이 나와요</small></h2>
         <ul id="mPool" class="pool"></ul>
         <button id="mDemo" class="cta mini" type="button">데모용: 반 친구들이 기록했어요</button>
         <small class="note">친구들의 기록은 학급 서버가 생기기 전까지 샘플 인원입니다.</small>
@@ -456,15 +456,15 @@
     <div class="adact"><button type="button" class="cta ghost" id="adminCancel">취소</button><button type="submit" class="cta">접속</button></div>
   </form>
 </dialog>
-<script src="app.js?v=1.28"></script>
-<script src="log.js?v=1.28"></script>
-<script src="class.js?v=1.28"></script>
-<script src="shop.js?v=1.28"></script>
-<script src="mission.js?v=1.28"></script>
-<script src="feed.js?v=1.28"></script>
-<script src="pick.js?v=1.28"></script>
-<script src="tabs.js?v=1.28"></script>
-<script src="admin.js?v=1.28"></script>
-<script src="notify.js?v=1.28"></script>
+<script src="app.js?v=15.0"></script>
+<script src="log.js?v=15.0"></script>
+<script src="class.js?v=15.0"></script>
+<script src="shop.js?v=15.0"></script>
+<script src="mission.js?v=15.0"></script>
+<script src="feed.js?v=15.0"></script>
+<script src="pick.js?v=15.0"></script>
+<script src="tabs.js?v=15.0"></script>
+<script src="admin.js?v=15.0"></script>
+<script src="notify.js?v=15.0"></script>
 </body>
 </html>

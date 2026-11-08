@@ -25,6 +25,12 @@
   const reads = () => st.entries.filter(e => e.kind === 'read' && e.book === cb().t);
   const reachedOf = b => Math.max(0, ...st.entries.filter(e => e.kind === 'read' && e.book === b.t).map(e => e.end));
   const reached = () => reachedOf(cb());
+  // 완독까지 걸린 날수: 그 책의 첫 기록일부터 완독일까지(양끝 포함). 샘플 책은 기록이 없어 고정값
+  const SAMPLE_DAYS = { '빨간 머리 앤': 9, '노인과 바다': 6 };
+  function daysTaken(e) {
+    const first = st.entries.filter(x => x.kind === 'read' && x.book === e.book).map(x => x.date).sort()[0];
+    return first ? Math.max(1, Math.round((new Date(e.date) - new Date(first)) / 864e5) + 1) : SAMPLE_DAYS[e.book] || null;
+  }
 
   // 하루 첫 기록 +10, 5쪽당 +2(하루 최대 20), 한 구절 +5. 미션 보상은 mission.js가 따로 지급한다.
   function reward(entries, missions, date, pages, quote) {
@@ -215,7 +221,7 @@
     // 책장 툴팁용: 읽는 중인 책 + 승인된 완독(최신순)
     books: () => [
       ...[cb(), ...st.lib.filter(b => b !== cb())].filter(b => !b.ok).map(b => ({ t: b.t, s: b.fin ? '승인 대기 · 끝까지 읽음' : `읽는 중 · ${reachedOf(b)}/${b.total}쪽` })),
-      ...st.entries.filter(e => e.kind === 'done').sort((a, b) => b.date.localeCompare(a.date)).map(e => ({ t: e.book, s: `완독 · ${e.date.slice(5).replace('-', '.')}`, c: e.cat })),
+      ...st.entries.filter(e => e.kind === 'done').sort((a, b) => b.date.localeCompare(a.date)).map(e => ({ t: e.book, s: `완독 · ${e.date.slice(5).replace('-', '.')}`, c: e.cat, n: daysTaken(e) })),
     ],
     quotes: () => st.entries.filter(e => e.quote).map(e => ({ id: `q-${e.date}-${e.start}`, date: e.date, text: e.quote, book: e.book, writer: (st.lib.find(b => b.t === e.book) || {}).w || '' })),
     stats() {

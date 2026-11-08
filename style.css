@@ -468,3 +468,30 @@ small { font-size: 12px; } .mute { color: var(--muted); } .ok { color: #247040; 
 .adrow label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; }
 .adbtns { display: flex; gap: 8px; flex-wrap: wrap; }
 @media (max-width: 760px) { .adsum { grid-template-columns: 1fr 1fr; } }
+
+/* v15.0: 모바일 반응형 — 메뉴는 한 줄로 밀어 보기, 표는 가로 스크롤, 여백·글자 정리 */
+@media (max-width: 1099px) {
+  .menu { order: 3; flex: 1 0 100%; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .menu::-webkit-scrollbar { display: none; }
+  .nav .me { margin-left: auto; }
+}
+@media (max-width: 760px) {
+  .app { padding: 10px 10px 20px; }
+  .nav { padding: 8px 10px; gap: 8px; border-radius: 16px; margin-bottom: 10px; }
+  .logo small { display: none; }
+  .me { gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .themes { margin-right: 0; }
+  .menu a, .menu button { padding: 8px 12px; font-size: 13px; }
+  .panel { padding: 10px 10px 14px; border-radius: 18px; }
+  .head { padding: 2px 4px 10px; gap: 8px; }
+  .head h1 { font-size: 16px; }
+  .now { flex-wrap: wrap; border-radius: 16px; }
+  .tabs { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; }
+  .tabs a, .tabs button { flex: none; }
+  .logtbl, .shtbl { display: block; max-width: 100%; overflow-x: auto; white-space: nowrap; }
+  .adrow > div { min-width: 0; flex-basis: 100%; }
+  .pchoice { padding: 20px 12px; font-size: 15px; }
+  .pres { grid-template-columns: 1fr; }
+  .vtabs button { padding: 8px 14px; }
+  .foot { padding: 10px 14px; }
+}

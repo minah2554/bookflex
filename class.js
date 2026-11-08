@@ -20,7 +20,8 @@
     해바라기: { wall: 'cream', floor: 'wood', ids: ['bed', 'shelf', 'sunset', 'roundrug', 'plant'], avatar: { hair: '#c98a3c', top: '#f2b84b' }, say: '노을 보며 읽는 중' },
   };
   const POOL = ['어린 왕자', '데미안', '동물농장', '노인과 바다', '변신', '빨간 머리 앤', '1984'];
-  const PH = '[학생이 직접 쓴 글이 들어갈 자리]';
+  const CATS = ['문학', '인문', '사회', '과학', '예술'], WISH = ['모모', '소나기', '완득이', '82년생 김지영', '코스모스', '사피엔스', '아몬드', '지구 끝의 온실', '불편한 편의점'];
+  const PH ='[학생이 직접 쓴 글이 들어갈 자리]';
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const fmt = n => n.toLocaleString('ko-KR');
   const today = () => window.BF.stats().today;
@@ -132,7 +133,12 @@
       return `<h2>독서 기록 <small>누적 ${pages}쪽 · 이번 주 ${days}일</small></h2><table class="logtbl"><thead><tr><th>날짜</th><th>책</th><th>읽은 쪽</th></tr></thead><tbody>${rows}</tbody></table>`;
     }
     if (ftab === 'shelf') {
-      return `<h2>내 책장 <small>완독 ${nb}권</small></h2><div class="spines">${books.map((b, i) => `<div class="spine" style="--c:hsl(${hue(b)} 55% 55%);--h:${150 - (i % 3) * 14}px" title="${esc(b)}"><span>${esc(b)}</span></div>`).join('')}${Array.from({ length: Math.max(0, 6 - nb) }, () => '<div class="spine empty" style="--h:140px"></div>').join('')}</div>`;
+      // 친구 완독 기록·담은 책은 샘플(학급 서버가 생기면 실제 데이터로 바뀐다)
+      const rows = books.map((b, i) => `<tr><td><b>${esc(b)}</b></td><td>${CATS[hue(b) % CATS.length]}</td><td>${3 + (hue(b + name) % 10)}일 만에</td><td>${day(3 + i * 9)}</td></tr>`).join('');
+      const wish = Array.from({ length: 2 + (hue(name) % 2) }, (_, i) => WISH[(hue(name) + i * 3) % WISH.length]);
+      return `<h2>${esc(name)}의 책장 <small>완독 ${nb}권</small></h2><div class="spines">${books.map((b, i) => `<div class="spine" style="--c:hsl(${hue(b)} 55% 55%);--h:${150 - (i % 3) * 14}px" title="${esc(b)}"><span>${esc(b)}</span></div>`).join('')}${Array.from({ length: Math.max(0, 6 - nb) }, () => '<div class="spine empty" style="--h:140px"></div>').join('')}</div>
+        <h3>완독 기록</h3>${nb ? `<table class="logtbl"><thead><tr><th>책</th><th>독서 분야</th><th>읽은 기간</th><th>완독 승인일</th></tr></thead><tbody>${rows}</tbody></table>` : '<p class="note">아직 승인된 완독이 없어요.</p>'}
+        <h3>읽고 싶어서 담은 책</h3><div class="chips">${wish.map(t => `<span class="badge">${esc(t)}</span>`).join('')}</div>`;
     }
     return `<h2>게시판 <small>${esc(name)}이(가) 쓴 글</small></h2><div class="flist">${[['quote', '한 구절'], ['review', '한줄평']].map(([t, l]) => `<article class="post"><header><span class="tag ${t === 'quote' ? '' : 'b'}">${l}</span><time>${day(1)}</time></header><p class="ph">${PH}</p><small class="src">${esc(books[0] || POOL[0])}</small></article>`).join('')}</div>`;
   }

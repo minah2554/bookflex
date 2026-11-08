@@ -62,7 +62,7 @@
     $('spines').innerHTML = x.done.map((b, i) => `<div class="spine" style="--c:hsl(${hue(b.t)} 55% 55%);--h:${150 - (i % 3) * 14}px" title="${esc(b.t)}"><span>${esc(b.t)}</span></div>`).join('') +
       `<div class="spine now" style="--h:140px" title="읽는 중"><span>${esc(x.s.book)} · ${x.s.reached}/${x.s.total}쪽</span></div>` +
       Array.from({ length: Math.max(0, 6 - x.done.length) }, () => '<div class="spine empty" style="--h:140px" aria-hidden="true"></div>').join('');
-    $('shRows').innerHTML = x.done.map(b => `<tr><td><b>${esc(b.t)}</b></td><td>${CAT[b.t] || b.c || '기타'}</td><td>${esc(b.s.replace('완독 · ', ''))}</td></tr>`).join('');
+    $('shRows').innerHTML = x.done.map(b => `<tr><td><b>${esc(b.t)}</b></td><td>${CAT[b.t] || b.c || '기타'}</td><td>${b.n ? `${b.n}일 만에` : '-'}</td><td>${esc(b.s.replace('완독 · ', ''))}</td></tr>`).join('');
     const wish = read('bookflex.pick.v1') || [];
     $('wish').innerHTML = wish.length ? wish.map(t => `<span class="badge">${esc(t)}</span>`).join('') : '<small class="note">BOOK PICK에서 마음에 드는 책을 담으면 여기에 모여요.</small>';
   }

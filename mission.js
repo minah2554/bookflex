@@ -18,30 +18,40 @@
     { title: '모두 친구 서재 1곳 방문하기', base: 15, more: '놀러가면', how: '학급 전원 고유 방문 1명 이상', mine: () => visits() >= 1 },
   ];
 
-  const hash = s => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
-  const pick = (arr, date, salt) => arr[hash(date + salt) % arr.length];
+  // 날짜를 날수로 바꿔 차례대로 돌린다: 같은 날은 항상 같고, 다음 날은 반드시 다른 미션
+  const dayNo = date => Math.floor(Date.parse(date + 'T00:00:00Z') / 864e5);
+  const pick = (arr, date) => arr[dayNo(date) % arr.length];
 
-  let m = { p: [], c: [], demo: [], got: {} };
+  // ci: 지금 학급 미션 번호(전원 달성하면 +1), demo: 데모로 전원 달성시킨 미션 번호, cleared: 달성한 학급 미션 제목
+  let m = { p: [], c: [], demo: [], got: {}, ci: null, cleared: [] };
   try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.p)) m = { ...m, ...s }; } catch {}
+  if (m.ci == null) m.ci = dayNo(window.BF.stats().today) % CLASS.length;
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(m)); } catch {} };
 
   const today = () => window.BF.stats().today;
   function personal() {
-    const s = window.BF.stats(), p = pick(PERSONAL, s.today, 'p'), val = Math.min(p.goal, p.val(s));
+    const s = window.BF.stats(), p = pick(PERSONAL, s.today), val = Math.min(p.goal, p.val(s));
     return { ...p, val, done: val >= p.goal };
   }
   function classInfo() {
-    const s = window.BF.stats(), c = pick(CLASS, s.today, 'c');
-    const done = (m.demo.includes(s.today) ? TOTAL - 1 : c.base) + (c.mine(s) ? 1 : 0);
+    const s = window.BF.stats(), c = CLASS[m.ci % CLASS.length];
+    const done = (m.demo.includes(m.ci) ? TOTAL - 1 : c.base) + (c.mine(s) ? 1 : 0);
     return { ...c, done, total: TOTAL, left: TOTAL - done };
   }
-  // 자체 점검: 같은 날짜는 항상 같은 미션
-  console.assert(pick(PERSONAL, '2026-11-07', 'p') === pick(PERSONAL, '2026-11-07', 'p'), '미션이 날짜마다 고정되지 않음');
+  // 자체 점검: 같은 날은 같은 미션, 다음 날은 다른 미션
+  console.assert(pick(PERSONAL, '2026-11-07') === pick(PERSONAL, '2026-11-07') && pick(PERSONAL, '2026-11-07') !== pick(PERSONAL, '2026-11-08'), '개인 미션 순환 오류');
 
   function check() {
     const d = today(), msgs = [];
     if (personal().done && !m.p.includes(d)) { m.p.push(d); window.BF.addChips(P_CHIP); m.got[d] = (m.got[d] || 0) + P_CHIP; msgs.push(`개인 미션 완료! +${P_CHIP}칩`); }
-    if (classInfo().left <= 0 && !m.c.includes(d)) { m.c.push(d); window.BF.addChips(C_CHIP); m.got[d] = (m.got[d] || 0) + C_CHIP; msgs.push(`우리 반 미션 전원 달성! +${C_CHIP}칩`); }
+    const ci = classInfo();
+    if (ci.left <= 0) {
+      const reward = !m.c.includes(d);
+      if (reward) { m.c.push(d); window.BF.addChips(C_CHIP); m.got[d] = (m.got[d] || 0) + C_CHIP; }
+      if (!m.cleared.includes(ci.title)) m.cleared.push(ci.title);
+      m.ci++; // 전원 달성 → 다음 학급 미션 제시
+      msgs.push(`우리 반 「${ci.title}」 전원 달성!${reward ? ` +${C_CHIP}칩` : ' (칩은 하루 한 번만)'} 다음 미션: 「${classInfo().title}」`);
+    }
     if (msgs.length) { save(); $('mMsg').className = 'msg okm'; $('mMsg').textContent = `FLEX MISSION — ${msgs.join(' · ')}`; }
     render();
   }
@@ -61,12 +71,12 @@
     $('mGot').textContent = m.got[d] || 0;
     $('mPool').innerHTML = [
       ...PERSONAL.map(x => `<li><span class="tag">개인</span><b>${x.title}</b><small>${x.how}</small>${x.title === p.title ? '<em>오늘</em>' : ''}</li>`),
-      ...CLASS.map(x => `<li><span class="tag c">우리 반</span><b>${x.title}</b><small>${x.how}</small>${x.title === c.title ? '<em>오늘</em>' : ''}</li>`),
+      ...CLASS.map(x => `<li><span class="tag c">우리 반</span><b>${x.title}</b><small>${x.how}</small>${x.title === c.title ? '<em>지금</em>' : m.cleared.includes(x.title) ? '<em>달성</em>' : ''}</li>`),
     ].join('');
-    $('mDemo').disabled = m.demo.includes(d);
+    $('mDemo').disabled = m.demo.includes(m.ci);
   }
 
-  $('mDemo').addEventListener('click', () => { if (!m.demo.includes(today())) { m.demo.push(today()); save(); check(); } });
+  $('mDemo').addEventListener('click', () => { if (!m.demo.includes(m.ci)) { m.demo.push(m.ci); save(); check(); } });
   document.addEventListener('bf:change', check);
   document.querySelector('[data-page=mission]').addEventListener('click', () => { $('mMsg').textContent = ''; render(); });
   window.MISSION = { classInfo, personal, check };
