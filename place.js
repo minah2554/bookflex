@@ -2,7 +2,8 @@
 // 위치·각도는 가구마다 {x, y, r, f}(기본 자리에서 얼마나 옮겼는지)로 저장된다(app.js의 state.pos).
 (() => {
   const $ = id => document.getElementById(id);
-  const R = window.ROOM, STEP = 6, ROT = 45, LIM = 300;
+  const R = window.ROOM, STEP = 6, ROT = 45, ROTS = ['rug', 'roundrug', 'bigrug'], // 러그는 납작해서 그냥 돌린다
+    LIM = 300;
   const clamp = v => Math.max(-LIM, Math.min(LIM, v));
   let homeSel = '';
 
@@ -29,6 +30,7 @@
   const mark = c => {
     const on = c.active();
     c.box.classList.toggle('editing', on);
+    const fb = c.bar.querySelector('[data-a="4"]'); if (fb) fb.textContent = ROTS.includes(c.id()) ? '회전' : '뒤집기';
     c.box.querySelectorAll('.itm').forEach(g => g.classList.toggle('sel', on && g.dataset.id === c.id()));
   };
 
@@ -36,14 +38,14 @@
     const acts = [
       ['◀', '왼쪽으로', p => ({ ...p, x: clamp(p.x - STEP) })], ['▲', '위로', p => ({ ...p, y: clamp(p.y - STEP) })],
       ['▼', '아래로', p => ({ ...p, y: clamp(p.y + STEP) })], ['▶', '오른쪽으로', p => ({ ...p, x: clamp(p.x + STEP) })],
-      ['좌우 뒤집기', '뒤집기: 좌우 → 뒤쪽 → 제자리', p => ({ ...p, r: 0, f: ((p.f || 0) + 1) % 3 })],
+      ['뒤집기', '방향 바꾸기(러그는 회전, 가구는 좌우 → 뒤쪽 → 제자리)', (p, id) => (ROTS.includes(id) ? { ...p, f: 0, r: ((p.r || 0) + ROT) % 360 } : { ...p, r: 0, f: ((p.f || 0) + 1) % (R.hasBack(id) ? 3 : 2) })],
       ['제자리로', '기본 자리로 되돌리기', () => null],
     ];
     c.bar.innerHTML = acts.map(([t, l], i) => `<button type="button" data-a="${i}" aria-label="${l}">${t}</button>`).join('');
     c.bar.onclick = e => {
       const b = e.target.closest('[data-a]'), id = c.id();
       if (!b || !id) return;
-      c.set(id, acts[+b.dataset.a][2](c.get(id)));
+      c.set(id, acts[+b.dataset.a][2](c.get(id), id));
     };
   }
 

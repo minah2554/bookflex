@@ -1,4 +1,4 @@
-const APP_VERSION = '6.9'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '7.0'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
@@ -118,6 +118,7 @@ const varCount = id => VAR_N[id] || 4;
 const variants = (() => { try { return JSON.parse(localStorage.getItem(VAR_KEY)) || {}; } catch { return {}; } })();
 const spriteKey = id => (HAS_VAR.includes(id) ? id + '-' + (variants[id] || 1) : id);
 // 방 안 자리: [가운데 x, 기준 y, 가로폭, mid(1이면 y가 그림 가운데, 아니면 바닥)] — 방 좌표(480×360 기준)
+const BACK = []; // 뒤쪽 그림이 있는 그림 이름 목록(예: 'desk-1')
 const PLACE = {
   plant: [106, 312, 40], rug: [222, 262, 150, 1], roundrug: [225, 272, 120, 1], bigrug: [225, 255, 250, 1],
   desk: [384, 302, 130], chair: [344, 318, 54], sofa: [170, 306, 100], books: [322, 292, 44],
@@ -133,9 +134,10 @@ const TILT = (id, k) => (BAKED[k] === undefined ? 0 : +(Math.atan(GOAL[id] - BAK
 const ALT = { lamp: [118, 203, 22], clock: [133, 205, 15], mug: [123, 209, 12], bmark: [111, 207, 16, 1] };
 ITEMS.forEach(i => {
   if (!PLACE[i.id]) return;
-  i.draw = (_, list = []) => {
+  // 뒤쪽 그림(assets/items/<그림이름>-back.webp)이 있는 물건만 뒤집기 3단계에서 뒤쪽을 보여 줌. 그림이 생기면 BACK에 그림 이름을 넣는다.
+  i.draw = (_, list = [], back = false) => {
     const p = ALT[i.id] || PLACE[i.id], k = spriteKey(i.id), d = DIM[k], w = p[2], h = w * d[1] / d[0];
-    const x = p[0] - w / 2, y = p[3] ? p[1] - h / 2 : p[1] - h, img = `<image href="assets/items/${k}.webp" x="${x}" y="${y}" width="${w}" height="${h}"/>`;
+    const x = p[0] - w / 2, y = p[3] ? p[1] - h / 2 : p[1] - h, img = `<image href="assets/items/${k}${back && BACK.includes(k) ? '-back' : ''}.webp" x="${x}" y="${y}" width="${w}" height="${h}"/>`;
     const a = TILT(i.id, k);
     return a ? `<g transform="translate(${p[0]} ${y + h / 2}) skewY(${a}) translate(${-p[0]} ${-(y + h / 2)})">${img}</g>` : img;
   };
@@ -218,7 +220,7 @@ function avatarSvg(a = state.avatar, text = state.say) {
   }
   return `<g class="avatar-g">${s}</g>`;
 }
-const xfStyle = p => (p ? `transform:translate(${p.x || 0}px,${p.y || 0}px) scaleX(${p.f ? -1 : 1})` : '');
+const xfStyle = p => (p ? `transform:translate(${p.x || 0}px,${p.y || 0}px) rotate(${p.r || 0}deg) scaleX(${p.f ? -1 : 1})` : '');
 // px: 한 화면에 방이 둘(홈·상점) 있어 패턴 id가 겹치지 않게 붙이는 접두어
 // over: 상점 미리보기용 { wall, floor, add } — 안 산 물건도 임시로 놓아 본다
 function roomSvg(px, over = {}) {
@@ -230,9 +232,9 @@ function roomSvg(px, over = {}) {
     `<polygon points="${pts(pts4)}" fill="#000" opacity="${shade}" stroke="#0003"/>`;
   const list = ITEMS.filter(i => over.ids ? over.ids.includes(i.id) : over.add === i.id || ((!i.shop || own(i.id)) && !state.off.includes(i.id))).sort((a, b) => a.layer - b.layer);
   // 책장은 마우스를 올리면 읽은 책 목록이 뜨는 영역. 아바타는 책상(5~6)까지 그린 뒤, 의자 앞에 선다.
-  const draw = i => i.id === 'shelf' ? `<g class="shelf-hit" tabindex="0" role="img" aria-label="책장 — 읽은 책 목록 보기">${i.draw(over.books, list)}</g>` : i.draw(over.books, list);
+  const draw = (i, back) => i.id === 'shelf' ? `<g class="shelf-hit" tabindex="0" role="img" aria-label="책장 — 읽은 책 목록 보기">${i.draw(over.books, list, back)}</g>` : i.draw(over.books, list, back);
   // 가구마다 옮김·돌림·뒤집기(pos: x, y, r, f)를 CSS 변환으로 얹는다
-  const wrap = i => `<g class="itm" data-id="${i.id}" data-f="${((over.pos && over.pos[i.id]) || (over.ids ? null : state.pos[i.id]) || {}).f || 0}" style="${xfStyle((over.pos && over.pos[i.id]) || (over.ids ? null : state.pos[i.id]))}">${draw(i)}</g>`;
+  const wrap = i => { const p = (over.pos && over.pos[i.id]) || (over.ids ? null : state.pos[i.id]); return `<g class="itm" data-id="${i.id}" data-f="${(p && p.f) || 0}" style="${xfStyle(p)}">${draw(i, !!p && p.f === 2)}</g>`; };
   const items = list.filter(i => i.layer <= 6.1).map(wrap).join('') + (over.noAvatar ? '' : over.avatar ? avatarSvg(over.avatar, over.say) : avatarSvg()) + list.filter(i => i.layer > 6.1).map(wrap).join('');
   // 방이 틀 전체를 채우도록 벽·바닥을 화면 밖까지 늘려 그린다(점토 느낌: 모서리 그늘, 걸레받이)
   const E = 330, H = 420;
@@ -253,7 +255,7 @@ const room = () => (document.getElementById('room').innerHTML = roomSvg('h-'));
 // 상점 화면이 쓰는 창구: 구매하면 방에 바로 놓이고(벽지·바닥은 바로 적용) 저장한다
 window.ROOM = {
   bust: bustSvg,
-  xfStyle, draft: {}, pos: id => ({ x: 0, y: 0, r: 0, f: 0, ...state.pos[id] }),
+  xfStyle, draft: {}, hasBack: id => BACK.includes(spriteKey(id)), pos: id => ({ x: 0, y: 0, r: 0, f: 0, ...state.pos[id] }),
   setPos(id, p) { if (p) state.pos[id] = p; else delete state.pos[id]; save(); render(); },
   // 지금 방에 놓인(보이는) 가구 목록
   shown: () => ITEMS.filter(i => (!i.shop || own(i.id)) && !state.off.includes(i.id)).map(i => [i.id, i.label]),

@@ -551,4 +551,3 @@ small { font-size: 12px; } .mute { color: var(--muted); } .ok { color: #247040; 
 .vmain > #vBody { flex: 1; }
 
 /* v6.9: 뒤집기 3단계(제자리 → 좌우 → 뒤쪽). 뒤쪽은 그림이 하나뿐이라 좌우 반전에 그늘을 얹어 보여 준다 */
-.itm[data-f="2"] > * { filter: brightness(.8); }

@@ -7,7 +7,7 @@
 <link rel="icon" type="image/png" href="assets/favicon-64.png">
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="style.css?v=6.9">
+<link rel="stylesheet" href="style.css?v=7.0">
 </head>
 <body>
 <div class="app">
@@ -114,7 +114,7 @@
             <div class="row"><span>벽지</span><div id="walls"></div></div>
             <div class="row"><span>바닥</span><div id="floors"></div></div>
             <div class="row"><span>소품</span><div id="items"></div></div>
-            <div class="row"><span>배치</span><div class="placewrap"><label>가구 <select id="placeSel"></select></label><div id="placeBar" class="placebar"></div><small class="note">방 안의 가구를 끌어서 옮기거나, 위 단추로 옮기고 좌우로 뒤집을 수 있어요. 상점에서 산 가구도 여기에 자동으로 나와요.</small></div></div>
+            <div class="row"><span>배치</span><div class="placewrap"><label>가구 <select id="placeSel"></select></label><div id="placeBar" class="placebar"></div><small class="note">방 안의 가구를 끌어서 옮기거나, 위 단추로 옮기고 방향을 바꿀 수 있어요. 상점에서 산 가구도 여기에 자동으로 나와요.</small></div></div>
             <button id="reset" class="reset" type="button">처음 상태로</button>
           </div>
         </section>
@@ -427,7 +427,7 @@
           <div id="shopRoom" class="room"></div>
           <p class="pname" id="pName"></p>
           <div class="vrow" id="vRow" hidden></div>
-          <div class="placewrap"><div id="shopPlace" class="placebar"></div><small class="note">내 미니서재와 같은 모습이에요. 물건을 끌어서 자리를 정하고, 뒤집기 단추로 방향을 바꿔 보세요. 사면 그 자리에 놓여요.</small></div>
+          <div class="placewrap"><div id="shopPlace" class="placebar"></div><small class="note">내 미니서재와 같은 모습이에요. 물건을 끌어서 자리를 정하고, 뒤집기(러그는 회전) 단추로 방향을 바꿔 보세요. 사면 그 자리에 놓여요.</small></div>
           <div class="after"><small>사고 나면 남는 칩</small><b id="pAfter"></b></div>
           <small class="note">칩을 써도 레벨·칭호는 그대로</small>
           <button id="buyBtn" class="cta wide" type="button"></button>
@@ -465,16 +465,16 @@
     <div class="adact"><button type="button" class="cta ghost" id="adminCancel">취소</button><button type="submit" class="cta">접속</button></div>
   </form>
 </dialog>
-<script src="app.js?v=6.9"></script>
-<script src="log.js?v=6.9"></script>
-<script src="class.js?v=6.9"></script>
-<script src="place.js?v=6.9"></script>
-<script src="shop.js?v=6.9"></script>
-<script src="mission.js?v=6.9"></script>
-<script src="feed.js?v=6.9"></script>
-<script src="pick.js?v=6.9"></script>
-<script src="tabs.js?v=6.9"></script>
-<script src="admin.js?v=6.9"></script>
-<script src="notify.js?v=6.9"></script>
+<script src="app.js?v=7.0"></script>
+<script src="log.js?v=7.0"></script>
+<script src="class.js?v=7.0"></script>
+<script src="place.js?v=7.0"></script>
+<script src="shop.js?v=7.0"></script>
+<script src="mission.js?v=7.0"></script>
+<script src="feed.js?v=7.0"></script>
+<script src="pick.js?v=7.0"></script>
+<script src="tabs.js?v=7.0"></script>
+<script src="admin.js?v=7.0"></script>
+<script src="notify.js?v=7.0"></script>
 </body>
 </html>
