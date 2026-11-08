@@ -36,7 +36,7 @@
     const acts = [
       ['◀', '왼쪽으로', p => ({ ...p, x: clamp(p.x - STEP) })], ['▲', '위로', p => ({ ...p, y: clamp(p.y - STEP) })],
       ['▼', '아래로', p => ({ ...p, y: clamp(p.y + STEP) })], ['▶', '오른쪽으로', p => ({ ...p, x: clamp(p.x + STEP) })],
-      ['좌우 뒤집기', '좌우 뒤집기(누를 때마다 번갈아)', p => ({ ...p, r: 0, f: p.f ? 0 : 1 })],
+      ['좌우 뒤집기', '뒤집기: 좌우 → 뒤쪽 → 제자리', p => ({ ...p, r: 0, f: ((p.f || 0) + 1) % 3 })],
       ['제자리로', '기본 자리로 되돌리기', () => null],
     ];
     c.bar.innerHTML = acts.map(([t, l], i) => `<button type="button" data-a="${i}" aria-label="${l}">${t}</button>`).join('');

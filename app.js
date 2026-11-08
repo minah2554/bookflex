@@ -1,4 +1,4 @@
-const APP_VERSION = '6.8'; // CHANGELOG.md와 함께 올린다
+const APP_VERSION = '6.9'; // CHANGELOG.md와 함께 올린다
 const THEME_KEY = 'bookflex.theme.v1';
 const KEY = 'bookflex.room.v1';
 
@@ -129,12 +129,12 @@ const PLACE = {
 const BAKED = { 'window-1': -.24, 'window-2': -.24, 'sunset-1': -.31, 'sunset-2': -.22, 'poster-1': .4, 'poster-2': .38, 'poster-3': .41, 'poster-4': .41, 'frame-1': .38, 'frame-2': .4, 'frame-3': .43, 'frame-4': .4, 'desk-1': .24, 'desk-2': .28 };
 const GOAL = { window: -.5, sunset: -.5, poster: .5, frame: .5, desk: .5 };
 const TILT = (id, k) => (BAKED[k] === undefined ? 0 : +(Math.atan(GOAL[id] - BAKED[k]) * 180 / Math.PI).toFixed(1));
-// 책상이 없으면 책상 위 작은 물건은 협탁 위에 놓인다
+// 책상 위 작은 물건은 처음엔 협탁 위에 놓이고, 책상을 사거나 옮겨도 따라가지 않는다(원하면 끌어서 책상 위로)
 const ALT = { lamp: [118, 203, 22], clock: [133, 205, 15], mug: [123, 209, 12], bmark: [111, 207, 16, 1] };
 ITEMS.forEach(i => {
   if (!PLACE[i.id]) return;
   i.draw = (_, list = []) => {
-    const p = ALT[i.id] && !list.some(x => x.id === 'desk') ? ALT[i.id] : PLACE[i.id], k = spriteKey(i.id), d = DIM[k], w = p[2], h = w * d[1] / d[0];
+    const p = ALT[i.id] || PLACE[i.id], k = spriteKey(i.id), d = DIM[k], w = p[2], h = w * d[1] / d[0];
     const x = p[0] - w / 2, y = p[3] ? p[1] - h / 2 : p[1] - h, img = `<image href="assets/items/${k}.webp" x="${x}" y="${y}" width="${w}" height="${h}"/>`;
     const a = TILT(i.id, k);
     return a ? `<g transform="translate(${p[0]} ${y + h / 2}) skewY(${a}) translate(${-p[0]} ${-(y + h / 2)})">${img}</g>` : img;
@@ -232,7 +232,7 @@ function roomSvg(px, over = {}) {
   // 책장은 마우스를 올리면 읽은 책 목록이 뜨는 영역. 아바타는 책상(5~6)까지 그린 뒤, 의자 앞에 선다.
   const draw = i => i.id === 'shelf' ? `<g class="shelf-hit" tabindex="0" role="img" aria-label="책장 — 읽은 책 목록 보기">${i.draw(over.books, list)}</g>` : i.draw(over.books, list);
   // 가구마다 옮김·돌림·뒤집기(pos: x, y, r, f)를 CSS 변환으로 얹는다
-  const wrap = i => `<g class="itm" data-id="${i.id}" style="${xfStyle((over.pos && over.pos[i.id]) || (over.ids ? null : state.pos[i.id]))}">${draw(i)}</g>`;
+  const wrap = i => `<g class="itm" data-id="${i.id}" data-f="${((over.pos && over.pos[i.id]) || (over.ids ? null : state.pos[i.id]) || {}).f || 0}" style="${xfStyle((over.pos && over.pos[i.id]) || (over.ids ? null : state.pos[i.id]))}">${draw(i)}</g>`;
   const items = list.filter(i => i.layer <= 6.1).map(wrap).join('') + (over.noAvatar ? '' : over.avatar ? avatarSvg(over.avatar, over.say) : avatarSvg()) + list.filter(i => i.layer > 6.1).map(wrap).join('');
   // 방이 틀 전체를 채우도록 벽·바닥을 화면 밖까지 늘려 그린다(점토 느낌: 모서리 그늘, 걸레받이)
   const E = 330, H = 420;
